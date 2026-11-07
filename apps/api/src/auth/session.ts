@@ -40,6 +40,14 @@ export async function revokeSession(db: DB, req: FastifyRequest) {
   if (token) await db.deleteFrom("sessions").where("token_hash", "=", hash(token)).execute();
 }
 
+/** Đăng xuất mọi thiết bị khác của người dùng, giữ phiên hiện tại */
+export async function revokeOtherSessions(db: DB, req: FastifyRequest, userId: string) {
+  const token = tokenFrom(req);
+  let q = db.deleteFrom("sessions").where("user_id", "=", userId);
+  if (token) q = q.where("token_hash", "!=", hash(token));
+  await q.execute();
+}
+
 export function setSessionCookie(reply: FastifyReply, token: string, secure: boolean) {
   reply.setCookie(SESSION_COOKIE, token, { httpOnly: true, sameSite: "lax", secure, path: "/", maxAge: SESSION_TTL_MS / 1000 });
 }

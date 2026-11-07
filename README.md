@@ -38,14 +38,15 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 
 | Đường dẫn | Việc |
 |---|---|
-| `POST /v1/auth/otp/request`, `/otp/verify` | Đăng nhập bằng số điện thoại (OTP 6 số, hết hạn 5 phút, sai 5 lần thì khóa) |
-| `POST /v1/auth/google` | Đăng nhập Google (ID token) |
+| `POST /v1/auth/register`, `/login` | Đăng ký / đăng nhập bằng email + mật khẩu (scrypt; sai 5 lần khóa 15 phút) |
+| `POST /v1/auth/google` | Đăng nhập Google (ID token). Email trùng tài khoản mật khẩu thì gộp, xóa mật khẩu cũ chưa xác minh |
+| `POST /v1/me/password` | Đặt / đổi mật khẩu, đăng xuất các thiết bị khác |
 | `GET/PATCH /v1/me`, `GET/PUT /v1/me/machine` | Hồ sơ, máy chính (lưu kèm điểm theo phiên bản thang điểm) |
 | `GET /v1/leaderboard` | Bảng xếp hạng máy chính của mọi người |
 
 Phiên đăng nhập: cookie `f2m_session` (web, qua `/api` của Next) hoặc `Authorization: Bearer` (app). Biến môi trường: [apps/api/.env.example](apps/api/.env.example).
 
-**Trước khi mở ra internet:** cắm nhà cung cấp SMS thật vào [apps/api/src/auth/sms.ts](apps/api/src/auth/sms.ts), đặt `AUTH_DEV_OTP=0`, `COOKIE_SECURE=1`, và điền `GOOGLE_CLIENT_IDS` (Google chỉ chấp nhận `localhost` hoặc tên miền HTTPS).
+**Trước khi mở ra internet:** chạy sau HTTPS và đặt `COOKIE_SECURE=1`; điền `GOOGLE_CLIENT_IDS` (Google chỉ chấp nhận `localhost` hoặc tên miền HTTPS). Chưa có: xác minh email, quên mật khẩu (cần dịch vụ gửi email).
 
 ## Deploy (aicenter, chỉ LAN)
 

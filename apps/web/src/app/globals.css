@@ -259,3 +259,10 @@ select.input option { background: var(--surface); }
   .account { padding-left: 0; border-left: 0; }
   .account .who { display: none; }
 }
+/* ô mật khẩu có nút hiện/ẩn */
+.pw { position: relative; }
+.pw .input { padding-right: 52px; }
+.pw-toggle { position: absolute; right: 2px; top: 0; width: 44px; height: 44px; display: grid; place-items: center; border: 0; background: none; color: var(--muted); cursor: pointer; border-radius: 12px; }
+.pw-toggle:hover { color: var(--text); }
+.pw-toggle svg { width: 18px; height: 18px; stroke-width: 1.5; }
+.panel .segmented { background: var(--ground); }

@@ -61,7 +61,6 @@ def main():
     run(ssh, f"cd {REMOTE} && rm -rf src && mkdir src && tar xzf src.tgz -C src && rm src.tgz && cp src/deploy/docker-compose.yml .")
     # .env tạo một lần, không ghi đè; thêm biến mới nếu thiếu
     run(ssh, f"cd {REMOTE} && [ -f .env ] || (echo POSTGRES_PASSWORD=$(openssl rand -hex 16) > .env && chmod 600 .env)")
-    run(ssh, f"cd {REMOTE} && (grep -q '^AUTH_PEPPER=' .env || echo AUTH_PEPPER=$(openssl rand -hex 32) >> .env)")
 
     print("Build + khởi động (lần đầu mất vài phút)…")
     out = run(ssh, f"cd {REMOTE} && docker compose up -d --build {services} 2>&1 | tail -25")

@@ -24,5 +24,5 @@ export async function api<T>(path: string, init: { method?: string; body?: unkno
 
 export interface Profile {
   id: string; handle: string; displayName: string; province: string | null;
-  email: string | null; phone: string | null; providers: ("phone" | "google")[];
+  email: string | null; emailVerified: boolean; hasPassword: boolean; providers: ("password" | "google")[];
 }

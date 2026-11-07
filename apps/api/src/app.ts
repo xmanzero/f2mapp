@@ -3,7 +3,6 @@ import cors from "@fastify/cors";
 import rateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import type { GoogleVerifier } from "./auth/google.js";
-import type { SmsSender } from "./auth/sms.js";
 import type { DB } from "./db.js";
 import { authRoutes } from "./routes/auth.js";
 import { machineRoutes } from "./routes/machines.js";
@@ -12,18 +11,14 @@ import { partsRoutes } from "./routes/parts.js";
 
 export interface AppDeps {
   db: DB;
-  sms: SmsSender;
-  /** Bí mật dùng khi băm mã OTP */
-  pepper: string;
   /** Client ID Google (web, Android, iOS). Rỗng = tắt đăng nhập Google */
   googleClientIds: string[];
   /** Chỉ dùng khi test: thay bộ xác thực token Google */
   googleVerifier?: GoogleVerifier;
-  /** Trả mã OTP trong response — CHỈ bật khi chưa có nhà cung cấp SMS và chạy trong LAN */
-  devOtp: boolean;
   cookieSecure: boolean;
-  /** Số lần xin mã OTP tối đa mỗi giờ cho một IP (mặc định 10) */
-  otpRequestsPerIpHour?: number;
+  /** Giới hạn theo IP (mặc định 10 đăng ký/giờ, 30 lần đăng nhập/10 phút) — test đặt cao hơn */
+  registerPerIpHour?: number;
+  loginPerIp10Min?: number;
 }
 
 export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: AppDeps } = {}) {

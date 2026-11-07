@@ -2,10 +2,10 @@ import { evaluate, machineInputSchema, resolveMachine, SCALE_VERSION, UnknownPar
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { AppDeps } from "../app.js";
-import { maskPhone } from "../auth/phone.js";
-import { userIdFromRequest } from "../auth/session.js";
+import { revokeOtherSessions, userIdFromRequest } from "../auth/session.js";
+import { passwordField } from "./auth.js";
 import { leaderboard, loadPrimaryMachine, savePrimaryMachine } from "../services/machines.js";
-import { getProfile, HANDLE_RE } from "../services/users.js";
+import { AuthError, changePassword, getProfile, HANDLE_RE } from "../services/users.js";
 
 const patchBody = z.object({
   displayName: z.string().trim().min(2, "Tên hiển thị từ 2 ký tự").max(40).optional(),
@@ -20,10 +20,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     if (!uid) reply.code(401).send({ error: "unauthorized", message: "Bạn cần đăng nhập." });
     return uid;
   };
-  const publicProfile = async (uid: string) => {
-    const p = await getProfile(db, uid);
-    return p && { ...p, phone: p.phone ? maskPhone(p.phone) : null };
-  };
+  const publicProfile = (uid: string) => getProfile(db, uid);
 
   app.get("/me", async (req, reply) => {
     const uid = await requireUser(req, reply);
@@ -48,6 +45,22 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     };
     if (Object.keys(set).length) await db.updateTable("users").set(set).where("id", "=", uid).execute();
     return { user: await publicProfile(uid) };
+  });
+
+  const passwordBody = z.object({ currentPassword: z.string().max(128).optional(), newPassword: passwordField });
+  app.post("/me/password", { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } }, async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const body = passwordBody.safeParse(req.body);
+    if (!body.success) return reply.code(400).send({ error: "bad_request", message: body.error.issues[0]?.message ?? "Dữ liệu chưa đúng" });
+    try {
+      await changePassword(db, uid, body.data.currentPassword, body.data.newPassword);
+    } catch (e) {
+      if (e instanceof AuthError) return reply.code(400).send({ error: e.code, message: e.message });
+      throw e;
+    }
+    await revokeOtherSessions(db, req, uid);
+    return { ok: true, user: await publicProfile(uid) };
   });
 
   app.get("/me/machine", async (req, reply) => {

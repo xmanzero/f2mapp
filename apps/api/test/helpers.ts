@@ -7,7 +7,6 @@ import { Kysely } from "kysely";
 import { PGliteDialect } from "kysely-pglite-dialect";
 import { buildApp } from "../src/app.js";
 import { createGoogleVerifier } from "../src/auth/google.js";
-import { ConsoleSms } from "../src/auth/sms.js";
 import type { Database } from "../src/db.js";
 import { syncParts } from "../src/services/machines.js";
 
@@ -15,7 +14,7 @@ const MIGRATIONS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".
 export const GOOGLE_CLIENT = "test-client.apps.googleusercontent.com";
 
 /** Postgres thật (PGlite, trong bộ nhớ) + đủ migration + app có tài khoản */
-export async function setup(opts: { otpRequestsPerIpHour?: number } = {}) {
+export async function setup(opts: { registerPerIpHour?: number } = {}) {
   const pg = new PGlite();
   for (const f of (await readdir(MIGRATIONS)).filter((x) => x.endsWith(".sql")).sort()) {
     // gen_random_uuid() có sẵn từ Postgres 13; PGlite không cần pgcrypto
@@ -31,13 +30,12 @@ export async function setup(opts: { otpRequestsPerIpHour?: number } = {}) {
     new SignJWT(claims).setProtectedHeader({ alg: "RS256", kid: "test" }).setIssuer("https://accounts.google.com")
       .setAudience(aud).setIssuedAt().setExpirationTime("10m").sign(privateKey);
 
-  const sms = new ConsoleSms(() => {});
   const app = buildApp({
     deps: {
-      db, sms, pepper: "test-pepper-0123456789", googleClientIds: [GOOGLE_CLIENT],
+      db, googleClientIds: [GOOGLE_CLIENT],
       googleVerifier: createGoogleVerifier([GOOGLE_CLIENT], createLocalJWKSet({ keys: [jwk] })),
-      devOtp: true, cookieSecure: false, otpRequestsPerIpHour: opts.otpRequestsPerIpHour ?? 1000,
+      cookieSecure: false, registerPerIpHour: opts.registerPerIpHour ?? 1000, loginPerIp10Min: 1000,
     },
   });
-  return { app, db, sms, googleToken, close: async () => { await app.close(); await db.destroy(); } };
+  return { app, db, googleToken, close: async () => { await app.close(); await db.destroy(); } };
 }

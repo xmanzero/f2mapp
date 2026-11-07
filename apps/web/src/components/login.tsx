@@ -1,6 +1,7 @@
 "use client";
 
 import { computeScores, resolveMachine } from "@f2m/shared";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { SAMPLE_MACHINES } from "@/data/sample";
@@ -9,30 +10,42 @@ import { n0 } from "@/lib/format";
 import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 
-interface AuthConfig { phone: { enabled: boolean; devCodeShown: boolean }; google: { clientId: string | null } }
+interface AuthConfig { password: { enabled: boolean; minLength: number }; google: { clientId: string | null } }
 interface LoginResult { token: string; created: boolean; user: Profile }
 
 declare global {
   interface Window {
     google?: { accounts: { id: {
-      initialize(o: { client_id: string; callback: (r: { credential: string }) => void; ux_mode?: string }): void;
+      initialize(o: { client_id: string; callback: (r: { credential: string }) => void }): void;
       renderButton(el: HTMLElement, o: Record<string, unknown>): void;
     } } };
   }
 }
 
-export function Login() {
+export function PasswordInput({ id, value, onChange, autoComplete, describedBy, minLength }: {
+  id: string; value: string; onChange: (v: string) => void; autoComplete: string; describedBy?: string; minLength?: number;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="pw">
+      <input id={id} className="input" type={show ? "text" : "password"} autoComplete={autoComplete} required minLength={minLength}
+        value={value} onChange={(e) => onChange(e.target.value)} aria-describedby={describedBy} />
+      <button type="button" className="pw-toggle" onClick={() => setShow((s) => !s)} aria-label={show ? "Ẩn mật khẩu" : "Hiện mật khẩu"} aria-pressed={show}>
+        {show ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+      </button>
+    </div>
+  );
+}
+
+export function Login({ initialMode = "login" }: { initialMode?: "login" | "register" }) {
   const router = useRouter();
-  const next = useSearchParams().get("next") ?? "/";
+  const params = useSearchParams();
+  const next = params.get("next") ?? "/";
   const { setUser, refresh } = useSession();
   const { machine, isSample, ready } = useMachine();
   const [config, setConfig] = useState<AuthConfig | null>(null);
-  const [step, setStep] = useState<"phone" | "code">("phone");
-  const [phone, setPhone] = useState("");
-  const [masked, setMasked] = useState("");
-  const [code, setCode] = useState("");
-  const [devCode, setDevCode] = useState<string | null>(null);
-  const [wait, setWait] = useState(0);
+  const [mode, setMode] = useState<"login" | "register">(params.get("tao") === "1" ? "register" : initialMode);
+  const [form, setForm] = useState({ email: "", password: "", displayName: "" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const googleBox = useRef<HTMLDivElement>(null);
@@ -41,13 +54,6 @@ export function Login() {
     api<AuthConfig>("/v1/auth/config").then(setConfig)
       .catch(() => setError("Máy chủ tài khoản chưa sẵn sàng. Thử lại sau ít phút."));
   }, []);
-
-  // đếm ngược nút Gửi lại mã
-  useEffect(() => {
-    if (wait <= 0) return;
-    const t = setTimeout(() => setWait((w) => w - 1), 1000);
-    return () => clearTimeout(t);
-  }, [wait]);
 
   const done = async (r: LoginResult) => {
     setUser(r.user);
@@ -69,7 +75,7 @@ export function Login() {
             .catch((e: ApiError) => setError(e.message)).finally(() => setBusy(false));
         },
       });
-      window.google!.accounts.id.renderButton(googleBox.current!, { theme: "filled_black", size: "large", shape: "pill", text: "signin_with", locale: "vi", width: 300 });
+      window.google!.accounts.id.renderButton(googleBox.current!, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", locale: "vi", width: 300 });
     };
     if (window.google) return render();
     const s = document.createElement("script");
@@ -80,89 +86,75 @@ export function Login() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config]);
 
-  const requestCode = async () => {
+  const submit = async () => {
     setBusy(true);
     setError(null);
     try {
-      const r = await api<{ phone: string; resendIn: number; devCode?: string }>("/v1/auth/otp/request", { body: { phone } });
-      setMasked(r.phone);
-      setDevCode(r.devCode ?? null);
-      setWait(r.resendIn);
-      setStep("code");
-      setCode("");
-    } catch (e) {
-      const err = e as ApiError;
-      setError(err.message);
-      if (err.retryIn) setWait(err.retryIn);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const verify = async () => {
-    setBusy(true);
-    setError(null);
-    try {
-      await done(await api<LoginResult>("/v1/auth/otp/verify", { body: { phone, code } }));
+      await done(mode === "login"
+        ? await api<LoginResult>("/v1/auth/login", { body: { email: form.email, password: form.password } })
+        : await api<LoginResult>("/v1/auth/register", { body: form }));
     } catch (e) {
       setError((e as ApiError).message);
     } finally {
       setBusy(false);
     }
   };
+  const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const switchMode = (m: "login" | "register") => { setMode(m); setError(null); };
 
   // vị trí máy hiện tại trên bảng xếp hạng (để thấy lợi ích của việc đăng nhập)
   const power = ready ? computeScores(resolveMachine(machine)).power : null;
   const rank = power === null ? null
     : SAMPLE_MACHINES.filter((m) => computeScores(resolveMachine(m.machine)).power > power).length + 1;
+  const minLen = config?.password.minLength ?? 8;
 
   return (
     <>
       <div className="title-row">
         <div>
-          <h1>Đăng nhập</h1>
-          <p className="sub">Bằng số điện thoại hoặc tài khoản Google. Lần đầu đăng nhập sẽ tự tạo tài khoản.</p>
+          <h1>{mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}</h1>
+          <p className="sub">Bằng email và mật khẩu, hoặc tài khoản Google.</p>
         </div>
       </div>
 
       <div className="grid">
         <section className="panel s5" aria-labelledby="h-login">
-          <header><h2 id="h-login">{step === "phone" ? "Đăng nhập bằng số điện thoại" : "Nhập mã xác nhận"}</h2></header>
+          <header>
+            <h2 id="h-login">{mode === "login" ? "Email và mật khẩu" : "Tài khoản mới"}</h2>
+            <div className="segmented" role="group" aria-label="Chọn">
+              <button type="button" aria-pressed={mode === "login"} onClick={() => switchMode("login")}>Đăng nhập</button>
+              <button type="button" aria-pressed={mode === "register"} onClick={() => switchMode("register")}>Tạo tài khoản</button>
+            </div>
+          </header>
 
-          {step === "phone" ? (
-            <form className="form" onSubmit={(e) => { e.preventDefault(); void requestCode(); }}>
+          <form className="form" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
+            {mode === "register" && (
               <div className="field">
-                <label htmlFor="phone">Số di động</label>
-                <input id="phone" className="input" type="tel" inputMode="tel" autoComplete="tel" required
-                  value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0912 345 678" aria-describedby={error ? "login-error" : undefined} />
+                <label htmlFor="displayName">Tên hiển thị</label>
+                <input id="displayName" className="input" autoComplete="nickname" required minLength={2} maxLength={40}
+                  value={form.displayName} onChange={(e) => set("displayName")(e.target.value)} placeholder="Tên mọi người sẽ thấy" />
               </div>
-              <button className="btn primary block" disabled={busy || !config || wait > 0}>
-                {wait > 0 ? `Gửi mã sau ${wait} giây` : busy ? "Đang gửi…" : "Gửi mã qua SMS"}
-              </button>
-            </form>
-          ) : (
-            <form className="form" onSubmit={(e) => { e.preventDefault(); void verify(); }}>
-              <div className="field">
-                <label htmlFor="code">Mã 6 số gửi tới {masked}</label>
-                <input id="code" className="input code" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required autoFocus
-                  value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} aria-describedby={devCode ? "dev-code" : undefined} />
-              </div>
-              {devCode && (
-                <p id="dev-code" className="notice">
-                  Chế độ thử nghiệm: máy chủ chưa gửi SMS thật. Mã của bạn là <b className="num">{devCode}</b>.
-                </p>
-              )}
-              <button className="btn primary block" disabled={busy || code.length !== 6}>{busy ? "Đang kiểm tra…" : "Đăng nhập"}</button>
-              <div className="form-links">
-                <button type="button" className="link" onClick={() => { setStep("phone"); setError(null); }}>Đổi số</button>
-                <button type="button" className="link" disabled={wait > 0 || busy} onClick={() => void requestCode()}>
-                  {wait > 0 ? `Gửi lại mã sau ${wait} giây` : "Gửi lại mã"}
-                </button>
-              </div>
-            </form>
-          )}
-
-          {error && <p id="login-error" className="form-error" role="alert">{error}</p>}
+            )}
+            <div className="field">
+              <label htmlFor="email">Email</label>
+              <input id="email" className="input" type="email" inputMode="email" autoComplete="email" required
+                autoCapitalize="none" spellCheck={false} value={form.email} onChange={(e) => set("email")(e.target.value)} placeholder="ten@gmail.com" />
+            </div>
+            <div className="field">
+              <label htmlFor="password">Mật khẩu</label>
+              <PasswordInput id="password" value={form.password} onChange={set("password")}
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                minLength={mode === "register" ? minLen : undefined} describedBy={mode === "register" ? "pw-hint" : undefined} />
+              {mode === "register" && <span id="pw-hint" className="hint">Từ {minLen} ký tự. Nên dùng một câu dễ nhớ, khó đoán.</span>}
+            </div>
+            {error && <p className="form-error" role="alert" style={{ marginTop: 0 }}>{error}</p>}
+            <button className="btn primary block" disabled={busy || !config}>
+              {busy ? "Đang xử lý…" : mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}
+            </button>
+            {mode === "login" && (
+              <p className="faint" style={{ fontSize: 13 }}>Quên mật khẩu? Tính năng lấy lại qua email sắp có. Nếu tài khoản có gắn Google, đăng nhập bằng Google rồi đặt mật khẩu mới trong trang Tài khoản.</p>
+            )}
+          </form>
 
           <div className="or"><span>hoặc</span></div>
           {config?.google.clientId ? (
@@ -173,7 +165,7 @@ export function Login() {
         </section>
 
         <section className="panel s7" aria-labelledby="h-why">
-          <header><h2 id="h-why">Khi đăng nhập</h2></header>
+          <header><h2 id="h-why">Khi có tài khoản</h2></header>
           <ul className="rows">
             <li className="row">
               <div className="grow">
@@ -196,6 +188,18 @@ export function Login() {
               <div className="grow">
                 <div style={{ fontWeight: 500 }}>Đăng bán linh kiện cũ</div>
                 <div className="line2">Khi nâng cấp, linh kiện thay ra được giữ lại để đăng bán kèm sẵn thông số và điểm (sắp có).</div>
+              </div>
+            </li>
+            <li className="row">
+              <div className="grow">
+                <div style={{ fontWeight: 500 }}>Email không hiện công khai</div>
+                <div className="line2">Trên bảng xếp hạng và tin rao, mọi người chỉ thấy tên hiển thị và tên tài khoản của bạn.</div>
+              </div>
+            </li>
+            <li className="row">
+              <div className="grow">
+                <div style={{ fontWeight: 500 }}>Mật khẩu được băm một chiều</div>
+                <div className="line2">f2m không lưu mật khẩu gốc. Nhập sai 5 lần, tài khoản tạm khóa 15 phút để chặn dò mật khẩu.</div>
               </div>
             </li>
           </ul>

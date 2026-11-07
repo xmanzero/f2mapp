@@ -10,19 +10,13 @@ export interface Database {
     phone: string | null;
     email: string | null;
     province: string | null;
+    password_hash: string | null;
+    email_verified_at: Date | null;
+    failed_logins: Generated<number>;
+    locked_until: Date | null;
     created_at: Generated<Date>;
   };
-  user_identities: { provider: "phone" | "google"; subject: string; user_id: string; created_at: Generated<Date> };
-  otp_codes: {
-    id: Generated<string>;
-    phone: string;
-    code_hash: string;
-    expires_at: Date;
-    attempts: Generated<number>;
-    consumed_at: Date | null;
-    ip: string | null;
-    created_at: Generated<Date>;
-  };
+  user_identities: { provider: "google"; subject: string; user_id: string; created_at: Generated<Date> };
   sessions: {
     token_hash: string;
     user_id: string;
