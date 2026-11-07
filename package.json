@@ -1,0 +1,19 @@
+{
+  "name": "f2mapp",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @f2m/web",
+    "dev:api": "npm run dev -w @f2m/api",
+    "dev:mobile": "npm run start -w @f2m/mobile",
+    "test": "npm test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "parts": "python -I tools/build_parts.py"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

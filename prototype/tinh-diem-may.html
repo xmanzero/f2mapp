@@ -1,0 +1,496 @@
+<title>Điểm Sức Mạnh PC</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: bench-sheet tool — config panel left, live score readout right, component table + method below */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --ink:#15202B; --muted:#5A6774; --line:#D8DEE5;
+  --accent:#1E6A86; --accent-soft:#E0EDF2; --warn:#A9510B; --warn-soft:#FBEADB; --bad:#B42318; --bad-soft:#FBE4E1; --good:#2B7A4B; --good-soft:#E2F2E8;
+  --bar-bg:#E7EBF0;
+  --t-bronze:#9A5B2E; --t-silver:#6E7884; --t-gold:#A87D0F; --t-plat:#2F7F86; --t-diamond:#3D5FC4; --t-legend:#9B2F6A; --t-fg:#FFFFFF;
+  --f-display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E141A; --surface:#161F28; --ink:#E5EBF0; --muted:#94A2AF; --line:#29353F;
+  --accent:#5DB3D0; --accent-soft:#15303B; --warn:#F0A260; --warn-soft:#3A2617; --bad:#F2877B; --bad-soft:#3D1D1A; --good:#6CC58F; --good-soft:#163222;
+  --bar-bg:#222D37; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0E141A; --surface:#161F28; --ink:#E5EBF0; --muted:#94A2AF; --line:#29353F;
+  --accent:#5DB3D0; --accent-soft:#15303B; --warn:#F0A260; --warn-soft:#3A2617; --bad:#F2877B; --bad-soft:#3D1D1A; --good:#6CC58F; --good-soft:#163222;
+  --bar-bg:#222D37; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 56px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:grid;gap:28px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:clamp(28px,4vw,40px);letter-spacing:.01em}
+h2{font-size:22px}
+h3{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-family:var(--f-body);font-weight:600}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+header{display:grid;gap:10px}
+header p{margin:0;color:var(--muted);max-width:70ch}
+.anchors{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:4px 10px;font-size:13px}
+.chip b{font-family:var(--f-mono);font-weight:600;color:var(--accent)}
+.draft{border:1px dashed var(--warn);color:var(--warn);background:var(--warn-soft);border-radius:6px;padding:8px 12px;font-size:13px;max-width:none}
+
+.main{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:880px){.main{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:16px;min-width:0}
+.field{display:grid;gap:6px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+select{width:100%;font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+select:focus-visible,button:focus-visible,tr:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;cursor:pointer}
+.pbtn{font-size:13px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:4px 12px}
+.pbtn:hover{border-color:var(--accent);color:var(--accent)}
+.sep{border:0;border-top:1px solid var(--line);margin:0}
+
+.result{display:grid;gap:18px;min-width:0}
+.total{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 20px}
+.total .big{font-family:var(--f-display);font-size:clamp(48px,7vw,72px);font-weight:700;line-height:.95;letter-spacing:-.01em}
+.total .meta{display:grid;gap:6px;padding-bottom:6px}
+.tier{display:inline-block;font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--t-fg);padding:4px 12px;border-radius:4px;width:max-content}
+.vsref{font-size:13px;color:var(--muted)}
+.badges{display:grid;gap:6px}
+.hbw{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.hbw small{font-size:12px;color:var(--muted)}
+.hb{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--warn);background:var(--warn-soft);border:1px dashed var(--warn);border-radius:999px;padding:2px 10px}
+.bars{display:grid;gap:12px}
+.bar{display:grid;grid-template-columns:110px minmax(0,1fr) 78px;gap:12px;align-items:center}
+.bar .lbl{font-weight:600;font-size:14px}
+.bar .lbl small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.track{position:relative;height:14px;background:var(--bar-bg);border-radius:3px}
+.fill{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:3px;transition:width .25s ease}
+.ref{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.55}
+.bar .val{text-align:right;font-size:15px}
+.scale{display:grid;grid-template-columns:110px minmax(0,1fr) 78px;gap:12px;font-size:11px;color:var(--muted)}
+.scale .ticks{position:relative;height:14px}
+.scale .ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+@media (max-width:520px){.bar,.scale{grid-template-columns:84px minmax(0,1fr) 64px;gap:8px}}
+
+.needs{display:grid;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.need{display:grid;grid-template-columns:110px 130px minmax(0,1fr);gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.need:last-child{border-bottom:0}
+.need .nm{font-weight:600}
+.need .dt{font-size:14px;color:var(--muted);min-width:0}
+.need .dt b{color:var(--ink);font-weight:600}
+.lv{display:inline-block;font-size:13px;font-weight:700;border-radius:4px;padding:2px 9px;width:max-content}
+.lv.l1{color:var(--bad);background:var(--bad-soft)}
+.lv.l2{color:var(--warn);background:var(--warn-soft)}
+.lv.l3{color:var(--accent);background:var(--accent-soft)}
+.lv.l4,.lv.l5{color:var(--good);background:var(--good-soft)}
+.lv.l5{outline:1px solid var(--good)}
+@media (max-width:560px){.need{grid-template-columns:90px minmax(0,1fr)}.need .dt{grid-column:1 / -1}}
+.notes{display:grid;gap:8px}
+.note{border-radius:6px;padding:10px 12px;font-size:14px;border-left:4px solid}
+.note b{font-weight:700}
+.note.bad{background:var(--bad-soft);border-color:var(--bad)}
+.note.warn{background:var(--warn-soft);border-color:var(--warn)}
+.note.good{background:var(--good-soft);border-color:var(--good)}
+.note.info{background:var(--accent-soft);border-color:var(--accent)}
+
+.sub table{width:100%;border-collapse:collapse;font-size:14px}
+.sub th,.sub td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right}
+.sub th:first-child,.sub td:first-child{text-align:left}
+.sub th{font-size:12px;color:var(--muted);font-weight:600}
+.sub tr.cur td{background:var(--accent-soft);font-weight:600}
+.side{display:inline-block;font-size:12px;font-weight:700;border-radius:3px;padding:1px 7px}
+.side.cpu{color:var(--warn);background:var(--warn-soft)}
+.side.gpu{color:var(--accent);background:var(--accent-soft)}
+.side.bal{color:var(--good);background:var(--good-soft)}
+.delta.pos{color:var(--good)} .delta.neg{color:var(--warn)} .delta.zero{color:var(--muted)}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+.tab{border:0;background:none;color:var(--muted);padding:8px 14px;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--accent);border-color:var(--accent)}
+.tablewrap{overflow-x:auto}
+.ptable{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
+.ptable th,.ptable td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.ptable th:first-child,.ptable td:first-child{text-align:left}
+.ptable th{position:sticky;top:0;background:var(--surface);font-size:12px;color:var(--muted);font-weight:600}
+.ptable tbody tr{cursor:pointer}
+.ptable tbody tr:hover{background:var(--accent-soft)}
+.ptable tr.sel{background:var(--accent-soft)}
+.ptable td.mainbar{width:28%}
+.mini{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.mini .t{flex:1;height:8px;background:var(--bar-bg);border-radius:2px;position:relative;min-width:80px}
+.mini .t i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:2px}
+.badge{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:0 5px;margin-left:6px;vertical-align:1px}
+.muted{color:var(--muted)}
+
+.method{display:grid;gap:14px}
+.method p{margin:0;max-width:74ch}
+.method pre{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px 14px;overflow-x:auto;font-family:var(--f-mono);font-size:13px;line-height:1.6}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.cols > div{min-width:0}
+.cols ul{margin:6px 0 0;padding-left:18px}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Điểm Sức Mạnh PC</h1>
+    <p>Chọn linh kiện để xem điểm sức mạnh và hạng của máy, mức đáp ứng từng nhu cầu (game, đồ họa, AI, văn phòng), điểm nghẽn ở từng độ phân giải và các cảnh báo phần cứng. Máy mốc (i5-12400F + RTX 3060 12GB + 16 GB RAM kênh đôi + SSD NVMe Gen3) được đúng 10.000 điểm sức mạnh.</p>
+    <div class="anchors">
+      <span class="chip">Mốc GPU: RTX 3060 12GB = <b>10.000</b></span>
+      <span class="chip">Mốc CPU: Core i5-12400F = <b>10.000</b></span>
+      <span class="chip">Thang điểm <b>v0.5</b></span>
+    </div>
+    <p class="draft">Bản nháp để thảo luận. FPS và ray tracing của card lấy từ bảng GPU Hierarchy 2026 của Tom's Hardware; điểm gaming và đơn nhân CPU từ CPU Hierarchy của Tom's Hardware; điểm render từ Blender Open Data 4.5 (CC0). Số có dấu ~ là ước tính (linh kiện đời cũ không có trong các bảng). Chưa có linh kiện laptop.</p>
+  </header>
+
+  <section class="main">
+    <div class="panel" aria-label="Cấu hình máy">
+      <h2>Cấu hình</h2>
+      <div class="field">
+        <label>Máy mẫu</label>
+        <div class="presets" id="presets"></div>
+      </div>
+      <hr class="sep">
+      <div class="field"><label for="cpu">CPU</label><select id="cpu"></select></div>
+      <div class="field"><label for="gpu">Card đồ họa</label><select id="gpu"></select></div>
+      <div class="row2">
+        <div class="field"><label for="ram">RAM</label>
+          <select id="ram"><option value="8">8 GB</option><option value="16">16 GB</option><option value="32">32 GB</option><option value="64">64 GB</option><option value="128">128 GB</option></select></div>
+        <div class="field"><label for="ch">Kênh RAM</label>
+          <select id="ch"><option value="2">Kênh đôi</option><option value="1">Kênh đơn</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="ssd">Ổ hệ điều hành</label>
+          <select id="ssd"><option value="2000">HDD</option><option value="7000">SSD SATA</option><option value="10000">NVMe Gen3</option><option value="12000">NVMe Gen4</option><option value="13000">NVMe Gen5</option></select></div>
+        <div class="field"><label for="pcie">Khe PCIe mainboard</label>
+          <select id="pcie"><option value="3">PCIe 3.0</option><option value="4">PCIe 4.0</option><option value="5">PCIe 5.0</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="psu">Nguồn</label>
+          <select id="psu"></select></div>
+        <div class="field"><label for="res">Màn hình</label>
+          <select id="res"><option value="1080">1080p (FHD)</option><option value="1440">1440p (2K)</option><option value="2160">2160p (4K)</option></select></div>
+      </div>
+      <hr class="sep">
+      <h3>Thử nâng cấp</h3>
+      <div class="field"><label for="ucpu">Thay CPU bằng</label><select id="ucpu"></select></div>
+      <div class="field"><label for="ugpu">Thay card đồ họa bằng</label><select id="ugpu"></select></div>
+      <div class="row2">
+        <div class="field"><label for="uram">RAM mới</label>
+          <select id="uram"><option value="">Giữ nguyên</option><option value="16">16 GB kênh đôi</option><option value="32">32 GB kênh đôi</option><option value="64">64 GB kênh đôi</option></select></div>
+        <div class="field"><label for="upsu">Nguồn mới</label>
+          <select id="upsu"></select></div>
+      </div>
+    </div>
+
+    <div class="panel result" aria-live="polite">
+      <div class="total">
+        <div>
+          <h3>Điểm sức mạnh</h3>
+          <div class="big num" id="total">10.000</div>
+        </div>
+        <div class="meta">
+          <span class="tier" id="tier">Vàng</span>
+          <span class="vsref" id="vsref"></span>
+          <span class="badges" id="badges"></span>
+        </div>
+      </div>
+      <div class="sub">
+        <h3 style="margin-bottom:8px">Mức đáp ứng nhu cầu</h3>
+        <div class="needs" id="needs"></div>
+      </div>
+      <h3>Thành phần điểm sức mạnh</h3>
+      <div class="bars" id="bars"></div>
+      <div class="scale" aria-hidden="true"><span></span><div class="ticks" id="ticks"></div><span></span></div>
+      <div class="notes" id="notes"></div>
+      <div class="sub">
+        <h3 style="margin-bottom:6px">Điểm nghẽn khi chơi game</h3>
+        <div class="tablewrap"><table id="bntable"></table></div>
+      </div>
+      <div class="sub" id="up" hidden>
+        <h3 style="margin-bottom:6px">Trước → sau nâng cấp</h3>
+        <div class="tablewrap"><table id="uptable"></table></div>
+        <div class="notes" id="upnotes" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:10px">
+      <h2>Bảng điểm linh kiện</h2>
+      <span class="muted" style="font-size:13px">Bấm một dòng để lắp vào cấu hình</span>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-gpu" aria-selected="true">Card đồ họa</button>
+      <button class="tab" role="tab" id="tab-cpu" aria-selected="false">CPU</button>
+    </div>
+    <div class="tablewrap" style="max-height:520px"><table class="ptable" id="ptable"></table></div>
+  </section>
+
+  <section class="panel method">
+    <h2>Cách tính</h2>
+    <p>Hai tầng. Tầng 1 là luật phần cứng: phát hiện RAM kênh đơn, card PCIe x4/x8 cắm khe 3.0, nguồn thiếu công suất, ổ HDD. Tầng 2 tính hiệu năng: CPU quyết định số khung hình tối đa nó nuôi được (không đổi theo độ phân giải), card đồ họa cho số khung hình giảm dần khi tăng độ phân giải. Khung hình thực tế gần bằng bên nhỏ hơn, và bên nhỏ hơn là bên nghẽn.</p>
+<pre>FPS_GPU(R)  = FPS đo của card ở độ phân giải R × hệ_số_PCIe       (Tom's Hardware 2026, Ultra, máy test 9800X3D)
+FPS_CPU     = CPU_gaming / 10.000 × 120 × hệ_số_RAM           (12400F ≈ 120 FPS, 9800X3D ≈ 215 FPS ở 1080p Ultra)
+FPS(R)      = min_mềm(FPS_GPU, FPS_CPU) = (a⁻⁶ + b⁻⁶)^(−1/6)   (khớp số đo: 4090 + 9800X3D ra 187, đo thật 184)
+Nghẽn(R)    = 1 − min / max, bên nhỏ hơn là bên nghẽn
+
+Gaming    = FPS(1080p) / FPS_máy_mốc(1080p) × 10.000 × (0,9 nếu RAM 8 GB)
+Đồ họa    = H(CPU render 0,50; GPU render 0,30; RAM 0,20)      CPU/GPU render lấy từ Blender Open Data
+AI        = H(VRAM 0,60; GPU 0,30; RAM 0,10)
+Điểm sức mạnh = 0,50 Gaming + 0,30 Đồ họa + 0,20 AI
+
+Mức đáp ứng (không tính vào điểm sức mạnh)
+Gaming    : FPS(R) ở thiết lập Ultra  →  &lt;30 Yếu · 30–59 Chơi được · 60–99 Tốt · 100–143 Rất tốt · ≥144 Cực mượt
+Đồ họa    : &lt;5.000 Yếu · &lt;10.000 Khá · &lt;18.000 Tốt · &lt;30.000 Rất tốt · còn lại Chuyên nghiệp
+AI        : theo VRAM  &lt;6 GB Yếu · 6–8 Cơ bản · 10–12 Tốt · 16–20 Rất tốt · 24 Chuyên sâu · ≥32 Chuyên nghiệp
+Văn phòng : H(CPU đơn nhân 0,50; Ổ đĩa 0,30; RAM 0,20)  →  &lt;5.000 Yếu · &lt;6.500 Đủ dùng · &lt;8.000 Tốt · còn lại Rất tốt (mức tối đa)
+
+H(a×wa, b×wb, …) = 1 / (wa/a + wb/b + …)     trung bình điều hòa có trọng số</pre>
+    <div class="cols">
+      <div><h3>Hệ số</h3>
+        <ul>
+          <li>FPS card đo sẵn cho 1080p, 1440p, 4K nên đã gồm ảnh hưởng thiếu VRAM. FPS 1080p của card đầu bảng lấy max(đo 1080p, đo 1440p ÷ 0,70) vì máy test bị CPU giới hạn</li>
+          <li>PCIe trên khe 3.0: card x4 × 0,80 · card x8 × 0,94 (8 GB VRAM) hoặc × 0,97</li>
+          <li>RAM phía CPU: kênh đơn × 0,90 · 8 GB × 0,90</li>
+          <li>Điểm phụ: VRAM 12 GB = 10.000; RAM 8/16/32/64/128 GB = 5.000/10.000/14.000/17.000/19.000; ổ HDD/SATA/Gen3/Gen4/Gen5 = 2.000/7.000/10.000/12.000/13.000</li>
+        </ul></div>
+      <div><h3>Luật phần cứng</h3>
+        <ul>
+          <li>Nguồn cần = max(khuyến nghị của hãng card, CPU + card + 150 W), làm tròn lên 50 W</li>
+          <li>Nghẽn ≤ 10%: cân bằng · CPU nghẽn &gt; 15%: cảnh báo · card nghẽn: bình thường khi chơi game</li>
+          <li>Đổi CPU khác socket: phải thay mainboard; AM5 và LGA1851 chỉ dùng DDR5</li>
+        </ul></div>
+      <div><h3>Hạng theo điểm sức mạnh</h3>
+        <ul id="tierlist"></ul>
+        <h3 style="margin-top:12px">Huy hiệu</h3>
+        <ul>
+          <li><b>Nghèo vượt khó</b>: điểm sức mạnh dưới 3.000</li>
+          <li><b>Lão làng</b>: CPU và card đều ra mắt từ 6 năm trước trở lên</li>
+          <li><b>Lệch pha</b>: CPU kìm card hơn 30% ở độ phân giải màn hình đang dùng</li>
+          <li><b>Thợ AI</b>: card từ 24 GB VRAM</li>
+          <li><b>Đỉnh nóc kịch trần</b>: top 1% người dùng (cần dữ liệu thật, chưa có trong bản mẫu)</li>
+        </ul></div>
+    </div>
+  </section>
+</div>
+
+<script src="parts.js"></script>
+<script>
+// Danh mục linh kiện sinh từ tools/build_parts.py (Tom's Hardware, Blender Open Data, thông số hãng).
+const CPUS=window.PARTS.cpus, GPUS=window.PARTS.gpus;
+const SOCKET_DDR={LGA1200:"DDR4",LGA1700:"DDR4/DDR5",LGA1851:"DDR5",AM4:"DDR4",AM5:"DDR5"};
+const RES_IDX={1080:0,1440:1,2160:2};
+// i5-12400F nuôi ~120 FPS ở 1080p Ultra trong bộ game Tom's Hardware (9800X3D ≈ 215 FPS, gaming 9800X3D/12400F = 1,79)
+const CPU_FPS_ANCHOR=120;
+const RESNAME={1080:"1080p",1440:"1440p",2160:"4K"};
+const RAMCAP={8:5000,16:10000,32:14000,64:17000,128:19000};
+const PSUS=[300,400,450,500,550,600,650,750,850,1000,1200];
+const TIERS=[[0,"Đồng","--t-bronze"],[5000,"Bạc","--t-silver"],[9000,"Vàng","--t-gold"],[14000,"Bạch kim","--t-plat"],[20000,"Kim cương","--t-diamond"],[26000,"Huyền thoại","--t-legend"]];
+const SCORES=[["gaming","Gaming","50% · chuẩn 1080p"],["render","Đồ họa","30% · render"],["ai","AI","20% · mô hình cục bộ"]];
+const LV={1:"l1",2:"l2",3:"l3",4:"l4",5:"l5"};
+const fpsOf=(c,res)=>bottleneck(c,res).eff*(c.ram===8?.9:1);
+function needs(c,s){
+  const fps=fpsOf(c,c.res), r=RESNAME[c.res];
+  const g=fps<30?[1,"Yếu"]:fps<60?[2,"Chơi được"]:fps<100?[3,"Tốt"]:fps<144?[4,"Rất tốt"]:[5,"Cực mượt"];
+  const bn=bottleneck(c,c.res);
+  const gd=`<b>~${Math.round(fps)} FPS</b> game AAA mới, ${r} thiết lập Ultra`+(bn.side==="cpu"&&bn.loss>.15?` · CPU kìm card ${pct(bn.loss)}`:"");
+  const rd=s.render, d=rd<5000?[1,"Yếu"]:rd<10000?[2,"Khá"]:rd<18000?[3,"Tốt"]:rd<30000?[4,"Rất tốt"]:[5,"Chuyên nghiệp"];
+  const dd=d[0]<=2?"Chỉnh ảnh, dựng video nhẹ":d[0]===3?"Dựng video Full HD, render 3D cơ bản":d[0]===4?"Dựng video 4K, render 3D thường xuyên":"Render nặng, làm nghề chuyên nghiệp";
+  const v=c.gpu.n.startsWith("Đồ họa")?0:c.gpu.v;
+  const a=v<6?[1,"Yếu"]:v<10?[2,"Cơ bản"]:v<16?[3,"Tốt"]:v<24?[4,"Rất tốt"]:[5,v>=32?"Chuyên nghiệp":"Chuyên sâu"];
+  const ad=(v===0?"Không có VRAM riêng, chạy AI bằng CPU rất chậm":v<6?`${v} GB VRAM: chỉ mô hình rất nhỏ (≤ 3B)`:v<10?`<b>${v} GB VRAM</b>: mô hình 7–8B đã lượng tử hóa`:v<16?`<b>${v} GB VRAM</b>: 7–8B mượt, 14B đã lượng tử hóa`:v<24?`<b>${v} GB VRAM</b>: 14B mượt, tạo ảnh tốt`:v<32?`<b>${v} GB VRAM</b>: mô hình tới 32B đã lượng tử hóa`:`<b>${v} GB VRAM</b>: 32B mượt`)
+    +(/^(RX|Arc)/.test(c.gpu.n)?" · phần mềm AI hỗ trợ card AMD/Intel kém NVIDIA":"");
+  const o=s.office, of=o<5000?[1,"Yếu"]:o<6500?[2,"Đủ dùng"]:o<8000?[3,"Tốt"]:[4,"Rất tốt"];
+  const od=of[0]===4?"Dư sức cho Word, Excel, trình duyệt, họp trực tuyến":c.ssd===2000?"Ổ HDD làm máy khởi động, mở ứng dụng chậm":c.ram===8?"Mở nhiều tab trình duyệt sẽ chậm vì 8 GB RAM":"Dùng ổn, mở nhiều ứng dụng cùng lúc hơi chậm";
+  return [["Gaming",g,gd],["Đồ họa",d,dd],["AI",a,ad],["Văn phòng",of,od]];
+}
+const BARMAX=36000;
+
+const PRESETS=[
+  ["Máy mốc",{cpu:"Core i5-12400F",gpu:"RTX 3060 12GB",ram:16,ch:2,ssd:10000,pcie:4,psu:550,res:1080}],
+  ["Máy cỏ",{cpu:"Core i3-10100",gpu:"Đồ họa tích hợp (iGPU)",ram:8,ch:1,ssd:2000,pcie:3,psu:300,res:1080}],
+  ["Văn phòng cũ",{cpu:"Core i3-10100F",gpu:"GTX 1650",ram:8,ch:1,ssd:7000,pcie:3,psu:400,res:1080}],
+  ["Lệch cấu hình",{cpu:"Core i3-10100F",gpu:"RTX 4070 Super",ram:16,ch:2,ssd:10000,pcie:3,psu:650,res:1080}],
+  ["Card x8, main cũ",{cpu:"Ryzen 5 3600",gpu:"RTX 4060",ram:16,ch:2,ssd:10000,pcie:3,psu:500,res:1080}],
+  ["Gaming tầm trung",{cpu:"Ryzen 5 7500F",gpu:"RTX 5060 Ti 16GB",ram:32,ch:2,ssd:12000,pcie:4,psu:650,res:1440}],
+  ["Đỉnh cao",{cpu:"Ryzen 7 9800X3D",gpu:"RTX 5090",ram:64,ch:2,ssd:13000,pcie:5,psu:1000,res:2160}]
+];
+
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString("vi-VN");
+const pct=x=>Math.round(x*100)+"%";
+const H=pairs=>1/pairs.reduce((s,[v,w])=>s+w/Math.max(v,1),0);
+const smin=(a,b)=>Math.pow(Math.max(a,1)**-6+Math.max(b,1)**-6,-1/6);
+const cpuBy=n=>CPUS.find(c=>c.n===n), gpuBy=n=>GPUS.find(g=>g.n===n);
+
+function pcieF(g,gen){
+  if(gen>=4) return 1;
+  if(g.lanes===4) return .80;
+  if(g.lanes===8) return g.v<=8?.94:.97;
+  return 1;
+}
+function gpuFps(c,res){ return c.gpu.f[RES_IDX[res]]*pcieF(c.gpu,c.pcie); }
+function cpuFps(c){ return c.cpu.gm/10000*CPU_FPS_ANCHOR*(c.ch==1?.9:1)*(c.ram===8?.9:1); }
+function bottleneck(c,res){
+  const g=gpuFps(c,res), p=cpuFps(c), lo=Math.min(g,p), hi=Math.max(g,p);
+  return {g,p,eff:smin(g,p),loss:1-lo/hi,side:g<=p?"gpu":"cpu"};
+}
+const EFF_ANCHOR=smin(61.5,CPU_FPS_ANCHOR); // RTX 3060 12GB 61,5 FPS ở 1080p Ultra
+function psuNeed(c){
+  const raw=Math.max(c.gpu.rec,c.cpu.w+c.gpu.tbp+150);
+  return Math.ceil(raw/50)*50;
+}
+
+function compute(c){
+  const ramS=RAMCAP[c.ram]*(c.ch==1?.85:1);
+  const gpuT=c.gpu.r*pcieF(c.gpu,c.pcie);
+  const vramS=Math.max(c.gpu.v,1)/12*10000;
+  const gaming=bottleneck(c,1080).eff/EFF_ANCHOR*10000*(c.ram===8?.9:1);
+  const render=H([[c.cpu.mt,.5],[c.gpu.rd*pcieF(c.gpu,c.pcie),.3],[ramS,.2]]);
+  const ai=H([[vramS,.6],[gpuT,.3],[ramS,.1]]);
+  const office=H([[c.cpu.st,.5],[c.ssd,.3],[ramS,.2]]);
+  const total=.5*gaming+.3*render+.2*ai;
+  return {gaming,render,ai,office,total};
+}
+const tierOf=t=>TIERS.filter(x=>t>=x[0]).pop();
+// Huy hiệu: hiện kèm hạng, không thay hạng
+const NOW_YEAR=2026;
+const BADGES=[
+  {name:"Nghèo vượt khó",desc:"Máy yếu mà vẫn chiến được, đáng nể!",when:(c,s)=>s.total<3000},
+  {name:"Lão làng",desc:`CPU và card đồ họa đã hơn 6 năm tuổi mà vẫn chạy tốt`,when:c=>{const y1=c.cpu.y,y2=c.gpu.y??y1;return y1&&y2&&NOW_YEAR-Math.max(y1,y2)>=6}},
+  {name:"Lệch pha",desc:"CPU đang kìm card đồ họa hơn 30% ở độ phân giải màn hình đang dùng",when:c=>{const b=bottleneck(c,c.res);return b.side==="cpu"&&b.loss>.30}},
+  {name:"Thợ AI",desc:"Từ 24 GB VRAM, chạy được mô hình AI cỡ lớn",when:c=>!c.gpu.n.startsWith("Đồ họa")&&c.gpu.v>=24}
+];
+
+// Tầng 1: luật phần cứng
+function hwRules(c){
+  const out=[];
+  const need=psuNeed(c);
+  if(c.psu<need) out.push([c.psu<need-100?"bad":"warn",`<b>Nguồn ${c.psu} W thiếu công suất.</b> CPU (${c.cpu.w} W) + ${c.gpu.n} (${c.gpu.tbp} W) cần nguồn từ ${need} W. Máy có thể tắt đột ngột khi chơi game nặng.`]);
+  const pf=pcieF(c.gpu,c.pcie);
+  if(pf<1) out.push([c.gpu.lanes===4?"bad":"warn",`<b>${c.gpu.n} chỉ dùng ${c.gpu.lanes} làn PCIe</b>, cắm khe PCIe 3.0 sẽ mất khoảng ${pct(1-pf)} hiệu năng${c.gpu.v<=8&&c.gpu.lanes===8?", nhiều hơn khi game dùng hết VRAM":""}.`]);
+  if(c.ch===1) out.push(["warn","<b>RAM chạy kênh đơn</b>, băng thông chỉ còn một nửa. Lắp thêm một thanh cùng loại để chạy kênh đôi, chi phí thấp mà hiệu quả."]);
+  if(c.ram===8) out.push(["warn","<b>8 GB RAM đã thiếu</b> cho game và trình duyệt hiện nay. Nâng lên 16 GB kênh đôi."]);
+  if(c.ssd===2000) out.push(["warn","<b>Hệ điều hành nằm trên HDD</b> nên máy khởi động và mở ứng dụng chậm. SSD là nâng cấp đáng tiền nhất."]);
+  return out;
+}
+// Tầng 2: điểm nghẽn ở độ phân giải đang dùng
+function perfNotes(c){
+  const b=bottleneck(c,c.res), r=RESNAME[c.res];
+  if(b.side==="cpu" && b.loss>.15) return [["warn",`<b>CPU nghẽn ở ${r}:</b> ${c.cpu.n} chỉ nuôi được khoảng ${pct(1-b.loss)} số khung hình mà ${c.gpu.n} làm được. Nâng CPU sẽ tăng FPS rõ nhất.`]];
+  if(b.loss<=.10) return [["good",`<b>Cân bằng ở ${r}:</b> CPU và card đồ họa tương xứng nhau.`]];
+  if(b.side==="gpu") return [["info",`<b>Card đồ họa chạy hết công suất ở ${r}</b>, đây là trạng thái bình thường khi chơi game. CPU còn dư khoảng ${pct(b.p/b.g-1)}, muốn tăng FPS thì nâng card.`]];
+  return [["info",`<b>CPU hơi đuối ở ${r}</b> (chênh ${pct(b.loss)}), chưa đáng lo.`]];
+}
+
+function fillSelect(sel,list,keep){
+  sel.innerHTML=(keep?'<option value="">Giữ nguyên</option>':'')+list.map(x=>`<option>${x.n}</option>`).join("");
+}
+const cpuSorted=[...CPUS].sort((a,b)=>a.n.localeCompare(b.n));
+fillSelect($("cpu"),cpuSorted); fillSelect($("gpu"),GPUS);
+fillSelect($("ucpu"),cpuSorted,true); fillSelect($("ugpu"),GPUS,true);
+$("psu").innerHTML=PSUS.map(w=>`<option value="${w}">${w} W</option>`).join("");
+$("upsu").innerHTML='<option value="">Giữ nguyên</option>'+PSUS.map(w=>`<option value="${w}">${w} W</option>`).join("");
+
+const UPIDS=["ucpu","ugpu","uram","upsu"];
+$("presets").innerHTML=PRESETS.map((p,i)=>`<button class="pbtn" data-i="${i}">${p[0]}</button>`).join("");
+$("presets").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  const p=PRESETS[b.dataset.i][1];
+  for(const k of ["cpu","gpu","ram","ch","ssd","pcie","psu","res"]) $(k).value=p[k];
+  UPIDS.forEach(id=>$(id).value="");
+  render();
+});
+$("ticks").innerHTML=[0,10000,20000,30000].map(v=>`<span style="left:${v/BARMAX*100}%">${v?fmt(v):"0"}${v===10000?" (mốc)":""}</span>`).join("");
+$("tierlist").innerHTML=TIERS.map((t,i)=>`<li><b>${t[1]}</b>: ${i<TIERS.length-1?`${fmt(t[0])} – ${fmt(TIERS[i+1][0]-1)}`:`từ ${fmt(t[0])}`}</li>`).join("");
+
+function readCfg(){
+  return {cpu:cpuBy($("cpu").value),gpu:gpuBy($("gpu").value),ram:+$("ram").value,ch:+$("ch").value,ssd:+$("ssd").value,
+    pcie:+$("pcie").value,psu:+$("psu").value,res:+$("res").value};
+}
+const noteHtml=list=>list.map(([k,m])=>`<div class="note ${k}">${m}</div>`).join("");
+
+function render(){
+  const c=readCfg(), s=compute(c), t=tierOf(s.total);
+  $("total").textContent=fmt(s.total);
+  const tier=$("tier"); tier.textContent=t[1]; tier.style.background=`var(${t[2]})`;
+  $("vsref").textContent=`Gấp ${(s.total/10000).toLocaleString("vi-VN",{maximumFractionDigits:2,minimumFractionDigits:2})} lần máy mốc`;
+  $("badges").innerHTML=BADGES.filter(b=>b.when(c,s)).map(b=>`<span class="hbw"><span class="hb">🏅 ${b.name}</span><small>${b.desc}</small></span>`).join("");
+  $("bars").innerHTML=SCORES.map(([k,l,sub])=>`<div class="bar"><div class="lbl">${l}<small>${sub}</small></div>
+    <div class="track"><div class="fill" style="width:${Math.min(s[k]/BARMAX,1)*100}%"></div><div class="ref" style="left:${10000/BARMAX*100}%"></div></div>
+    <div class="val num">${fmt(s[k])}</div></div>`).join("");
+  $("needs").innerHTML=needs(c,s).map(([n,[l,t],d])=>`<div class="need"><span class="nm">${n}</span><span class="lv ${LV[l]}">${t}</span><span class="dt">${d}</span></div>`).join("");
+  $("notes").innerHTML=noteHtml([...hwRules(c),...perfNotes(c)]);
+
+  $("bntable").innerHTML=`<thead><tr><th>Độ phân giải</th><th>Card nuôi được</th><th>CPU nuôi được</th><th>Bên nghẽn</th><th>Mức nghẽn</th></tr></thead><tbody>`+
+    [1080,1440,2160].map(r=>{const b=bottleneck(c,r);
+      const side=b.loss<=.10?'<span class="side bal">Cân bằng</span>':b.side==="cpu"?'<span class="side cpu">CPU</span>':'<span class="side gpu">Card</span>';
+      return `<tr class="${r===c.res?"cur":""}"><td>${RESNAME[r]}${r===c.res?" · đang dùng":""}</td><td class="num">${fmt(b.g)}</td><td class="num">${fmt(b.p)}</td><td>${side}</td><td class="num">${pct(b.loss)}</td></tr>`}).join("")+
+    `</tbody><tfoot><tr><td colspan="5" class="muted" style="text-align:left;font-size:12px;border:0">Đơn vị: khung hình tương đối, RTX 3060 ở 1080p = 10.000.</td></tr></tfoot>`;
+
+  const u={...c};
+  if($("ucpu").value) u.cpu=cpuBy($("ucpu").value);
+  if($("ugpu").value) u.gpu=gpuBy($("ugpu").value);
+  if($("uram").value){u.ram=+$("uram").value;u.ch=2;}
+  if($("upsu").value) u.psu=+$("upsu").value;
+  const changed=["cpu","gpu","ram","ch","psu"].some(k=>u[k]!==c[k]);
+  $("up").hidden=!changed;
+  if(changed){
+    const su=compute(u);
+    const rows=[...SCORES.map(([k,l])=>[l,k]),["Điểm sức mạnh","total"]];
+    $("uptable").innerHTML=`<thead><tr><th>Mục</th><th>Hiện tại</th><th>Sau nâng cấp</th><th>Thay đổi</th></tr></thead><tbody>`+
+      rows.map(([l,k])=>{const d=su[k]/s[k]-1;const cls=Math.abs(d)<.005?"zero":d>0?"pos":"neg";
+        return `<tr${k==="total"?' style="font-weight:700"':""}><td>${l}</td><td class="num">${fmt(s[k])}</td><td class="num">${fmt(su[k])}</td><td class="num delta ${cls}">${d>=0?"+":""}${(d*100).toLocaleString("vi-VN",{maximumFractionDigits:1})}%</td></tr>`}).join("")+
+      `</tbody><tfoot><tr><td colspan="4" class="muted" style="text-align:left;font-size:12px;border:0">Hạng sau nâng cấp: <b>${tierOf(su.total)[1]}</b>. Game AAA ở ${RESNAME[c.res]}: ~${Math.round(fpsOf(c,c.res))} → ~${Math.round(fpsOf(u,u.res))} FPS.</td></tr></tfoot>`;
+    const un=[];
+    if(u.cpu.s!==c.cpu.s){
+      const ddr=SOCKET_DDR[u.cpu.s], old=SOCKET_DDR[c.cpu.s];
+      un.push(["warn",`<b>Khác socket</b> (${c.cpu.s} → ${u.cpu.s}): phải thay mainboard${ddr==="DDR5"&&old!=="DDR5"?" và chuyển sang RAM DDR5":""}.`]);
+    }
+    const need=psuNeed(u);
+    if(u.psu<need) un.push(["warn",`<b>Cần nguồn từ ${need} W</b> cho cấu hình mới (đang ${u.psu} W).`]);
+    if(u.pcie<4 && pcieF(u.gpu,u.pcie)<1) un.push(["warn",`${u.gpu.n} chạy x${u.gpu.lanes}, cắm khe PCIe 3.0 mất khoảng ${pct(1-pcieF(u.gpu,u.pcie))}.`]);
+    $("upnotes").innerHTML=noteHtml(un);
+  }
+  renderTable();
+}
+
+let tab="gpu";
+function renderTable(){
+  const c=readCfg(), tbl=$("ptable");
+  if(tab==="gpu"){
+    const list=[...GPUS].sort((a,b)=>b.r-a.r), mx=list[0].r;
+    const est=(v,isEst,f=fmt)=>isEst?`<span class="muted">~${f(v)}</span>`:f(v);
+    const f1=v=>v.toLocaleString("vi-VN",{maximumFractionDigits:0});
+    tbl.innerHTML=`<thead><tr><th>Card đồ họa</th><th>Sức mạnh</th><th>FPS 1080p</th><th>FPS 1440p</th><th>FPS 4K</th><th>Ray tracing</th><th>Render</th><th>VRAM</th><th>PCIe</th><th>Công suất</th><th>Nguồn đề nghị</th></tr></thead><tbody>`+
+      list.map(g=>`<tr tabindex="0" data-n="${g.n}" class="${g===c.gpu?"sel":""}"><td>${g.n}${g.n==="RTX 3060 12GB"?'<span class="badge">MỐC</span>':""}</td>
+        <td class="mainbar"><div class="mini"><span class="t"><i style="width:${g.r/mx*100}%"></i></span><span class="num">${est(g.r,g.src==="est")}</span></div></td>
+        ${g.f.map(v=>`<td class="num">${est(v,g.src==="est",f1)}</td>`).join("")}
+        <td class="num">${g.rt==null?'<span class="muted">không</span>':est(g.rt,g.src==="est")}</td><td class="num">${fmt(g.rd)}</td><td class="num">${g.n.startsWith("Đồ họa")?"dùng chung":g.v+" GB"}</td>
+        <td class="num">x${g.lanes}</td><td class="num">${g.tbp?g.tbp+" W":"—"}</td><td class="num">${g.rec} W</td></tr>`).join("")+"</tbody>";
+  }else{
+    const list=[...CPUS].sort((a,b)=>b.gm-a.gm), mx=list[0].gm;
+    tbl.innerHTML=`<thead><tr><th>CPU</th><th>Gaming</th><th>Đơn nhân</th><th>Đa nhân (render)</th><th>Socket</th><th>RAM</th><th>Công suất</th></tr></thead><tbody>`+
+      list.map(x=>`<tr tabindex="0" data-n="${x.n}" class="${x===c.cpu?"sel":""}"><td>${x.n}${x.n==="Core i5-12400F"?'<span class="badge">MỐC</span>':""}</td>
+        <td class="mainbar"><div class="mini"><span class="t"><i style="width:${x.gm/mx*100}%"></i></span><span class="num">${x.src.gm==="est"?'<span class="muted">~'+fmt(x.gm)+'</span>':fmt(x.gm)}</span></div></td>
+        <td class="num">${x.src.st==="est"?'<span class="muted">~'+fmt(x.st)+'</span>':fmt(x.st)}</td><td class="num">${x.src.mt==="est"?'<span class="muted">~'+fmt(x.mt)+'</span>':fmt(x.mt)}</td><td class="muted">${x.s}</td><td class="muted">${SOCKET_DDR[x.s]}</td><td class="num">${x.w} W</td></tr>`).join("")+"</tbody>";
+  }
+}
+function pick(tr){ if(!tr) return; $(tab).value=tr.dataset.n; render(); }
+$("ptable").addEventListener("click",e=>pick(e.target.closest("tr[data-n]")));
+$("ptable").addEventListener("keydown",e=>{if(e.key==="Enter")pick(e.target.closest("tr[data-n]"))});
+["tab-gpu","tab-cpu"].forEach(id=>$(id).addEventListener("click",()=>{
+  tab=id.slice(4); $("tab-gpu").setAttribute("aria-selected",tab==="gpu"); $("tab-cpu").setAttribute("aria-selected",tab==="cpu"); renderTable();
+}));
+["cpu","gpu","ram","ch","ssd","pcie","psu","res",...UPIDS].forEach(id=>$(id).addEventListener("change",render));
+
+const P0=PRESETS[0][1];
+for(const k of ["cpu","gpu","ram","ch","ssd","pcie","psu","res"]) $(k).value=P0[k];
+render();
+</script>

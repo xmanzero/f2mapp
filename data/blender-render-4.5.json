@@ -1,0 +1,4892 @@
+{
+ "source": "Blender Open Data (CC0)",
+ "blender": "4.5",
+ "rows": [
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 7995WX 96-Cores",
+   "n": 17,
+   "score": 2993.7131865592505,
+   "points": 192223
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 9995WX 96-Cores",
+   "n": 14,
+   "score": 2648.264681885019,
+   "points": 170042
+  },
+  {
+   "kind": "cpu",
+   "name": "EPYC 9B14",
+   "n": 5,
+   "score": 2170.824104615579,
+   "points": 139386
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 9985WX 64-Cores",
+   "n": 15,
+   "score": 2143.846148896469,
+   "points": 137654
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 9980X 64-Cores",
+   "n": 15,
+   "score": 2026.5258214108683,
+   "points": 130121
+  },
+  {
+   "kind": "cpu",
+   "name": "EPYC 9654",
+   "n": 10,
+   "score": 2016.6770958016782,
+   "points": 129489
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 7980X 64-Cores",
+   "n": 56,
+   "score": 1853.6484686741424,
+   "points": 119021
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 7970X 32-Cores",
+   "n": 147,
+   "score": 1305.2177710436572,
+   "points": 83807
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 9975WX 32-Cores",
+   "n": 5,
+   "score": 1294.9801972178682,
+   "points": 83149
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 5995WX 64-Cores",
+   "n": 10,
+   "score": 1290.391056764328,
+   "points": 82855
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 3990X",
+   "n": 9,
+   "score": 1206.8121574581296,
+   "points": 77488
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 9970X 32-Cores",
+   "n": 22,
+   "score": 1175.8086902447556,
+   "points": 75497
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon w9-3495X",
+   "n": 7,
+   "score": 1159.1088249881755,
+   "points": 74425
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 7975WX 32-Cores",
+   "n": 7,
+   "score": 1073.1804347313546,
+   "points": 68908
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 7960X 24-Cores",
+   "n": 33,
+   "score": 914.6926965971375,
+   "points": 58731
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 9965WX 24-Cores",
+   "n": 5,
+   "score": 903.7195721914353,
+   "points": 58027
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 9960X 24-Cores",
+   "n": 24,
+   "score": 898.0665457674429,
+   "points": 57664
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 7965WX 24-Cores",
+   "n": 5,
+   "score": 773.1541971550507,
+   "points": 49643
+  },
+  {
+   "kind": "cpu",
+   "name": "EPYC 4585PX",
+   "n": 10,
+   "score": 749.6112853336404,
+   "points": 48132
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 5975WX 32-Cores",
+   "n": 6,
+   "score": 744.7117536097566,
+   "points": 47817
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M3 Ultra",
+   "n": 27,
+   "score": 716.8349524211452,
+   "points": 46027
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 3970X",
+   "n": 26,
+   "score": 687.6297734674527,
+   "points": 44152
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 9950X3D",
+   "n": 1289,
+   "score": 664.2934805094069,
+   "points": 42654
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 9950X",
+   "n": 624,
+   "score": 625.6335045564192,
+   "points": 40171
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 270K Plus",
+   "n": 20,
+   "score": 611.7349066239722,
+   "points": 39279
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M5 Max",
+   "n": 5,
+   "score": 604.987459755348,
+   "points": 38846
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 9955WX 16-Cores",
+   "n": 7,
+   "score": 582.9263844905744,
+   "points": 37429
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 9 285K",
+   "n": 280,
+   "score": 562.7020789121931,
+   "points": 36131
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 9955HX",
+   "n": 21,
+   "score": 556.7863010626345,
+   "points": 35751
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7950X",
+   "n": 246,
+   "score": 551.3004618940574,
+   "points": 35398
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7950X3D",
+   "n": 211,
+   "score": 540.9875617950393,
+   "points": 34736
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 3960X",
+   "n": 24,
+   "score": 540.5961990050008,
+   "points": 34711
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M5 Pro",
+   "n": 6,
+   "score": 535.4828128668155,
+   "points": 34383
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-14900KS",
+   "n": 31,
+   "score": 528.2051560967041,
+   "points": 33915
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M2 Ultra",
+   "n": 11,
+   "score": 525.6659572642375,
+   "points": 33752
+  },
+  {
+   "kind": "cpu",
+   "name": "Eng Sample: 100-000000870-32_Y",
+   "n": 9,
+   "score": 522.4417411383735,
+   "points": 33545
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 9955HX3D",
+   "n": 85,
+   "score": 521.5096602617341,
+   "points": 33486
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-14900K",
+   "n": 275,
+   "score": 506.2804395086995,
+   "points": 32508
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900KS",
+   "n": 12,
+   "score": 504.14706296288506,
+   "points": 32371
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 9900X",
+   "n": 384,
+   "score": 500.5685093605092,
+   "points": 32141
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 8945HX",
+   "n": 7,
+   "score": 499.3312375157128,
+   "points": 32062
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-14900KF",
+   "n": 65,
+   "score": 497.4905243695199,
+   "points": 31943
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 9 285HX",
+   "n": 18,
+   "score": 492.5063910924147,
+   "points": 31623
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900KF",
+   "n": 62,
+   "score": 487.16160540373,
+   "points": 31280
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900K",
+   "n": 82,
+   "score": 487.0524465150349,
+   "points": 31273
+  },
+  {
+   "kind": "cpu",
+   "name": "RYZEN AI MAX+ 395 w/ 8060S",
+   "n": 64,
+   "score": 486.72592703194204,
+   "points": 31252
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7945HX",
+   "n": 54,
+   "score": 485.6444339645028,
+   "points": 31183
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 9 285",
+   "n": 12,
+   "score": 485.00862249065744,
+   "points": 31142
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7945HX3D",
+   "n": 13,
+   "score": 483.7493519944868,
+   "points": 31061
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 265K",
+   "n": 279,
+   "score": 476.7518931994878,
+   "points": 30612
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 265KF",
+   "n": 70,
+   "score": 475.56214491614776,
+   "points": 30535
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7940HX",
+   "n": 8,
+   "score": 473.837627019753,
+   "points": 30425
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 9900X3D",
+   "n": 33,
+   "score": 471.24319078943915,
+   "points": 30258
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 8940HX",
+   "n": 39,
+   "score": 470.2922648189602,
+   "points": 30197
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon W-3275M",
+   "n": 10,
+   "score": 469.506006672863,
+   "points": 30146
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M4 Max",
+   "n": 134,
+   "score": 469.07801378892975,
+   "points": 30119
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 2990WX",
+   "n": 9,
+   "score": 463.1176063356985,
+   "points": 29736
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 9 275HX",
+   "n": 229,
+   "score": 457.17970295882384,
+   "points": 29355
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-14700KF",
+   "n": 125,
+   "score": 449.5145941274335,
+   "points": 28863
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-14700K",
+   "n": 106,
+   "score": 444.2921439808656,
+   "points": 28528
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M1 Ultra",
+   "n": 11,
+   "score": 432.91305181360485,
+   "points": 27797
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 250K Plus",
+   "n": 6,
+   "score": 432.6855776524,
+   "points": 27782
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 7985WX 64-Cores",
+   "n": 27,
+   "score": 426.2982072389122,
+   "points": 27372
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7900X",
+   "n": 162,
+   "score": 413.8643298781589,
+   "points": 26574
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper PRO 5955WX 16-Cores",
+   "n": 8,
+   "score": 412.2074102748128,
+   "points": 26467
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 2970WX",
+   "n": 5,
+   "score": 410.85198564281967,
+   "points": 26380
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7900",
+   "n": 143,
+   "score": 408.95390120845565,
+   "points": 26258
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900F",
+   "n": 5,
+   "score": 406.61632936544254,
+   "points": 26108
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7900X3D",
+   "n": 31,
+   "score": 404.76439995580256,
+   "points": 25989
+  },
+  {
+   "kind": "cpu",
+   "name": "RYZEN AI MAX+ PRO 395 w/ 8060S",
+   "n": 15,
+   "score": 404.5073724106478,
+   "points": 25973
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M3 Max",
+   "n": 52,
+   "score": 402.8691531984723,
+   "points": 25868
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 255HX",
+   "n": 40,
+   "score": 397.96516647217743,
+   "points": 25553
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 5950X",
+   "n": 491,
+   "score": 391.87061566059026,
+   "points": 25162
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13700K",
+   "n": 122,
+   "score": 389.2387804359769,
+   "points": 24993
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 265HX",
+   "n": 9,
+   "score": 381.4977490711134,
+   "points": 24496
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 265",
+   "n": 12,
+   "score": 378.88199812600885,
+   "points": 24328
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-12900KS",
+   "n": 10,
+   "score": 373.9470267168788,
+   "points": 24011
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-7980XE",
+   "n": 5,
+   "score": 368.61449942948764,
+   "points": 23668
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900HX",
+   "n": 105,
+   "score": 367.56743567232184,
+   "points": 23601
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13700KF",
+   "n": 90,
+   "score": 365.7797705666169,
+   "points": 23486
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 5900XT",
+   "n": 76,
+   "score": 365.1782680044098,
+   "points": 23448
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13700",
+   "n": 9,
+   "score": 360.95469942265026,
+   "points": 23177
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 265F",
+   "n": 12,
+   "score": 359.0402242156391,
+   "points": 23054
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13950HX",
+   "n": 25,
+   "score": 356.6004064449435,
+   "points": 22897
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-12900K",
+   "n": 68,
+   "score": 354.11632357972985,
+   "points": 22737
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 3950X",
+   "n": 47,
+   "score": 353.50597935947786,
+   "points": 22698
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-12900KF",
+   "n": 29,
+   "score": 348.05497516108574,
+   "points": 22348
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 9850X3D",
+   "n": 19,
+   "score": 345.2068624817998,
+   "points": 22165
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M4 Pro",
+   "n": 170,
+   "score": 344.38929625403944,
+   "points": 22113
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 245KF",
+   "n": 5,
+   "score": 340.28833036689383,
+   "points": 21850
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-14900",
+   "n": 9,
+   "score": 337.9625918154261,
+   "points": 21700
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-14700HX",
+   "n": 91,
+   "score": 334.51590007072423,
+   "points": 21479
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-14900HX",
+   "n": 85,
+   "score": 333.7442313265105,
+   "points": 21429
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 9800X3D",
+   "n": 1084,
+   "score": 332.830177649526,
+   "points": 21371
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 9 HX 375 w/ 890M",
+   "n": 6,
+   "score": 332.63329238011283,
+   "points": 21358
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13980HX",
+   "n": 19,
+   "score": 329.98383577378576,
+   "points": 21188
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-14900F",
+   "n": 6,
+   "score": 320.3870210972128,
+   "points": 20572
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900",
+   "n": 7,
+   "score": 319.73307459831574,
+   "points": 20530
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 245K",
+   "n": 25,
+   "score": 317.979974731368,
+   "points": 20417
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 235",
+   "n": 5,
+   "score": 311.82390804814816,
+   "points": 20022
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-14600KF",
+   "n": 76,
+   "score": 309.7908369115198,
+   "points": 19891
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 9700X",
+   "n": 439,
+   "score": 308.44382923651585,
+   "points": 19805
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 5900X",
+   "n": 299,
+   "score": 306.0185991652839,
+   "points": 19649
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon W-3245",
+   "n": 11,
+   "score": 305.7255264301783,
+   "points": 19630
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-14600K",
+   "n": 102,
+   "score": 302.03247118843865,
+   "points": 19393
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13600K",
+   "n": 35,
+   "score": 301.2753994935395,
+   "points": 19345
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 9 HX 370 w/ 890M",
+   "n": 76,
+   "score": 301.042401051031,
+   "points": 19330
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13600KF",
+   "n": 45,
+   "score": 300.5283806005278,
+   "points": 19297
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-14700",
+   "n": 38,
+   "score": 300.2169382615642,
+   "points": 19277
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-14700F",
+   "n": 46,
+   "score": 295.00917354326714,
+   "points": 18942
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12700KF",
+   "n": 102,
+   "score": 292.8400793652943,
+   "points": 18803
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13850HX",
+   "n": 12,
+   "score": 290.3677506906203,
+   "points": 18644
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2696 v4",
+   "n": 6,
+   "score": 288.75684374296407,
+   "points": 18541
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12700K",
+   "n": 120,
+   "score": 288.2349612345136,
+   "points": 18507
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 9 HX PRO 370 w/ 890M",
+   "n": 14,
+   "score": 285.909460487974,
+   "points": 18358
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-7960X",
+   "n": 5,
+   "score": 285.39959197151757,
+   "points": 18325
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-14650HX",
+   "n": 69,
+   "score": 283.20373819820804,
+   "points": 18184
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra X7 358H",
+   "n": 12,
+   "score": 281.21742570812324,
+   "points": 18057
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13700F",
+   "n": 14,
+   "score": 280.19292811668765,
+   "points": 17991
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7700X",
+   "n": 134,
+   "score": 278.31812454030785,
+   "points": 17871
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 3900XT",
+   "n": 7,
+   "score": 277.4493835876258,
+   "points": 17815
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M5",
+   "n": 48,
+   "score": 275.45204073493255,
+   "points": 17686
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12600KF",
+   "n": 77,
+   "score": 272.031964379344,
+   "points": 17467
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2697A v4",
+   "n": 11,
+   "score": 271.04141231612726,
+   "points": 17403
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7845HX",
+   "n": 12,
+   "score": 270.8805611062421,
+   "points": 17393
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 3900X",
+   "n": 123,
+   "score": 268.261065634355,
+   "points": 17225
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 1950X",
+   "n": 13,
+   "score": 266.64361578520135,
+   "points": 17121
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7700",
+   "n": 156,
+   "score": 266.2855240139875,
+   "points": 17098
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7800X3D",
+   "n": 362,
+   "score": 264.3578671196088,
+   "points": 16974
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 9600X",
+   "n": 325,
+   "score": 264.06530104295155,
+   "points": 16955
+  },
+  {
+   "kind": "cpu",
+   "name": "Genuine Intel 0000",
+   "n": 36,
+   "score": 263.4547985331411,
+   "points": 16916
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2699 v3",
+   "n": 7,
+   "score": 261.75478598033055,
+   "points": 16807
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M2 Max",
+   "n": 37,
+   "score": 260.8067169739863,
+   "points": 16746
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13500",
+   "n": 24,
+   "score": 259.29828396148747,
+   "points": 16649
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7840HS",
+   "n": 9,
+   "score": 257.5304020475825,
+   "points": 16536
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 265H",
+   "n": 10,
+   "score": 256.8310496424794,
+   "points": 16491
+  },
+  {
+   "kind": "cpu",
+   "name": "Snapdragon X 12-core X1E80100",
+   "n": 9,
+   "score": 254.76135342390413,
+   "points": 16358
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-10920X",
+   "n": 11,
+   "score": 251.1035121983668,
+   "points": 16123
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7745HX",
+   "n": 9,
+   "score": 251.0183854790775,
+   "points": 16118
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 8700G w/ 780M",
+   "n": 34,
+   "score": 250.43858555201874,
+   "points": 16080
+  },
+  {
+   "kind": "cpu",
+   "name": "EPYC 9455P",
+   "n": 21,
+   "score": 249.11530182045414,
+   "points": 15995
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-12950HX",
+   "n": 5,
+   "score": 248.58875770705686,
+   "points": 15962
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12800HX",
+   "n": 18,
+   "score": 247.7742709963194,
+   "points": 15909
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 3900",
+   "n": 8,
+   "score": 247.1146326377291,
+   "points": 15867
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 8700F",
+   "n": 19,
+   "score": 242.59583053343562,
+   "points": 15577
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7600X3D",
+   "n": 39,
+   "score": 239.6399461448652,
+   "points": 15387
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-10900K",
+   "n": 29,
+   "score": 237.9325289988511,
+   "points": 15277
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 8745HS w/ 780M",
+   "n": 8,
+   "score": 237.19009756345878,
+   "points": 15230
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12700F",
+   "n": 26,
+   "score": 236.62593679197235,
+   "points": 15193
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2696 v3",
+   "n": 5,
+   "score": 235.2484706884399,
+   "points": 15105
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13700HX",
+   "n": 23,
+   "score": 234.46876416219365,
+   "points": 15055
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 7940HS w/ 780M",
+   "n": 17,
+   "score": 231.90458129302482,
+   "points": 14890
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 255 w/ 780M",
+   "n": 10,
+   "score": 231.19580214323918,
+   "points": 14845
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 9 285H",
+   "n": 54,
+   "score": 228.93889775227115,
+   "points": 14700
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 260 w/ 780M",
+   "n": 25,
+   "score": 228.7060463057803,
+   "points": 14685
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-11900K",
+   "n": 19,
+   "score": 228.27317939574567,
+   "points": 14657
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-10900KF",
+   "n": 11,
+   "score": 227.93408718755438,
+   "points": 14635
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M3 Pro",
+   "n": 45,
+   "score": 227.16369767381326,
+   "points": 14586
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7840U w/ 780M",
+   "n": 5,
+   "score": 226.85858577426148,
+   "points": 14566
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12700",
+   "n": 26,
+   "score": 226.84343421671855,
+   "points": 14565
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-10850K",
+   "n": 32,
+   "score": 225.09299648374798,
+   "points": 14453
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M4",
+   "n": 258,
+   "score": 224.26854003862496,
+   "points": 14400
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 9 365 w/ 880M",
+   "n": 13,
+   "score": 224.13363238747826,
+   "points": 14391
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 1920X",
+   "n": 7,
+   "score": 223.41852996094715,
+   "points": 14345
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 230F",
+   "n": 10,
+   "score": 222.90165965356044,
+   "points": 14312
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12600K",
+   "n": 44,
+   "score": 222.83809193118114,
+   "points": 14308
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 H 255 w/ 780M",
+   "n": 6,
+   "score": 218.5178434299503,
+   "points": 14031
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-14500",
+   "n": 9,
+   "score": 218.17942434251637,
+   "points": 14009
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 270 w/ 780M",
+   "n": 5,
+   "score": 217.48678653631595,
+   "points": 13965
+  },
+  {
+   "kind": "cpu",
+   "name": "Snapdragon X Elite - X1E80100 - Qualcomm Oryon",
+   "n": 5,
+   "score": 217.0898858287533,
+   "points": 13939
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-10910",
+   "n": 5,
+   "score": 216.5977884836196,
+   "points": 13908
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 8845HS w/ 780M",
+   "n": 46,
+   "score": 216.48681901237876,
+   "points": 13900
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 255H",
+   "n": 30,
+   "score": 214.98173120318205,
+   "points": 13804
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5700X",
+   "n": 424,
+   "score": 214.82831590006526,
+   "points": 13794
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 7 PRO 350 w/ 860M",
+   "n": 12,
+   "score": 213.31298584489127,
+   "points": 13697
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5800XT",
+   "n": 91,
+   "score": 213.27578078260834,
+   "points": 13694
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 338H",
+   "n": 5,
+   "score": 213.18059131735842,
+   "points": 13688
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13650HX",
+   "n": 89,
+   "score": 212.57946561109023,
+   "points": 13650
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 225F",
+   "n": 10,
+   "score": 212.5289697306058,
+   "points": 13646
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7840HS w/ 780M",
+   "n": 49,
+   "score": 210.93460320988027,
+   "points": 13544
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M1 Max",
+   "n": 50,
+   "score": 210.78081979680982,
+   "points": 13534
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5800X3D",
+   "n": 128,
+   "score": 209.73265775507957,
+   "points": 13467
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Threadripper 2920X",
+   "n": 8,
+   "score": 208.33088647027935,
+   "points": 13377
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2698 v3",
+   "n": 6,
+   "score": 208.1628135372522,
+   "points": 13366
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5800X",
+   "n": 323,
+   "score": 207.59009921720084,
+   "points": 13329
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 8945HS w/ 780M",
+   "n": 18,
+   "score": 207.0631915157744,
+   "points": 13295
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13450HX",
+   "n": 111,
+   "score": 206.80601721834847,
+   "points": 13279
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 9 185H",
+   "n": 32,
+   "score": 206.25897316039934,
+   "points": 13244
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M2 Pro",
+   "n": 40,
+   "score": 206.1843662067269,
+   "points": 13239
+  },
+  {
+   "kind": "cpu",
+   "name": "Snapdragon X 10-core X1P64100",
+   "n": 5,
+   "score": 205.40772968237945,
+   "points": 13189
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7600X",
+   "n": 144,
+   "score": 204.9080001631707,
+   "points": 13157
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 250 w/ 780M",
+   "n": 30,
+   "score": 204.63144784369427,
+   "points": 13139
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13400F",
+   "n": 87,
+   "score": 203.98110344241937,
+   "points": 13097
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2697 v3",
+   "n": 6,
+   "score": 203.24478815723842,
+   "points": 13050
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-14400F",
+   "n": 45,
+   "score": 200.979400233928,
+   "points": 12905
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900HK",
+   "n": 5,
+   "score": 200.6801783798146,
+   "points": 12885
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2680 v4",
+   "n": 23,
+   "score": 199.08716674289084,
+   "points": 12783
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-11700K",
+   "n": 18,
+   "score": 198.40924067731407,
+   "points": 12740
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7600",
+   "n": 69,
+   "score": 198.17328446757716,
+   "points": 12724
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-10900F",
+   "n": 7,
+   "score": 197.6753990401628,
+   "points": 12693
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-14400",
+   "n": 10,
+   "score": 197.3960360125659,
+   "points": 12675
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 225H",
+   "n": 16,
+   "score": 197.18063225971062,
+   "points": 12661
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13400",
+   "n": 9,
+   "score": 196.12804952705633,
+   "points": 12593
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-14500HX",
+   "n": 25,
+   "score": 195.56436709579532,
+   "points": 12557
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 7 350 w/ 860M",
+   "n": 59,
+   "score": 195.13002572590162,
+   "points": 12529
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7500F",
+   "n": 94,
+   "score": 195.03936810859832,
+   "points": 12523
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 165H",
+   "n": 8,
+   "score": 194.82105735666536,
+   "points": 12509
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7500X3D",
+   "n": 6,
+   "score": 193.00502447067362,
+   "points": 12393
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 3800XT",
+   "n": 14,
+   "score": 191.47540688258528,
+   "points": 12294
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7435HS",
+   "n": 75,
+   "score": 190.1508102959516,
+   "points": 12209
+  },
+  {
+   "kind": "cpu",
+   "name": "Core 7 240H",
+   "n": 16,
+   "score": 189.7592228242929,
+   "points": 12184
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2697 v4",
+   "n": 6,
+   "score": 189.3050335532766,
+   "points": 12155
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5700X3D",
+   "n": 66,
+   "score": 188.19382761028902,
+   "points": 12084
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5700",
+   "n": 16,
+   "score": 188.0555353925003,
+   "points": 12075
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5700G",
+   "n": 49,
+   "score": 187.91303065723167,
+   "points": 12066
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 8400F",
+   "n": 18,
+   "score": 186.86558085865536,
+   "points": 11998
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-6950X",
+   "n": 8,
+   "score": 186.27760464742173,
+   "points": 11961
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-13900H",
+   "n": 66,
+   "score": 184.75258752358525,
+   "points": 11863
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 8600G w/ 760M",
+   "n": 24,
+   "score": 184.21893312193768,
+   "points": 11829
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 PRO 6850H",
+   "n": 17,
+   "score": 183.9520933596735,
+   "points": 11811
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-11900",
+   "n": 5,
+   "score": 182.79410680811708,
+   "points": 11737
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10700K",
+   "n": 41,
+   "score": 181.05514557082694,
+   "points": 11625
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 6900HX",
+   "n": 9,
+   "score": 180.32876193177034,
+   "points": 11579
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5600X3D",
+   "n": 9,
+   "score": 180.08559336156532,
+   "points": 11563
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M1 Pro",
+   "n": 63,
+   "score": 179.381943675772,
+   "points": 11518
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13700H",
+   "n": 37,
+   "score": 178.9948022517753,
+   "points": 11493
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-11900KF",
+   "n": 6,
+   "score": 178.7984275941771,
+   "points": 11480
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 6900HS",
+   "n": 34,
+   "score": 178.7240399206466,
+   "points": 11476
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon W-2155",
+   "n": 9,
+   "score": 177.99725126302954,
+   "points": 11429
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-11700F",
+   "n": 10,
+   "score": 176.32475337640952,
+   "points": 11322
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-12900H",
+   "n": 25,
+   "score": 174.80356314336666,
+   "points": 11224
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen Z1 Extreme",
+   "n": 9,
+   "score": 174.35638444854078,
+   "points": 11195
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 3800X",
+   "n": 17,
+   "score": 174.29867774735516,
+   "points": 11192
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 3700X",
+   "n": 105,
+   "score": 173.60292279295163,
+   "points": 11147
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7735HS",
+   "n": 67,
+   "score": 173.37779548030161,
+   "points": 11132
+  },
+  {
+   "kind": "cpu",
+   "name": "Snapdragon X - X126100 - Qualcomm Oryon",
+   "n": 6,
+   "score": 173.31761552625773,
+   "points": 11129
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12700H",
+   "n": 73,
+   "score": 171.8364631929834,
+   "points": 11033
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7640HS w/ 760M",
+   "n": 7,
+   "score": 169.72680899438393,
+   "points": 10898
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-9900K",
+   "n": 58,
+   "score": 169.41709500280658,
+   "points": 10878
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-11950H",
+   "n": 10,
+   "score": 165.25387827262273,
+   "points": 10611
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12800H",
+   "n": 7,
+   "score": 164.62276822007,
+   "points": 10570
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-10885H",
+   "n": 19,
+   "score": 162.5480374246144,
+   "points": 10437
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-7820X",
+   "n": 12,
+   "score": 160.1577790383373,
+   "points": 10284
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 5900HX",
+   "n": 32,
+   "score": 159.59285309468578,
+   "points": 10247
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 6800H",
+   "n": 29,
+   "score": 159.05687153691656,
+   "points": 10213
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10700F",
+   "n": 9,
+   "score": 158.9144740442303,
+   "points": 10204
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5600GT",
+   "n": 30,
+   "score": 157.64750077494776,
+   "points": 10122
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 8645HS w/ 760M",
+   "n": 13,
+   "score": 157.58682092135766,
+   "points": 10118
+  },
+  {
+   "kind": "cpu",
+   "name": "Genuine Intel CPU 0000",
+   "n": 7,
+   "score": 157.5151382692449,
+   "points": 10114
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-13620H",
+   "n": 69,
+   "score": 157.29321962951312,
+   "points": 10100
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 8500G w/ 740M",
+   "n": 14,
+   "score": 156.6587771661436,
+   "points": 10059
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2666 v3",
+   "n": 5,
+   "score": 156.2966360103391,
+   "points": 10036
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10700",
+   "n": 46,
+   "score": 156.1591289656234,
+   "points": 10027
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12400F",
+   "n": 97,
+   "score": 155.74156713789637,
+   "points": 10000
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 5 340 w/ 840M",
+   "n": 9,
+   "score": 155.69255914095817,
+   "points": 9997
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 6800U",
+   "n": 8,
+   "score": 154.65705953913692,
+   "points": 9930
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13500H",
+   "n": 9,
+   "score": 154.28930434444828,
+   "points": 9907
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon W-2245",
+   "n": 11,
+   "score": 154.19919659098858,
+   "points": 9901
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12400",
+   "n": 28,
+   "score": 154.12878154368352,
+   "points": 9896
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon W-2140B",
+   "n": 6,
+   "score": 154.09527476535575,
+   "points": 9894
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12500",
+   "n": 6,
+   "score": 153.69335908968975,
+   "points": 9868
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 155H",
+   "n": 59,
+   "score": 153.11855570128319,
+   "points": 9832
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-12650H",
+   "n": 32,
+   "score": 152.68730425578283,
+   "points": 9804
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5600XT",
+   "n": 6,
+   "score": 152.4953403436105,
+   "points": 9792
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5800H",
+   "n": 64,
+   "score": 152.21699500793932,
+   "points": 9774
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5600X",
+   "n": 241,
+   "score": 151.31472030488086,
+   "points": 9716
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5600",
+   "n": 130,
+   "score": 150.43148304816214,
+   "points": 9659
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5800HS",
+   "n": 5,
+   "score": 149.79313235532172,
+   "points": 9618
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 5900HS",
+   "n": 8,
+   "score": 149.2732675627975,
+   "points": 9585
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 125H",
+   "n": 11,
+   "score": 145.78671649955433,
+   "points": 9361
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5600G",
+   "n": 165,
+   "score": 145.4377385288923,
+   "points": 9338
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-11600K",
+   "n": 7,
+   "score": 144.8793037613217,
+   "points": 9303
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 2700X Eight-Core",
+   "n": 38,
+   "score": 144.76101620118447,
+   "points": 9295
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5500X3D",
+   "n": 6,
+   "score": 144.45129536721564,
+   "points": 9275
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2667 v4",
+   "n": 11,
+   "score": 144.13451386689218,
+   "points": 9255
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 4800H",
+   "n": 27,
+   "score": 143.42580253344454,
+   "points": 9209
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen AI 7 PRO 360 w/ 880M",
+   "n": 6,
+   "score": 142.8149704818614,
+   "points": 9170
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12500H",
+   "n": 71,
+   "score": 141.4571777042467,
+   "points": 9083
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-11500",
+   "n": 6,
+   "score": 141.46046403405137,
+   "points": 9083
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10600",
+   "n": 7,
+   "score": 140.87801634451841,
+   "points": 9046
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 1800X Eight-Core",
+   "n": 16,
+   "score": 140.12079457345976,
+   "points": 8997
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5500GT",
+   "n": 6,
+   "score": 140.07382128567838,
+   "points": 8994
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5500",
+   "n": 97,
+   "score": 139.15458049316206,
+   "points": 8935
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 3600X",
+   "n": 22,
+   "score": 137.79831251808395,
+   "points": 8848
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-9700K",
+   "n": 41,
+   "score": 136.69729010789044,
+   "points": 8777
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10600K",
+   "n": 8,
+   "score": 135.63306354028236,
+   "points": 8709
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-11850H",
+   "n": 23,
+   "score": 135.53518776466632,
+   "points": 8703
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7445HS w/ 740M",
+   "n": 15,
+   "score": 135.35566352720798,
+   "points": 8691
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12450HX",
+   "n": 33,
+   "score": 134.63757962153215,
+   "points": 8645
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-11900H",
+   "n": 8,
+   "score": 134.44341632551163,
+   "points": 8632
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 225U",
+   "n": 6,
+   "score": 132.36637126504934,
+   "points": 8499
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-11700",
+   "n": 13,
+   "score": 131.70009666270695,
+   "points": 8456
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 9 4900HS",
+   "n": 9,
+   "score": 131.34929492161086,
+   "points": 8434
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5825U",
+   "n": 12,
+   "score": 131.01563045387712,
+   "points": 8412
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7535HS",
+   "n": 19,
+   "score": 129.7859945172251,
+   "points": 8333
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 3600",
+   "n": 156,
+   "score": 129.72110306593086,
+   "points": 8329
+  },
+  {
+   "kind": "cpu",
+   "name": "Core 5 210H",
+   "n": 21,
+   "score": 128.34162188262957,
+   "points": 8241
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-9880H",
+   "n": 35,
+   "score": 128.3089013945647,
+   "points": 8239
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-11400",
+   "n": 9,
+   "score": 128.3127403437992,
+   "points": 8239
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 7730U",
+   "n": 24,
+   "score": 128.22350991405875,
+   "points": 8233
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M3",
+   "n": 49,
+   "score": 128.18468015072386,
+   "points": 8231
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i9-9980HK",
+   "n": 38,
+   "score": 127.67560738144009,
+   "points": 8198
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-11800H",
+   "n": 52,
+   "score": 127.54344342525327,
+   "points": 8189
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 220 w/ 740M",
+   "n": 6,
+   "score": 126.87101906687127,
+   "points": 8146
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 1700X Eight-Core",
+   "n": 5,
+   "score": 126.12442880924382,
+   "points": 8098
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10875H",
+   "n": 10,
+   "score": 125.6291735084754,
+   "points": 8067
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 258V",
+   "n": 35,
+   "score": 125.53055520257331,
+   "points": 8060
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-9700F",
+   "n": 19,
+   "score": 124.88596360614395,
+   "points": 8019
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10500",
+   "n": 7,
+   "score": 124.71129083758623,
+   "points": 8008
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 2700 Eight-Core",
+   "n": 10,
+   "score": 124.44245229315882,
+   "points": 7990
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 PRO 4650G",
+   "n": 8,
+   "score": 124.43413801122736,
+   "points": 7990
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-11400F",
+   "n": 24,
+   "score": 124.21473388701207,
+   "points": 7976
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 4500",
+   "n": 21,
+   "score": 123.85379370596871,
+   "points": 7953
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8700K",
+   "n": 42,
+   "score": 122.95408571222882,
+   "points": 7895
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 6600H",
+   "n": 11,
+   "score": 122.74847959107349,
+   "points": 7882
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10600KF",
+   "n": 5,
+   "score": 121.61962738913826,
+   "points": 7809
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10870H",
+   "n": 7,
+   "score": 121.3777009085896,
+   "points": 7794
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-13420H",
+   "n": 50,
+   "score": 120.73212375182003,
+   "points": 7752
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5600H",
+   "n": 51,
+   "score": 120.65112476852536,
+   "points": 7747
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 256V",
+   "n": 12,
+   "score": 120.58612389200296,
+   "points": 7743
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 PRO 5675U",
+   "n": 5,
+   "score": 119.71998452873845,
+   "points": 7687
+  },
+  {
+   "kind": "cpu",
+   "name": "EPYC 9684X",
+   "n": 9,
+   "score": 118.62608440507292,
+   "points": 7617
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-2697 v2",
+   "n": 15,
+   "score": 118.07490723717476,
+   "points": 7581
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 PRO 5850U",
+   "n": 8,
+   "score": 117.95812916659038,
+   "points": 7574
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 1700 Eight-Core",
+   "n": 10,
+   "score": 117.49578966547028,
+   "points": 7544
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 PRO 4750U",
+   "n": 10,
+   "score": 116.96464669142622,
+   "points": 7510
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5700U",
+   "n": 16,
+   "score": 116.94471428639886,
+   "points": 7509
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10400",
+   "n": 18,
+   "score": 116.62470473790118,
+   "points": 7488
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 9 288V",
+   "n": 14,
+   "score": 115.95756959199456,
+   "points": 7446
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8700",
+   "n": 36,
+   "score": 114.9888578366657,
+   "points": 7383
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon CPU E5-1650 v4",
+   "n": 5,
+   "score": 114.7784738750303,
+   "points": 7370
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10400F",
+   "n": 37,
+   "score": 113.71939701697757,
+   "points": 7302
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 4600G",
+   "n": 5,
+   "score": 113.37314609092367,
+   "points": 7280
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-12450H",
+   "n": 37,
+   "score": 111.20534606815185,
+   "points": 7140
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 268V",
+   "n": 8,
+   "score": 110.87165536587972,
+   "points": 7119
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M2",
+   "n": 63,
+   "score": 109.70034483541626,
+   "points": 7044
+  },
+  {
+   "kind": "cpu",
+   "name": "BC-250",
+   "n": 10,
+   "score": 109.33582825795385,
+   "points": 7020
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-9700",
+   "n": 17,
+   "score": 107.92426583810517,
+   "points": 6930
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 2600 Six-Core",
+   "n": 68,
+   "score": 107.80415948749194,
+   "points": 6922
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon W-2135",
+   "n": 6,
+   "score": 107.14253455867092,
+   "points": 6880
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 PRO 7840U w/ 780M",
+   "n": 7,
+   "score": 107.02865967722127,
+   "points": 6872
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-12100F",
+   "n": 12,
+   "score": 106.08510111664417,
+   "points": 6812
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 2600X Six-Core",
+   "n": 9,
+   "score": 105.74096374660144,
+   "points": 6790
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-11400H",
+   "n": 68,
+   "score": 104.85767827077434,
+   "points": 6733
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 4600H",
+   "n": 11,
+   "score": 104.02349883930762,
+   "points": 6679
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 226V",
+   "n": 10,
+   "score": 102.35018738664284,
+   "points": 6572
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 PRO 5650U",
+   "n": 5,
+   "score": 100.14845258517119,
+   "points": 6430
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-12100",
+   "n": 6,
+   "score": 100.0800742821394,
+   "points": 6426
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-9600K",
+   "n": 30,
+   "score": 99.81257084160016,
+   "points": 6409
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10500H",
+   "n": 6,
+   "score": 99.106607147664,
+   "points": 6364
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 1600 Six-Core",
+   "n": 12,
+   "score": 96.7679058770059,
+   "points": 6213
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-5820K",
+   "n": 15,
+   "score": 95.15063347641203,
+   "points": 6110
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-9750H",
+   "n": 94,
+   "score": 94.79704528439444,
+   "points": 6087
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5500U",
+   "n": 49,
+   "score": 93.89383088748787,
+   "points": 6029
+  },
+  {
+   "kind": "cpu",
+   "name": "Apple M1",
+   "n": 105,
+   "score": 93.58353270587125,
+   "points": 6009
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10750H",
+   "n": 32,
+   "score": 92.89593079395301,
+   "points": 5965
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 5800U",
+   "n": 5,
+   "score": 91.17369526073368,
+   "points": 5854
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7430U",
+   "n": 6,
+   "score": 90.79989945951415,
+   "points": 5830
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-1355U",
+   "n": 11,
+   "score": 90.62775689147898,
+   "points": 5819
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-9850H",
+   "n": 13,
+   "score": 89.16887402479108,
+   "points": 5725
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10850H",
+   "n": 8,
+   "score": 88.9064591948488,
+   "points": 5709
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-7700K",
+   "n": 38,
+   "score": 88.69002289159131,
+   "points": 5695
+  },
+  {
+   "kind": "cpu",
+   "name": "Core 5 120U",
+   "n": 5,
+   "score": 87.89620854073974,
+   "points": 5644
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 3500X",
+   "n": 8,
+   "score": 86.64662155214663,
+   "points": 5563
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 5625U",
+   "n": 9,
+   "score": 86.4602070867241,
+   "points": 5552
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-6700K",
+   "n": 35,
+   "score": 85.39775387799912,
+   "points": 5483
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-9600KF",
+   "n": 7,
+   "score": 85.08578668519725,
+   "points": 5463
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 PRO 4650U",
+   "n": 5,
+   "score": 84.95776278407772,
+   "points": 5455
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 7 155U",
+   "n": 6,
+   "score": 84.94642095590939,
+   "points": 5454
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-9400",
+   "n": 6,
+   "score": 84.29538986847197,
+   "points": 5413
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-1260P",
+   "n": 13,
+   "score": 84.04693690773443,
+   "points": 5397
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8750H",
+   "n": 39,
+   "score": 83.91894609548498,
+   "points": 5388
+  },
+  {
+   "kind": "cpu",
+   "name": "Core Ultra 5 125U",
+   "n": 6,
+   "score": 81.44802995839042,
+   "points": 5230
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 2500X Quad-Core",
+   "n": 7,
+   "score": 81.18023135957947,
+   "points": 5212
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8850H",
+   "n": 19,
+   "score": 81.16071062113451,
+   "points": 5211
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-9400F",
+   "n": 26,
+   "score": 80.52624138096925,
+   "points": 5171
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7530U",
+   "n": 6,
+   "score": 80.22964262736801,
+   "points": 5151
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-11370H",
+   "n": 10,
+   "score": 80.15310664818436,
+   "points": 5147
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8500",
+   "n": 21,
+   "score": 79.71337298313288,
+   "points": 5118
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7235HS",
+   "n": 18,
+   "score": 79.19187363106641,
+   "points": 5085
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8400",
+   "n": 16,
+   "score": 78.68507798395916,
+   "points": 5052
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-11300H",
+   "n": 8,
+   "score": 77.07999143567574,
+   "points": 4949
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-10100F",
+   "n": 5,
+   "score": 76.32143015485175,
+   "points": 4901
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-1255U",
+   "n": 17,
+   "score": 75.05007157614925,
+   "points": 4819
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-4790K",
+   "n": 29,
+   "score": 73.49250377435108,
+   "points": 4719
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 4500U",
+   "n": 7,
+   "score": 73.3569931715972,
+   "points": 4710
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-10100",
+   "n": 9,
+   "score": 72.86319871106176,
+   "points": 4678
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-7700",
+   "n": 32,
+   "score": 72.1148230335092,
+   "points": 4630
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-1145G7",
+   "n": 5,
+   "score": 70.15390282612468,
+   "points": 4505
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 3400G",
+   "n": 12,
+   "score": 69.33837474350813,
+   "points": 4452
+  },
+  {
+   "kind": "cpu",
+   "name": "Custom APU 0405",
+   "n": 17,
+   "score": 67.9458326328983,
+   "points": 4363
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-1315U",
+   "n": 7,
+   "score": 67.87386888892594,
+   "points": 4358
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-1068NG7",
+   "n": 5,
+   "score": 67.39395913702734,
+   "points": 4327
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-6700",
+   "n": 24,
+   "score": 67.33581643020739,
+   "points": 4324
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-4770K",
+   "n": 8,
+   "score": 67.1569150500201,
+   "points": 4312
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7600K",
+   "n": 20,
+   "score": 67.09243704035194,
+   "points": 4308
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-9100F",
+   "n": 14,
+   "score": 67.02440874069718,
+   "points": 4304
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 2400G",
+   "n": 5,
+   "score": 66.62510131188702,
+   "points": 4278
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-9300H",
+   "n": 12,
+   "score": 66.2055996679543,
+   "points": 4251
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-4790",
+   "n": 23,
+   "score": 65.45377774923797,
+   "points": 4203
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-6600K",
+   "n": 9,
+   "score": 64.68050449240195,
+   "points": 4153
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-1038NG7",
+   "n": 11,
+   "score": 64.11418478791404,
+   "points": 4117
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10300H",
+   "n": 33,
+   "score": 63.73519419045157,
+   "points": 4092
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon W-2123",
+   "n": 6,
+   "score": 63.703290067833834,
+   "points": 4090
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-4770",
+   "n": 13,
+   "score": 62.91210638389374,
+   "points": 4040
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-1235U",
+   "n": 19,
+   "score": 62.57667791502297,
+   "points": 4018
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8279U",
+   "n": 5,
+   "score": 60.85787150214296,
+   "points": 3908
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-11375H",
+   "n": 12,
+   "score": 60.677996081983274,
+   "points": 3896
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-7700HQ",
+   "n": 29,
+   "score": 60.3849508569183,
+   "points": 3877
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-7820HQ",
+   "n": 7,
+   "score": 59.52559432785236,
+   "points": 3822
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-4870HQ",
+   "n": 9,
+   "score": 58.446551447265804,
+   "points": 3753
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-1155G7",
+   "n": 5,
+   "score": 57.69978543262808,
+   "points": 3705
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-1185G7",
+   "n": 22,
+   "score": 57.25796497963347,
+   "points": 3676
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-4690K",
+   "n": 5,
+   "score": 56.77128422282478,
+   "points": 3645
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 3 2200G",
+   "n": 6,
+   "score": 55.92474383821918,
+   "points": 3591
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-1165G7",
+   "n": 75,
+   "score": 54.28526406113513,
+   "points": 3486
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8257U",
+   "n": 8,
+   "score": 54.01024057560026,
+   "points": 3468
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-2600K",
+   "n": 6,
+   "score": 52.801039399208804,
+   "points": 3390
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 3550H",
+   "n": 17,
+   "score": 51.975707371753955,
+   "points": 3337
+  },
+  {
+   "kind": "cpu",
+   "name": "FX-8350 Eight-Core",
+   "n": 24,
+   "score": 51.507729178661506,
+   "points": 3307
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7500",
+   "n": 8,
+   "score": 51.338900763685565,
+   "points": 3296
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-6820HQ",
+   "n": 11,
+   "score": 50.95392493042277,
+   "points": 3272
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 7520U",
+   "n": 11,
+   "score": 50.82339734803296,
+   "points": 3263
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8300H",
+   "n": 5,
+   "score": 50.787019259472544,
+   "points": 3261
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-1334U",
+   "n": 6,
+   "score": 50.42271135551306,
+   "points": 3238
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-1215U",
+   "n": 7,
+   "score": 49.90856830373136,
+   "points": 3205
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8565U",
+   "n": 12,
+   "score": 49.22170904858427,
+   "points": 3160
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-1135G7",
+   "n": 78,
+   "score": 48.52037044138964,
+   "points": 3115
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-3770K",
+   "n": 11,
+   "score": 48.40820164329624,
+   "points": 3108
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8350U",
+   "n": 19,
+   "score": 48.25288152920534,
+   "points": 3098
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8250U",
+   "n": 20,
+   "score": 48.21394829533014,
+   "points": 3096
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-3770",
+   "n": 28,
+   "score": 47.890773439094595,
+   "points": 3075
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8665U",
+   "n": 38,
+   "score": 47.64757985510021,
+   "points": 3059
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8650U",
+   "n": 6,
+   "score": 47.41391887500427,
+   "points": 3044
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 7 4700U",
+   "n": 34,
+   "score": 47.335405492154976,
+   "points": 3039
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-4570",
+   "n": 9,
+   "score": 46.98569742370519,
+   "points": 3017
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7400",
+   "n": 13,
+   "score": 46.95728018738014,
+   "points": 3015
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-6500",
+   "n": 16,
+   "score": 46.85626712367412,
+   "points": 3009
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8265U",
+   "n": 11,
+   "score": 46.625987787549114,
+   "points": 2994
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-6600",
+   "n": 6,
+   "score": 46.58833478035594,
+   "points": 2991
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 3 3200G",
+   "n": 7,
+   "score": 46.21622462978698,
+   "points": 2967
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10310U",
+   "n": 10,
+   "score": 45.8725422338112,
+   "points": 2945
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-4590",
+   "n": 5,
+   "score": 44.62391897558593,
+   "points": 2865
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8365U",
+   "n": 8,
+   "score": 42.93885237962287,
+   "points": 2757
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-2600",
+   "n": 8,
+   "score": 42.31788523958798,
+   "points": 2717
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 5 3500U",
+   "n": 36,
+   "score": 40.65898576450863,
+   "points": 2611
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7300HQ",
+   "n": 5,
+   "score": 40.560610158322106,
+   "points": 2604
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-4460",
+   "n": 6,
+   "score": 39.892781383019035,
+   "points": 2561
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-8550U",
+   "n": 19,
+   "score": 39.557183615210505,
+   "points": 2540
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-1035G1",
+   "n": 44,
+   "score": 39.06260043801346,
+   "points": 2508
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-10510U",
+   "n": 10,
+   "score": 38.69409924177339,
+   "points": 2485
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-1065G7",
+   "n": 19,
+   "score": 37.022328988977556,
+   "points": 2377
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-3570K",
+   "n": 6,
+   "score": 36.7754536286166,
+   "points": 2361
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7 CPU 940",
+   "n": 6,
+   "score": 36.41245431298672,
+   "points": 2338
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-10210U",
+   "n": 13,
+   "score": 35.367134612656685,
+   "points": 2271
+  },
+  {
+   "kind": "cpu",
+   "name": "Xeon Platinum",
+   "n": 7,
+   "score": 32.90865894018585,
+   "points": 2113
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-3470",
+   "n": 14,
+   "score": 32.60665586201937,
+   "points": 2094
+  },
+  {
+   "kind": "cpu",
+   "name": "N150",
+   "n": 13,
+   "score": 32.30657495617025,
+   "points": 2074
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7360U",
+   "n": 10,
+   "score": 29.63989361184992,
+   "points": 1903
+  },
+  {
+   "kind": "cpu",
+   "name": "N95",
+   "n": 8,
+   "score": 27.38711832145409,
+   "points": 1758
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-1115G4",
+   "n": 10,
+   "score": 26.37487965790639,
+   "points": 1694
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-6200U",
+   "n": 7,
+   "score": 26.19137511162943,
+   "points": 1682
+  },
+  {
+   "kind": "cpu",
+   "name": "N100",
+   "n": 7,
+   "score": 25.81977654412973,
+   "points": 1658
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7200U",
+   "n": 16,
+   "score": 24.789069675678412,
+   "points": 1592
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7267U",
+   "n": 6,
+   "score": 24.02178118581129,
+   "points": 1542
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-7300U",
+   "n": 10,
+   "score": 23.745615813250012,
+   "points": 1525
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-4130",
+   "n": 58,
+   "score": 23.65134431206381,
+   "points": 1519
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-6600U",
+   "n": 6,
+   "score": 22.825346715789763,
+   "points": 1466
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-5257U",
+   "n": 10,
+   "score": 21.943483748143244,
+   "points": 1409
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-5350U",
+   "n": 12,
+   "score": 21.830055333868785,
+   "points": 1402
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-6300U",
+   "n": 6,
+   "score": 21.197996761443818,
+   "points": 1361
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-1005G1",
+   "n": 11,
+   "score": 20.690422473046006,
+   "points": 1329
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-7020U",
+   "n": 5,
+   "score": 20.587359998477954,
+   "points": 1322
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i3-1000NG4",
+   "n": 7,
+   "score": 19.589878906120838,
+   "points": 1258
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-4210U",
+   "n": 5,
+   "score": 19.52313379060082,
+   "points": 1254
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-8210Y",
+   "n": 5,
+   "score": 19.470937975516797,
+   "points": 1250
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-3210M",
+   "n": 5,
+   "score": 18.768104321872105,
+   "points": 1205
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-4650U",
+   "n": 6,
+   "score": 18.62602358456353,
+   "points": 1196
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-5300U",
+   "n": 6,
+   "score": 18.14929169058035,
+   "points": 1165
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-4260U",
+   "n": 5,
+   "score": 15.922835820168494,
+   "points": 1022
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i5-5250U",
+   "n": 7,
+   "score": 15.288735338003423,
+   "points": 982
+  },
+  {
+   "kind": "cpu",
+   "name": "A12-9720P RADEON R7, 12 COMPUTE CORES 4C+8G",
+   "n": 8,
+   "score": 15.249155957544023,
+   "points": 979
+  },
+  {
+   "kind": "cpu",
+   "name": "Core i7-7500U",
+   "n": 7,
+   "score": 15.13746220261523,
+   "points": 972
+  },
+  {
+   "kind": "cpu",
+   "name": "Ryzen 3 3200U",
+   "n": 5,
+   "score": 14.713996430116422,
+   "points": 945
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 6000 Blackwell Workstation Edition",
+   "n": 205,
+   "score": 16697.550381763605,
+   "points": 77472
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX Pro 6000 Blackwell DC-48Q",
+   "n": 8,
+   "score": 15754.914044104324,
+   "points": 73098
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 6000 Blackwell Server Edition",
+   "n": 28,
+   "score": 15481.392842208046,
+   "points": 71829
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5090 D",
+   "n": 12,
+   "score": 15020.699681720329,
+   "points": 69692
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "n": 33,
+   "score": 15009.063608274437,
+   "points": 69638
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5090",
+   "n": 1555,
+   "score": 14965.620409506531,
+   "points": 69436
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5090 D V2",
+   "n": 21,
+   "score": 12856.44772925234,
+   "points": 59650
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5090 D v2",
+   "n": 6,
+   "score": 12534.125723972938,
+   "points": 58155
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4090",
+   "n": 527,
+   "score": 11075.550992016078,
+   "points": 51387
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 5000 Blackwell",
+   "n": 7,
+   "score": 10928.75318484275,
+   "points": 50706
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 6000 Ada Generation",
+   "n": 20,
+   "score": 10641.075350432553,
+   "points": 49372
+  },
+  {
+   "kind": "gpu",
+   "name": "L40S-48Q",
+   "n": 6,
+   "score": 9342.911903382417,
+   "points": 43348
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5080",
+   "n": 1432,
+   "score": 9134.363924836996,
+   "points": 42381
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 4500 Blackwell",
+   "n": 17,
+   "score": 8497.19945484183,
+   "points": 39425
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4080 SUPER",
+   "n": 239,
+   "score": 8417.121574664654,
+   "points": 39053
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4080",
+   "n": 219,
+   "score": 8392.950403738168,
+   "points": 38941
+  },
+  {
+   "kind": "gpu",
+   "name": "L40S",
+   "n": 8,
+   "score": 7910.738128012631,
+   "points": 36704
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5090 Laptop GPU",
+   "n": 153,
+   "score": 7895.009563922675,
+   "points": 36631
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5070 Ti",
+   "n": 1415,
+   "score": 7590.75968481635,
+   "points": 35219
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 5000 Blackwell Generation Laptop GPU",
+   "n": 7,
+   "score": 7311.807128041237,
+   "points": 33925
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4070 Ti SUPER",
+   "n": 253,
+   "score": 7123.288417019148,
+   "points": 33050
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4090 Laptop GPU",
+   "n": 70,
+   "score": 6882.681116079604,
+   "points": 31934
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5080 Laptop GPU",
+   "n": 250,
+   "score": 6544.057611907163,
+   "points": 30363
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4070 Ti",
+   "n": 156,
+   "score": 6369.938191721514,
+   "points": 29555
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 4000 Blackwell",
+   "n": 40,
+   "score": 6250.5105571105005,
+   "points": 29001
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4070 SUPER",
+   "n": 467,
+   "score": 6244.262209696639,
+   "points": 28972
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5070",
+   "n": 914,
+   "score": 6172.756233435857,
+   "points": 28640
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5000 Ada Generation Laptop GPU",
+   "n": 20,
+   "score": 5902.250281129405,
+   "points": 27385
+  },
+  {
+   "kind": "gpu",
+   "name": "H200 NVL",
+   "n": 9,
+   "score": 5753.995073499451,
+   "points": 26697
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 4000 Blackwell Generation Laptop GPU",
+   "n": 8,
+   "score": 5695.216089072149,
+   "points": 26424
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5000 Ada Generation",
+   "n": 9,
+   "score": 5683.381540959403,
+   "points": 26369
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4500 Ada Generation",
+   "n": 5,
+   "score": 5662.628895662907,
+   "points": 26273
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3090 Ti",
+   "n": 139,
+   "score": 5553.146065586538,
+   "points": 25765
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4080 Laptop GPU",
+   "n": 87,
+   "score": 5426.3472854780475,
+   "points": 25177
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3090",
+   "n": 630,
+   "score": 5414.1490759556145,
+   "points": 25120
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3080 Ti",
+   "n": 208,
+   "score": 5335.181241840728,
+   "points": 24754
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4070",
+   "n": 262,
+   "score": 5220.973025578956,
+   "points": 24224
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A6000",
+   "n": 8,
+   "score": 5144.835597250324,
+   "points": 23871
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5070 Ti Laptop GPU",
+   "n": 216,
+   "score": 5003.277251709364,
+   "points": 23214
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 3000 Blackwell Generation Laptop GPU",
+   "n": 10,
+   "score": 4909.005002370706,
+   "points": 22776
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3500 Ada Generation Laptop GPU",
+   "n": 24,
+   "score": 4726.076484127399,
+   "points": 21928
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 4000 Blackwell SFF Edition",
+   "n": 8,
+   "score": 4720.021245081012,
+   "points": 21900
+  },
+  {
+   "kind": "gpu",
+   "name": "Graphics Device",
+   "n": 5,
+   "score": 4629.625447341905,
+   "points": 21480
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3080",
+   "n": 579,
+   "score": 4536.09480239084,
+   "points": 21046
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4000 Ada Generation",
+   "n": 16,
+   "score": 4455.949140020133,
+   "points": 20674
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A5000",
+   "n": 24,
+   "score": 4376.314537889162,
+   "points": 20305
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7900 XTX",
+   "n": 221,
+   "score": 4335.09674350109,
+   "points": 20114
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5060 Ti",
+   "n": 655,
+   "score": 4311.3062494401975,
+   "points": 20003
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX Pro 6000 Blackwell DC-12Q",
+   "n": 10,
+   "score": 4049.9529160617963,
+   "points": 18791
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5070 Laptop GPU",
+   "n": 234,
+   "score": 4017.520622067359,
+   "points": 18640
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4060 Ti",
+   "n": 332,
+   "score": 3933.4706288357065,
+   "points": 18250
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A4500",
+   "n": 19,
+   "score": 3920.2477079179357,
+   "points": 18189
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5060",
+   "n": 373,
+   "score": 3679.15842080563,
+   "points": 17070
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4000 SFF Ada Generation",
+   "n": 12,
+   "score": 3668.9548284010048,
+   "points": 17023
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7900 XT",
+   "n": 120,
+   "score": 3613.4816073585025,
+   "points": 16766
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4070 Laptop GPU",
+   "n": 226,
+   "score": 3560.6714022592882,
+   "points": 16521
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5060 Laptop GPU",
+   "n": 302,
+   "score": 3501.045617984335,
+   "points": 16244
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3070 Ti",
+   "n": 117,
+   "score": 3494.846654777132,
+   "points": 16215
+  },
+  {
+   "kind": "gpu",
+   "name": "L4",
+   "n": 8,
+   "score": 3467.400486157975,
+   "points": 16088
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4060 Laptop GPU",
+   "n": 579,
+   "score": 3281.492573169785,
+   "points": 15225
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 9070 XT",
+   "n": 676,
+   "score": 3280.3437904824423,
+   "points": 15220
+  },
+  {
+   "kind": "gpu",
+   "name": "AI PRO R9700",
+   "n": 11,
+   "score": 3216.879722268776,
+   "points": 14925
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3070",
+   "n": 311,
+   "score": 3191.122544657595,
+   "points": 14806
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4060",
+   "n": 439,
+   "score": 3178.439063699878,
+   "points": 14747
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3080 Ti Laptop GPU",
+   "n": 30,
+   "score": 3002.515939075246,
+   "points": 13931
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5050 Laptop GPU",
+   "n": 145,
+   "score": 2961.8520137556934,
+   "points": 13742
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A4000",
+   "n": 44,
+   "score": 2951.2228335047666,
+   "points": 13693
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A5000 Laptop GPU",
+   "n": 15,
+   "score": 2917.232546955728,
+   "points": 13535
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A5500 Laptop GPU",
+   "n": 12,
+   "score": 2908.502692666167,
+   "points": 13495
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7900 GRE",
+   "n": 44,
+   "score": 2896.252607919856,
+   "points": 13438
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 9070",
+   "n": 90,
+   "score": 2866.266299415367,
+   "points": 13299
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3080 Laptop GPU",
+   "n": 53,
+   "score": 2865.868981277302,
+   "points": 13297
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 5050",
+   "n": 59,
+   "score": 2865.2888948689915,
+   "points": 13294
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2080 Ti",
+   "n": 136,
+   "score": 2836.4979591083047,
+   "points": 13161
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3070 Ti Laptop GPU",
+   "n": 90,
+   "score": 2834.770084995117,
+   "points": 13153
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3060 Ti",
+   "n": 232,
+   "score": 2766.458241613348,
+   "points": 12836
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3070 Laptop GPU",
+   "n": 123,
+   "score": 2725.586608179436,
+   "points": 12646
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2000 Ada Generation",
+   "n": 25,
+   "score": 2658.832342099855,
+   "points": 12336
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6950 XT",
+   "n": 35,
+   "score": 2624.7693916149487,
+   "points": 12178
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro RTX 6000",
+   "n": 5,
+   "score": 2611.138387508824,
+   "points": 12115
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6900 XT",
+   "n": 56,
+   "score": 2597.18644153319,
+   "points": 12050
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 4050 Laptop GPU",
+   "n": 402,
+   "score": 2585.5002601616125,
+   "points": 11996
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2000 Ada Generation Laptop GPU",
+   "n": 24,
+   "score": 2539.7531988210562,
+   "points": 11784
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A4000 Laptop GPU",
+   "n": 8,
+   "score": 2499.948784319331,
+   "points": 11599
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7800 XT",
+   "n": 112,
+   "score": 2467.104203695013,
+   "points": 11447
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX PRO 1000 Blackwell Generation Laptop GPU",
+   "n": 5,
+   "score": 2463.3212410109495,
+   "points": 11429
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc A770",
+   "n": 55,
+   "score": 2450.974696137509,
+   "points": 11372
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6800 XT",
+   "n": 42,
+   "score": 2409.3839387749863,
+   "points": 11179
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 9070 GRE",
+   "n": 6,
+   "score": 2379.72953498485,
+   "points": 11041
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc B580",
+   "n": 124,
+   "score": 2373.6234159167416,
+   "points": 11013
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc A750",
+   "n": 72,
+   "score": 2290.811625841315,
+   "points": 10629
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2080 SUPER",
+   "n": 40,
+   "score": 2289.771358766105,
+   "points": 10624
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2080",
+   "n": 41,
+   "score": 2279.7764017663485,
+   "points": 10578
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2070 SUPER",
+   "n": 105,
+   "score": 2230.843085521024,
+   "points": 10350
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A3000 12GB Laptop GPU",
+   "n": 7,
+   "score": 2159.6878795959096,
+   "points": 10020
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3060",
+   "n": 632,
+   "score": 2155.3024287254093,
+   "points": 10000
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc Pro B60",
+   "n": 5,
+   "score": 2133.349291032321,
+   "points": 9898
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3060 Laptop GPU",
+   "n": 175,
+   "score": 2132.822515791116,
+   "points": 9896
+  },
+  {
+   "kind": "gpu",
+   "name": "Tesla V100-SXM2-16GB",
+   "n": 16,
+   "score": 2122.782703631307,
+   "points": 9849
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2070",
+   "n": 66,
+   "score": 2101.892095643313,
+   "points": 9752
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro RTX 4000",
+   "n": 19,
+   "score": 2101.032634742245,
+   "points": 9748
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7700 XT",
+   "n": 24,
+   "score": 2079.653652860617,
+   "points": 9649
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2060 SUPER",
+   "n": 109,
+   "score": 2064.0282782608438,
+   "points": 9577
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 1000 Ada Generation Laptop GPU",
+   "n": 6,
+   "score": 2047.1762156418258,
+   "points": 9498
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7800M",
+   "n": 15,
+   "score": 1936.909763347911,
+   "points": 8987
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A3000 Laptop GPU",
+   "n": 15,
+   "score": 1913.4472933416366,
+   "points": 8878
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc A580",
+   "n": 5,
+   "score": 1888.7278334446694,
+   "points": 8763
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6800",
+   "n": 36,
+   "score": 1873.0910628686634,
+   "points": 8691
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc B570",
+   "n": 7,
+   "score": 1846.759597732928,
+   "points": 8568
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A2000",
+   "n": 10,
+   "score": 1799.432566548057,
+   "points": 8349
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A2000 12GB",
+   "n": 34,
+   "score": 1746.4591488568394,
+   "points": 8103
+  },
+  {
+   "kind": "gpu",
+   "name": "TITAN V",
+   "n": 8,
+   "score": 1741.902356870348,
+   "points": 8082
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro RTX 5000",
+   "n": 13,
+   "score": 1703.0159078363986,
+   "points": 7902
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 9060 XT",
+   "n": 213,
+   "score": 1613.552557091804,
+   "points": 7486
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 500 Ada Generation Laptop GPU",
+   "n": 6,
+   "score": 1613.300971001875,
+   "points": 7485
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2060",
+   "n": 168,
+   "score": 1577.4686494699538,
+   "points": 7319
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2070 with Max-Q Design",
+   "n": 9,
+   "score": 1555.779753921433,
+   "points": 7218
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6750 XT",
+   "n": 23,
+   "score": 1547.5757218921356,
+   "points": 7180
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc Pro B50",
+   "n": 10,
+   "score": 1542.5855856207054,
+   "points": 7157
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6700 XT",
+   "n": 85,
+   "score": 1468.0024300452837,
+   "points": 6811
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3050",
+   "n": 145,
+   "score": 1351.3948334085346,
+   "points": 6270
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro RTX 3000",
+   "n": 15,
+   "score": 1350.551296101806,
+   "points": 6266
+  },
+  {
+   "kind": "gpu",
+   "name": "8060S",
+   "n": 45,
+   "score": 1346.2798285273607,
+   "points": 6246
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6800M",
+   "n": 12,
+   "score": 1336.4239506090753,
+   "points": 6201
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2060 with Max-Q Design",
+   "n": 5,
+   "score": 1278.4740395503688,
+   "points": 5932
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc B390 GPU",
+   "n": 16,
+   "score": 1275.2172126988855,
+   "points": 5917
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3050 Ti Laptop GPU",
+   "n": 104,
+   "score": 1274.0726547477323,
+   "points": 5911
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A2000 8GB Laptop GPU",
+   "n": 6,
+   "score": 1257.2580696509233,
+   "points": 5833
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7600 XT",
+   "n": 31,
+   "score": 1253.0202373814639,
+   "points": 5814
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A1000",
+   "n": 6,
+   "score": 1252.5761542243206,
+   "points": 5812
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7650 GRE",
+   "n": 7,
+   "score": 1226.7357799846357,
+   "points": 5692
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A2000 Laptop GPU",
+   "n": 7,
+   "score": 1217.7870006881485,
+   "points": 5650
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7600",
+   "n": 75,
+   "score": 1161.9033908171434,
+   "points": 5391
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3050 Laptop GPU",
+   "n": 198,
+   "score": 1154.2951385853394,
+   "points": 5356
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7700S",
+   "n": 6,
+   "score": 1093.432784569885,
+   "points": 5073
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7600M XT",
+   "n": 10,
+   "score": 1092.6915804405294,
+   "points": 5070
+  },
+  {
+   "kind": "gpu",
+   "name": "Tesla P100-PCIE-16GB",
+   "n": 10,
+   "score": 1073.238122346804,
+   "points": 4980
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6650 XT",
+   "n": 24,
+   "score": 1065.5633302588644,
+   "points": 4944
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6600 XT",
+   "n": 39,
+   "score": 1054.9582426247134,
+   "points": 4895
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 3050 6GB Laptop GPU",
+   "n": 176,
+   "score": 1041.3816932326813,
+   "points": 4832
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 5700 XT",
+   "n": 51,
+   "score": 961.2886443016888,
+   "points": 4460
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A1000 6GB Laptop GPU",
+   "n": 5,
+   "score": 952.5906573048113,
+   "points": 4420
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 7600S",
+   "n": 33,
+   "score": 948.8802500364376,
+   "points": 4403
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6600",
+   "n": 89,
+   "score": 932.379816258831,
+   "points": 4326
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc 140T GPU (16GB)",
+   "n": 15,
+   "score": 826.6805257295057,
+   "points": 3836
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1080 Ti",
+   "n": 63,
+   "score": 821.440621904592,
+   "points": 3811
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX 2050",
+   "n": 39,
+   "score": 768.0355509647945,
+   "points": 3563
+  },
+  {
+   "kind": "gpu",
+   "name": "CMP 30HX",
+   "n": 12,
+   "score": 765.2864009807497,
+   "points": 3551
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 5600 XT",
+   "n": 21,
+   "score": 756.4666161742862,
+   "points": 3510
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1660 Ti",
+   "n": 62,
+   "score": 752.4127726377428,
+   "points": 3491
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1660 SUPER",
+   "n": 112,
+   "score": 748.8401124243745,
+   "points": 3474
+  },
+  {
+   "kind": "gpu",
+   "name": "Tesla P40",
+   "n": 5,
+   "score": 725.8077393856199,
+   "points": 3368
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1660 Ti with Max-Q Design",
+   "n": 9,
+   "score": 691.8071932386308,
+   "points": 3210
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1660",
+   "n": 22,
+   "score": 684.9629204116852,
+   "points": 3178
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc 130T GPU (8GB)",
+   "n": 6,
+   "score": 658.5544634888521,
+   "points": 3056
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A500 Laptop GPU",
+   "n": 7,
+   "score": 653.0744971523508,
+   "points": 3030
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc 140V GPU (16GB)",
+   "n": 22,
+   "score": 632.0933199571205,
+   "points": 2933
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc 140V GPU (8GB)",
+   "n": 7,
+   "score": 626.0041310269976,
+   "points": 2904
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1070 Ti",
+   "n": 25,
+   "score": 593.5783935690902,
+   "points": 2754
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc 130V GPU (8GB)",
+   "n": 7,
+   "score": 588.0959772271219,
+   "points": 2729
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1080",
+   "n": 81,
+   "score": 585.7998913173662,
+   "points": 2718
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc A380",
+   "n": 18,
+   "score": 583.7068394003669,
+   "points": 2708
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1650 SUPER",
+   "n": 19,
+   "score": 552.8020179508976,
+   "points": 2565
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX TITAN X",
+   "n": 6,
+   "score": 524.0961063193665,
+   "points": 2432
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 980 Ti",
+   "n": 10,
+   "score": 523.7922953622524,
+   "points": 2430
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1070",
+   "n": 78,
+   "score": 522.0764100094059,
+   "points": 2422
+  },
+  {
+   "kind": "gpu",
+   "name": "Arc",
+   "n": 49,
+   "score": 516.3036126871629,
+   "points": 2396
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro P4200",
+   "n": 7,
+   "score": 511.0181462522546,
+   "points": 2371
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 5500 XT",
+   "n": 6,
+   "score": 508.7092757916895,
+   "points": 2360
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1650 Ti",
+   "n": 31,
+   "score": 468.71549425518276,
+   "points": 2175
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro P4000",
+   "n": 19,
+   "score": 453.8033806602296,
+   "points": 2106
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1650",
+   "n": 146,
+   "score": 424.0644077634457,
+   "points": 1968
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro T2000",
+   "n": 12,
+   "score": 420.5607647682172,
+   "points": 1951
+  },
+  {
+   "kind": "gpu",
+   "name": "RX6500 XT",
+   "n": 5,
+   "score": 414.61459633315957,
+   "points": 1924
+  },
+  {
+   "kind": "gpu",
+   "name": "RTX A400",
+   "n": 14,
+   "score": 406.8369458526016,
+   "points": 1888
+  },
+  {
+   "kind": "gpu",
+   "name": "Tesla P4",
+   "n": 13,
+   "score": 386.7281758649531,
+   "points": 1794
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6500M",
+   "n": 5,
+   "score": 384.34275134772946,
+   "points": 1783
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro T1000",
+   "n": 10,
+   "score": 377.33939430756175,
+   "points": 1751
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro T2000 with Max-Q Design",
+   "n": 5,
+   "score": 371.1777788456783,
+   "points": 1722
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1650 with Max-Q Design",
+   "n": 8,
+   "score": 370.3468807832172,
+   "points": 1718
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1060 6GB",
+   "n": 62,
+   "score": 361.1442259011666,
+   "points": 1676
+  },
+  {
+   "kind": "gpu",
+   "name": "7",
+   "n": 10,
+   "score": 352.330283814183,
+   "points": 1635
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1060",
+   "n": 17,
+   "score": 349.215521876882,
+   "points": 1620
+  },
+  {
+   "kind": "gpu",
+   "name": "890M",
+   "n": 31,
+   "score": 303.9193017344733,
+   "points": 1410
+  },
+  {
+   "kind": "gpu",
+   "name": "RX 6400",
+   "n": 9,
+   "score": 300.0900772239751,
+   "points": 1392
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro P2200",
+   "n": 5,
+   "score": 275.51738125059364,
+   "points": 1278
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 980",
+   "n": 5,
+   "score": 273.4448964063445,
+   "points": 1269
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1060 3GB",
+   "n": 31,
+   "score": 267.11197868165425,
+   "points": 1239
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 970",
+   "n": 22,
+   "score": 255.5448829214338,
+   "points": 1186
+  },
+  {
+   "kind": "gpu",
+   "name": "780M",
+   "n": 42,
+   "score": 239.8100166010685,
+   "points": 1113
+  },
+  {
+   "kind": "gpu",
+   "name": "MX450",
+   "n": 10,
+   "score": 227.27646095303064,
+   "points": 1054
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro P2000",
+   "n": 16,
+   "score": 212.2920884704119,
+   "points": 985
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1050 Ti",
+   "n": 73,
+   "score": 210.30129697901862,
+   "points": 976
+  },
+  {
+   "kind": "gpu",
+   "name": "",
+   "n": 360,
+   "score": 209.16357447289096,
+   "points": 970
+  },
+  {
+   "kind": "gpu",
+   "name": "760M",
+   "n": 8,
+   "score": 205.78228850072648,
+   "points": 955
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro M4000",
+   "n": 8,
+   "score": 205.41823424147347,
+   "points": 953
+  },
+  {
+   "kind": "gpu",
+   "name": "T500",
+   "n": 6,
+   "score": 196.3727636684108,
+   "points": 911
+  },
+  {
+   "kind": "gpu",
+   "name": "860M",
+   "n": 19,
+   "score": 192.11704727213865,
+   "points": 891
+  },
+  {
+   "kind": "gpu",
+   "name": "880M",
+   "n": 5,
+   "score": 181.90754762783092,
+   "points": 844
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 1050",
+   "n": 36,
+   "score": 176.9525676237401,
+   "points": 821
+  },
+  {
+   "kind": "gpu",
+   "name": "T400 4GB",
+   "n": 5,
+   "score": 167.9034184293686,
+   "points": 779
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 960",
+   "n": 17,
+   "score": 159.5773095325663,
+   "points": 740
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro M2200",
+   "n": 9,
+   "score": 155.81793861791152,
+   "points": 723
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro P1000",
+   "n": 10,
+   "score": 127.43811560158005,
+   "points": 591
+  },
+  {
+   "kind": "gpu",
+   "name": "840M",
+   "n": 7,
+   "score": 117.91391263692607,
+   "points": 547
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 950",
+   "n": 6,
+   "score": 114.54495941037658,
+   "points": 531
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro M1200",
+   "n": 12,
+   "score": 112.69805819138375,
+   "points": 523
+  },
+  {
+   "kind": "gpu",
+   "name": "740M",
+   "n": 5,
+   "score": 96.8155417515835,
+   "points": 449
+  },
+  {
+   "kind": "gpu",
+   "name": "MX350",
+   "n": 6,
+   "score": 94.3011342522065,
+   "points": 438
+  },
+  {
+   "kind": "gpu",
+   "name": "GTX 750 Ti",
+   "n": 5,
+   "score": 91.95289618795545,
+   "points": 427
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro P620",
+   "n": 6,
+   "score": 82.99964892884202,
+   "points": 385
+  },
+  {
+   "kind": "gpu",
+   "name": "GT 1030",
+   "n": 10,
+   "score": 62.813429672701645,
+   "points": 291
+  },
+  {
+   "kind": "gpu",
+   "name": "Quadro K620",
+   "n": 6,
+   "score": 56.56959873616046,
+   "points": 262
+  },
+  {
+   "kind": "gpu",
+   "name": "610M",
+   "n": 17,
+   "score": 46.83789336866576,
+   "points": 217
+  }
+ ]
+}

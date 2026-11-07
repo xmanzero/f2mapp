@@ -1,0 +1,19 @@
+node_modules/
+.next/
+dist/
+build/
+.expo/
+web-build/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store
+__pycache__/
+# Expo native folders (tạo khi prebuild)
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/expo-env.d.ts
+
+# Bảng tách từ Tom's Hardware: chỉ dùng nội bộ, không đăng lên repo công khai
+data/toms-gpu-hierarchy-2026.json
