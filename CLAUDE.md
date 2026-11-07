@@ -8,6 +8,10 @@ Mạng xã hội máy tính: người dùng khai báo cấu hình PC, xem điể
 - **Đăng nhập**: email + mật khẩu, hoặc Google (chốt 08/11/2026). Không dùng số điện thoại / OTP. Chưa có: xác minh email, quên mật khẩu (chờ dịch vụ gửi email).
 - **Giao diện** (website, app): thiết kế theo skill `ui-ux-pro-max:ui-ux-pro-max` và `taste-skill:design-taste-frontend`. Gọi cả hai skill trước khi dựng màn hình.
 
+## Việc để sau (chủ dự án dặn nhắc lại khi xong chức năng chính)
+- Dịch vụ gửi email → quên mật khẩu, xác minh email.
+- Tên miền HTTPS riêng + Google OAuth Client ID → bật đăng nhập Google, `COOKIE_SECURE=1`.
+
 ## Cấu trúc (npm workspaces)
 - `apps/web`: Next.js 16, App Router, Tailwind 4, bật `cacheComponents`. **Đọc `node_modules/next/dist/docs/` trước khi viết mã** (API khác bản cũ). Trang tĩnh không được đọc đồng hồ (`new Date()`) lúc dựng.
 - `apps/mobile`: Expo SDK 58, Expo Router (`src/app/`). Thêm thư viện bằng `npx expo install`; đọc docs theo đúng SDK (https://docs.expo.dev/llms.txt). Không sửa tay `android/`, `ios/`.

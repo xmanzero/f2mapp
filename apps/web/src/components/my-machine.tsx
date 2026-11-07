@@ -6,8 +6,11 @@ import {
 } from "@f2m/shared";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_MACHINES } from "@/data/sample";
+import { api } from "@/lib/api";
+import type { ReplacedPart } from "@/lib/listings";
+import { useSession } from "@/lib/session";
 import { n0, ratio, RES_LABEL, signedPct, STORAGE_LABEL } from "@/lib/format";
 import { useMachine } from "@/lib/use-machine";
 
@@ -50,6 +53,8 @@ export function MyMachine() {
         </span>
       </div>
 
+      <ReplacedNotice saveState={saveState} />
+
       {preview && (
         <div className="preview-bar" role="status">
           <p>
@@ -70,6 +75,25 @@ export function MyMachine() {
         <FindingsCard findings={hardwareFindings(cfg)} cfg={cfg} />
       </div>
     </>
+  );
+}
+
+/** Linh kiện vừa thay ra khỏi máy (đã đăng nhập) → nhắc đăng bán */
+function ReplacedNotice({ saveState }: { saveState: string }) {
+  const { user } = useSession();
+  const [parts, setParts] = useState<ReplacedPart[]>([]);
+  useEffect(() => {
+    if (!user || saveState === "saving") return;
+    api<{ replacedParts: ReplacedPart[] }>("/v1/me/listings").then((r) => setParts(r.replacedParts)).catch(() => {});
+  }, [user, saveState]);
+  if (parts.length === 0) return null;
+  const first = parts[0]!;
+  return (
+    <div className="sell-bar" role="status">
+      <p>Bạn đã thay ra <b>{first.name}</b>{parts.length > 1 ? ` và ${parts.length - 1} linh kiện khác` : ""}. Đăng bán để có thêm tiền nâng cấp.</p>
+      <Link href={`/cho/dang-tin?mp=${first.id}`} className="btn small primary">Đăng bán</Link>
+      {parts.length > 1 && <Link href="/cho/cua-toi" className="btn small">Xem tất cả</Link>}
+    </div>
   );
 }
 

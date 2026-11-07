@@ -1,63 +1,55 @@
 "use client";
 
-import { computeScores, findCpu, findGpu, resolveMachine, type MachineConfig } from "@f2m/shared";
+import { resolveMachine } from "@f2m/shared";
 import { X } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
-import { CONDITION_LABEL, SAMPLE_LISTINGS, type ListingKind, type SampleListing } from "@/data/sample";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { api } from "@/lib/api";
 import { n0, signedPct, vnd } from "@/lib/format";
+import {
+  CONDITION_LABEL, daysLabel, fitFor, KIND_LABEL, MIN_REAL_LISTINGS, SAMPLE_ROWS, toRow, valueOf,
+  type Listing, type ListingKind, type MarketRow,
+} from "@/lib/listings";
+import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 
-const KINDS: [ListingKind | "all", string][] = [["all", "Tất cả"], ["gpu", "Card đồ họa"], ["cpu", "CPU"], ["ram", "RAM"], ["storage", "Ổ SSD"]];
+const KINDS: (ListingKind | "all")[] = ["all", "gpu", "cpu", "ram", "storage", "other"];
 type Sort = "new" | "value" | "gain";
-const KIND_ORDER: Record<ListingKind, number> = { gpu: 0, cpu: 1, ram: 2, storage: 3 };
-const days = (d: number) => (d === 0 ? "hôm nay" : d === 1 ? "hôm qua" : `${d} ngày trước`);
-
-interface Fit { gain: number | null; note: string }
-/** Lắp linh kiện này vào máy của người dùng thì điểm sức mạnh đổi bao nhiêu */
-function fitFor(l: SampleListing, mine: MachineConfig | null): Fit {
-  if (!mine) return { gain: null, note: "—" };
-  const before = computeScores(mine).power;
-  if (l.kind === "gpu") {
-    const gpu = findGpu(l.part)!;
-    return { gain: computeScores({ ...mine, gpu }).power / before - 1, note: "" };
-  }
-  if (l.kind === "cpu") {
-    const cpu = findCpu(l.part)!;
-    if (cpu.socket !== mine.cpu.socket) return { gain: null, note: `Khác socket (${cpu.socket})` };
-    return { gain: computeScores({ ...mine, cpu }).power / before - 1, note: "" };
-  }
-  return { gain: null, note: "—" };
-}
-/** Điểm linh kiện trên mỗi triệu đồng (card: sức mạnh game, CPU: gaming) */
-function valueOf(l: SampleListing): number | null {
-  const pts = l.kind === "gpu" ? findGpu(l.part)?.raster : l.kind === "cpu" ? findCpu(l.part)?.gaming : undefined;
-  return pts ? pts / (l.priceVnd / 1_000_000) : null;
-}
+const KIND_ORDER: Record<ListingKind, number> = { gpu: 0, cpu: 1, ram: 2, storage: 3, other: 4 };
 
 export function Market() {
+  const router = useRouter();
   const params = useSearchParams();
+  const { user } = useSession();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [kind, setKind] = useState<ListingKind | "all">("all");
   const [sort, setSort] = useState<Sort>("new");
+  const [real, setReal] = useState<MarketRow[] | null>(null);
   const { machine, isSample, ready } = useMachine();
-  const mine = ready ? resolveMachine(machine) : null;
 
-  const rows = useMemo(() => SAMPLE_LISTINGS.map((l) => ({ l, fit: fitFor(l, mine), value: valueOf(l) })), [mine]);
-  const matchQ = (l: SampleListing) => !q || l.part.toLowerCase().includes(q.toLowerCase());
-  const scoped = rows.filter((r) => matchQ(r.l));
+  useEffect(() => { setQ(params.get("q") ?? ""); }, [params]);
+  useEffect(() => {
+    api<{ items: Listing[] }>("/v1/listings?limit=200").then((r) => setReal(r.items.map(toRow))).catch(() => setReal([]));
+  }, []);
+
+  const mine = useMemo(() => (ready ? resolveMachine(machine) : null), [ready, machine]);
+  const all = useMemo(() => [...(real ?? []), ...((real?.length ?? 0) < MIN_REAL_LISTINGS ? SAMPLE_ROWS : [])], [real]);
+  const rows = useMemo(() => all.map((r) => ({ r, fit: fitFor(r.kind, r.partName, mine), value: valueOf(r.kind, r.partName, r.priceVnd) })), [all, mine]);
+  const scoped = rows.filter(({ r }) => !q || r.name.toLowerCase().includes(q.toLowerCase()));
   const shown = scoped
-    .filter((r) => kind === "all" || r.l.kind === kind)
+    .filter(({ r }) => kind === "all" || r.kind === kind)
     .sort((a, b) =>
-      sort === "new" ? a.l.daysAgo - b.l.daysAgo
+      sort === "new" ? a.r.daysAgo - b.r.daysAgo || Number(a.r.sample) - Number(b.r.sample)
       // điểm card và điểm CPU không so được với nhau: nhóm theo loại rồi mới xếp
-      : sort === "value" ? KIND_ORDER[a.l.kind] - KIND_ORDER[b.l.kind] || (b.value ?? -1) - (a.value ?? -1)
+      : sort === "value" ? KIND_ORDER[a.r.kind] - KIND_ORDER[b.r.kind] || (b.value ?? -1) - (a.value ?? -1)
       : (b.fit.gain ?? -9) - (a.fit.gain ?? -9));
 
   // Phát hiện: tin tăng điểm máy bạn nhiều nhất trên mỗi triệu đồng
-  const best = mine && [...rows].filter((r) => (r.fit.gain ?? 0) > 0.02)
-    .sort((a, b) => b.fit.gain! / b.l.priceVnd - a.fit.gain! / a.l.priceVnd)[0];
+  const best = mine && [...rows].filter((x) => (x.fit.gain ?? 0) > 0.02)
+    .sort((a, b) => b.fit.gain! / b.r.priceVnd - a.fit.gain! / a.r.priceVnd)[0];
+  const realCount = real?.length ?? 0;
+  const postHref = user ? "/cho/dang-tin" : "/dang-nhap?next=/cho/dang-tin";
 
   return (
     <>
@@ -65,49 +57,68 @@ export function Market() {
         <div>
           <h1>Chợ linh kiện</h1>
           <p className="sub">
-            {best ? <>Đáng tiền nhất cho máy {isSample ? "mẫu" : "của bạn"}: <b>{best.l.part}</b> {vnd(best.l.priceVnd)}, tăng {Math.round(best.fit.gain! * 100)}% điểm sức mạnh.</>
-              : `${SAMPLE_LISTINGS.length} tin rao linh kiện cũ. Giá do người bán đặt.`}
+            {best ? <>Đáng tiền nhất cho máy {isSample ? "mẫu" : "của bạn"}: <b>{best.r.name}</b> {vnd(best.r.priceVnd)}, tăng {Math.round(best.fit.gain! * 100)}% điểm sức mạnh.</>
+              : "Linh kiện cũ do người chơi đăng bán. Giá do người bán đặt."}
           </p>
         </div>
-        <div style={{ display: "grid", justifyItems: "end", gap: 4 }}>
-          <button className="btn" disabled aria-describedby="post-why">Đăng tin bán</button>
-          <span id="post-why" className="stamp">Cần tài khoản, sắp có</span>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          {user && <Link href="/cho/cua-toi" className="btn">Tin của tôi</Link>}
+          <Link href={postHref} className="btn primary">Đăng tin bán</Link>
         </div>
       </div>
 
       <div className="counts" role="group" aria-label="Lọc theo loại linh kiện">
-        {KINDS.map(([k, label]) => (
+        {KINDS.map((k) => (
           <button key={k} className="count" aria-pressed={kind === k} onClick={() => setKind(k)}>
-            <span className="label">{label}</span>
-            <span className="value num">{scoped.filter((r) => k === "all" || r.l.kind === k).length}</span>
+            <span className="label">{k === "all" ? "Tất cả" : KIND_LABEL[k]}</span>
+            <span className="value num">{scoped.filter(({ r }) => k === "all" || r.kind === k).length}</span>
           </button>
         ))}
       </div>
 
       <section className="panel" aria-labelledby="h-list">
         <header>
-          <h2 id="h-list">{KINDS.find((k) => k[0] === kind)![1]} · <span className="num">{shown.length}</span> tin</h2>
-          <span className="meta">Tin mẫu</span>
+          <h2 id="h-list">{kind === "all" ? "Tất cả" : KIND_LABEL[kind]} · <span className="num">{shown.length}</span> tin</h2>
+          <span className="meta">{real === null ? "Đang tải…" : `${realCount} tin thật${realCount < MIN_REAL_LISTINGS ? " + tin mẫu" : ""}`}</span>
         </header>
         <div className="toolbar">
           <div className="segmented" role="group" aria-label="Sắp xếp">
-            {([["new", "Mới nhất"], ["value", "Đáng tiền"], ["gain", "Tăng điểm máy tôi"]] as const).map(([k, l]) => (
+            {([["new", "Mới nhất"], ["value", "Đáng tiền"], ["gain", "Hợp máy tôi"]] as const).map(([k, l]) => (
               <button key={k} aria-pressed={sort === k} onClick={() => setSort(k)}>{l}</button>
             ))}
           </div>
           <span className="spacer" />
           {q && (
-            <button className="btn small" onClick={() => setQ("")}>
+            <button className="btn small" onClick={() => { setQ(""); router.replace("/cho"); }}>
               Tìm “{q}” <X size={14} aria-hidden="true" /><span className="sr-only">Bỏ tìm</span>
             </button>
           )}
         </div>
 
-        {shown.length === 0 ? (
-          <p className="empty">Không có tin nào khớp “{q}”{kind !== "all" ? " trong mục này" : ""}.</p>
+        {real === null ? (
+          <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" style={{ height: 52, marginTop: 8 }} />)}</div>
+        ) : shown.length === 0 ? (
+          <p className="empty">{q ? `Không có tin nào khớp “${q}”${kind !== "all" ? " trong mục này" : ""}.` : "Chưa có tin nào trong mục này."} <Link href={postHref} className="card-link">Đăng tin bán</Link></p>
         ) : (
-          <div className="table-wrap">
-            <table className="data">
+          <>
+          {/* điện thoại: danh sách dòng hai tầng thay cho bảng */}
+          <ul className="mlist show-sm-block" aria-label="Tin rao">
+            {shown.map(({ r, fit }) => (
+              <li key={r.id} className={r.href ? "linked" : undefined}>
+                <div className="l1">
+                  {r.href ? <Link href={r.href} className="row-link">{r.name}</Link> : <span>{r.name}</span>}
+                  <b className="num">{vnd(r.priceVnd)}</b>
+                </div>
+                <div className="l2">
+                  <span className={`pill ${r.condition === "like_new" || r.condition === "new" ? "pos" : r.condition === "for_parts" ? "warn" : ""}`}>{CONDITION_LABEL[r.condition]}</span>
+                  <span className="faint">{[r.province, daysLabel(r.daysAgo), r.sample ? "tin mẫu" : null].filter(Boolean).join(" · ")}</span>
+                  {fit.gain !== null && fit.gain > 0.005 && <span className="gain num">{signedPct(fit.gain)} điểm</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="table-wrap hide-sm">
+            <table className="data market">
               <thead>
                 <tr>
                   <th>Linh kiện</th>
@@ -117,18 +128,18 @@ export function Market() {
                 </tr>
               </thead>
               <tbody>
-                {shown.map(({ l, fit, value }) => (
-                  <tr key={l.id}>
+                {shown.map(({ r, fit, value }) => (
+                  <tr key={r.id} className={r.href ? "linked" : undefined}>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontWeight: 500 }}>{l.part}</span>
-                        <span className={`pill ${l.condition === "like_new" ? "pos" : ""}`}>{CONDITION_LABEL[l.condition]}</span>
+                        {r.href ? <Link href={r.href} className="row-link" style={{ fontWeight: 500 }}>{r.name}</Link> : <span style={{ fontWeight: 500 }}>{r.name}</span>}
+                        <span className={`pill ${r.condition === "like_new" || r.condition === "new" ? "pos" : r.condition === "for_parts" ? "warn" : ""}`}>{CONDITION_LABEL[r.condition]}</span>
                       </div>
                       <div className="faint" style={{ fontSize: 13, marginTop: 2 }}>
-                        {l.province} · {l.seller} · {days(l.daysAgo)}{l.warrantyMonths > 0 ? ` · bảo hành ${l.warrantyMonths} tháng` : ""}
+                        {[r.province, r.seller, daysLabel(r.daysAgo), r.warrantyMonths ? `bảo hành ${r.warrantyMonths} tháng` : null, r.sample ? "tin mẫu" : null].filter(Boolean).join(" · ")}
                       </div>
                     </td>
-                    <td className="r num" style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{vnd(l.priceVnd)}</td>
+                    <td className="r num" style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{vnd(r.priceVnd)}</td>
                     <td className="r num hide-sm">{value === null ? <span className="faint">—</span> : n0(value)}</td>
                     <td className="r num" style={{ whiteSpace: "nowrap" }}>
                       {fit.gain === null ? <span className="faint">{fit.note}</span>
@@ -139,9 +150,10 @@ export function Market() {
               </tbody>
             </table>
           </div>
+          </>
         )}
-        <p className="faint" style={{ fontSize: 12, marginTop: 12 }}>
-          “Lắp vào máy” tính theo cấu hình ở <Link href="/" style={{ textDecoration: "underline", textUnderlineOffset: 3 }}>Máy của tôi</Link>. Điểm / triệu: điểm linh kiện (card: sức mạnh game, CPU: gaming) chia cho giá.
+        <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>
+          “Lắp vào máy” tính theo cấu hình ở <Link href="/" className="card-link">Máy của tôi</Link>. Điểm / triệu: điểm linh kiện (card: sức mạnh game, CPU: gaming) chia cho giá.
         </p>
       </section>
     </>

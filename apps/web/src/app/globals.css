@@ -266,3 +266,41 @@ select.input option { background: var(--surface); }
 .pw-toggle:hover { color: var(--text); }
 .pw-toggle svg { width: 18px; height: 18px; stroke-width: 1.5; }
 .panel .segmented { background: var(--ground); }
+/* dòng tin có trang chi tiết: cả dòng bấm được (liên kết phủ dòng) */
+table.data tr.linked { position: relative; cursor: pointer; }
+table.data tr.linked:hover td { background: var(--raised); }
+.row-link::after { content: ""; position: absolute; inset: 0; }
+.row-link:focus-visible { outline: none; }
+/* viền focus bàn phím cho cả dòng (không phải bóng đổ lúc nghỉ) */
+table.data tr.linked:has(.row-link:focus-visible) td { box-shadow: inset 0 0 0 2px var(--accent); } /* taste-skill-ignore */
+textarea.input { height: auto; min-height: 112px; padding: 12px 14px; resize: vertical; line-height: 22px; }
+.crumb { margin-bottom: 6px; color: var(--faint); font-size: 13px; }
+.desc { margin-top: 14px; white-space: pre-line; max-width: 72ch; }
+.contact { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding: 12px 14px; border-radius: var(--radius-inner); background: var(--raised); }
+.contact b { font-size: 16px; }
+.owner { display: grid; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.owner h3 { font-size: 14px; font-weight: 600; }
+.owner-price { display: grid; grid-template-columns: auto minmax(0, 220px) auto; gap: 10px; align-items: center; }
+@media (max-width: 480px) { .owner-price { grid-template-columns: minmax(0, 1fr) auto; } .owner-price label { grid-column: 1 / -1; } }
+.label-like { font-weight: 500; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 480px) { .row2 { grid-template-columns: minmax(0, 1fr); } }
+.segmented.wrap { flex-wrap: wrap; border-radius: 18px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { min-height: 36px; padding: 0 14px; border: 1px solid var(--control); border-radius: 999px; background: transparent; cursor: pointer; transition: background-color var(--t-hover) ease; }
+.chip:hover { background: var(--raised); }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--pill-positive-bg); }
+.preview { padding: 16px; border-radius: var(--radius-inner); background: var(--raised); }
+.sell-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: var(--gap); padding: 12px 12px 12px 18px; border-radius: 16px; background: var(--surface); }
+.sell-bar p { flex: 1; min-width: 220px; color: var(--muted); }
+.sell-bar b { color: var(--text); font-weight: 500; }
+/* chợ trên điện thoại: dòng hai tầng */
+.show-sm-block { display: none; }
+
+.mlist li { position: relative; padding: 12px 0; }
+.mlist li + li { border-top: 1px solid var(--rule); }
+.mlist .l1 { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-weight: 500; }
+.mlist .l1 b { flex: none; font-weight: 600; }
+.mlist .l2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; }
+.mlist .gain { margin-left: auto; color: var(--positive); font-weight: 500; }
+@media (max-width: 640px) { .show-sm-block { display: grid; } }

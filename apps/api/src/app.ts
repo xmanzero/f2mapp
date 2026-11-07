@@ -5,6 +5,7 @@ import Fastify from "fastify";
 import type { GoogleVerifier } from "./auth/google.js";
 import type { DB } from "./db.js";
 import { authRoutes } from "./routes/auth.js";
+import { listingRoutes } from "./routes/listings.js";
 import { machineRoutes } from "./routes/machines.js";
 import { meRoutes } from "./routes/me.js";
 import { partsRoutes } from "./routes/parts.js";
@@ -34,6 +35,7 @@ export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: A
   if (opts.deps) {
     app.register(authRoutes(opts.deps), { prefix: "/v1/auth" });
     app.register(meRoutes(opts.deps), { prefix: "/v1" });
+    app.register(listingRoutes(opts.deps), { prefix: "/v1" });
   }
   return app;
 }

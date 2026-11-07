@@ -43,6 +43,9 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 | `POST /v1/me/password` | Đặt / đổi mật khẩu, đăng xuất các thiết bị khác |
 | `GET/PATCH /v1/me`, `GET/PUT /v1/me/machine` | Hồ sơ, máy chính (lưu kèm điểm theo phiên bản thang điểm) |
 | `GET /v1/leaderboard` | Bảng xếp hạng máy chính của mọi người |
+| `GET /v1/listings`, `/v1/listings/:id` | Tin rao đang bán (lọc `kind`, tìm `q`); số liên hệ chỉ trả cho người đã đăng nhập |
+| `POST /v1/listings`, `PATCH /v1/listings/:id` | Đăng tin (card/CPU theo danh mục, RAM/ổ/khác nhập tên; có thể gắn linh kiện đã thay ra khỏi máy), đổi giá, đã hẹn / đã bán / ẩn |
+| `GET /v1/me/listings` | Tin của tôi + linh kiện đã thay ra chưa đăng bán |
 
 Phiên đăng nhập: cookie `f2m_session` (web, qua `/api` của Next) hoặc `Authorization: Bearer` (app). Biến môi trường: [apps/api/.env.example](apps/api/.env.example).
 

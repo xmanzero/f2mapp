@@ -68,7 +68,7 @@ function Frame({ children }: { children: ReactNode }) {
 
       <div className="main">
         <header className="topbar">
-          <Link href="/" className="brand-mobile" aria-label="f2m — trang chủ">
+          <Link href="/" className="brand-mobile" aria-label="f2m, trang chủ">
             <Mark size={22} /> f2m
           </Link>
           <form

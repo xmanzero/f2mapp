@@ -58,6 +58,24 @@ export interface Database {
     status: Generated<string>;
     added_at: Generated<Date>;
   };
+  listings: {
+    id: Generated<string>;
+    seller_id: string;
+    part_id: string | null;
+    machine_part_id: string | null;
+    kind: "gpu" | "cpu" | "ram" | "storage" | "other";
+    title: string | null;
+    price_vnd: string | number; // bigint: pg trả về chuỗi
+    condition: "new" | "like_new" | "used" | "for_parts";
+    warranty_months: number | null;
+    province: string | null;
+    description: string | null;
+    contact: string | null;
+    status: Generated<"active" | "reserved" | "sold" | "hidden">;
+    created_at: Generated<Date>;
+    updated_at: Generated<Date>;
+    sold_at: Date | null;
+  };
   machine_scores: {
     machine_id: string;
     scale_version: string;
