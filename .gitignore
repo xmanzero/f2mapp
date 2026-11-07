@@ -17,3 +17,6 @@ apps/mobile/expo-env.d.ts
 
 # Bảng tách từ Tom's Hardware: chỉ dùng nội bộ, không đăng lên repo công khai
 data/toms-gpu-hierarchy-2026.json
+
+# ảnh chụp kiểm tra giao diện
+.taste-skill/inspect/

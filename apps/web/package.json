@@ -10,10 +10,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@f2m/shared": "*",
+    "lucide-react": "^1.70.0",
     "next": "16.4.5",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "@f2m/shared": "*"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

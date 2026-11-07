@@ -1,29 +1,23 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+import { Shell } from "@/components/shell";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ variable: "--font-inter", subsets: ["latin", "vietnamese"], weight: ["400", "500", "600"] });
 
 export const metadata: Metadata = {
-  title: "f2m",
-  description: "Mạng xã hội máy tính: khai báo cấu hình, điểm sức mạnh, gợi ý nâng cấp, chợ linh kiện.",
+  title: { default: "f2m · Mạng xã hội PC", template: "%s · f2m" },
+  description: "Khai báo cấu hình PC, xem điểm sức mạnh và hạng, tìm điểm nghẽn, gợi ý nâng cấp, mua bán linh kiện cũ.",
 };
+
+export const viewport: Viewport = { themeColor: "#0c0d0f", colorScheme: "dark" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="vi"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="vi" data-theme="dark" className={inter.variable}>
+      <body>
+        <Shell>{children}</Shell>
+      </body>
     </html>
   );
 }

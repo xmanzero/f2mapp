@@ -18,6 +18,8 @@ Lệnh: `npm test`, `npm run typecheck`, `npm run dev:web|dev:api|dev:mobile`, `
 
 ## Tài liệu & dữ liệu
 - [docs/scoring-spec.md](docs/scoring-spec.md): đặc tả thang điểm, điểm nghẽn, luật phần cứng, huy hiệu, nguồn dữ liệu.
+- [docs/design.md](docs/design.md): phong cách giao diện đã chốt (True-black flat, lime trên dữ liệu, Inter), bản sắc riêng, cách kiểm tra. Màn hình mới (web và Expo) theo tài liệu này.
+- Repo: https://github.com/xmanzero/f2mapp (public — không đưa số liệu Tom's Hardware, mật khẩu, IP nhạy cảm lên).
 - [prototype/tinh-diem-may.html](prototype/tinh-diem-may.html): bản mẫu tính điểm (bản đăng: https://claude.ai/artifact/6wdf3mRFPWSHDfeUZHuZn6).
 - [tools/build_parts.py](tools/build_parts.py): sinh `prototype/parts.js` và `packages/shared/src/data/parts.json`. Sửa dữ liệu linh kiện ở script này rồi chạy lại.
 - [tools/blender_scores.py](tools/blender_scores.py) → [data/blender-render-4.5.json](data/blender-render-4.5.json): điểm render từ Blender Open Data (CC0).
