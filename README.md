@@ -34,7 +34,18 @@ API hiện chạy không cần database:
 | `POST /v1/machines/evaluate` | Tính điểm một cấu hình: điểm sức mạnh, hạng, mức đáp ứng, điểm nghẽn, cảnh báo, huy hiệu |
 | `POST /v1/machines/compare` | So sánh trước / sau nâng cấp, cảnh báo socket / nguồn / PCIe |
 
-Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`.
+Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có database thì có thêm tài khoản:
+
+| Đường dẫn | Việc |
+|---|---|
+| `POST /v1/auth/otp/request`, `/otp/verify` | Đăng nhập bằng số điện thoại (OTP 6 số, hết hạn 5 phút, sai 5 lần thì khóa) |
+| `POST /v1/auth/google` | Đăng nhập Google (ID token) |
+| `GET/PATCH /v1/me`, `GET/PUT /v1/me/machine` | Hồ sơ, máy chính (lưu kèm điểm theo phiên bản thang điểm) |
+| `GET /v1/leaderboard` | Bảng xếp hạng máy chính của mọi người |
+
+Phiên đăng nhập: cookie `f2m_session` (web, qua `/api` của Next) hoặc `Authorization: Bearer` (app). Biến môi trường: [apps/api/.env.example](apps/api/.env.example).
+
+**Trước khi mở ra internet:** cắm nhà cung cấp SMS thật vào [apps/api/src/auth/sms.ts](apps/api/src/auth/sms.ts), đặt `AUTH_DEV_OTP=0`, `COOKIE_SECURE=1`, và điền `GOOGLE_CLIENT_IDS` (Google chỉ chấp nhận `localhost` hoặc tên miền HTTPS).
 
 ## Deploy (aicenter, chỉ LAN)
 

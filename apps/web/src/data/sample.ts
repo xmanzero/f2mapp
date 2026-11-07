@@ -24,8 +24,8 @@ export const SAMPLE_MACHINES: SampleMachine[] = [
   { handle: "hoang.cs2", province: "Quảng Ninh", machine: m("Ryzen 5 5600", "RTX 3060 Ti", 16, 1080, { storage: "nvme3", psuW: 650 }) },
   { handle: "linh.sv", province: "Thái Nguyên", machine: m("Core i3-12100F", "RX 6600", 16, 1080, { storage: "nvme3", psuW: 550 }) },
   { handle: "trung.lienminh", province: "Đồng Nai", machine: m("Ryzen 5 3600", "GTX 1660 Super", 16, 1080, { storage: "sata", pcieGen: 3, psuW: 550 }) },
-  { handle: "bac.van", province: "Nam Định", machine: m("Core i5-10400F", "GTX 1650", 8, 1080, { ramChannels: 1, storage: "sata", pcieGen: 3, psuW: 450 }) },
-  { handle: "chu.tieu", province: "Bình Dương", machine: m("Core i3-10100", "Đồ họa tích hợp (iGPU)", 8, 1080, { ramChannels: 1, storage: "hdd", pcieGen: 3, psuW: 300 }) },
+  { handle: "bac.van", province: "Ninh Bình", machine: m("Core i5-10400F", "GTX 1650", 8, 1080, { ramChannels: 1, storage: "sata", pcieGen: 3, psuW: 450 }) },
+  { handle: "chu.tieu", province: "TP.HCM", machine: m("Core i3-10100", "Đồ họa tích hợp (iGPU)", 8, 1080, { ramChannels: 1, storage: "hdd", pcieGen: 3, psuW: 300 }) },
 ];
 
 export type ListingKind = "gpu" | "cpu" | "ram" | "storage";
@@ -52,9 +52,9 @@ export const SAMPLE_LISTINGS: SampleListing[] = [
   { id: "l11", kind: "cpu", part: "Ryzen 7 5800X3D", priceVnd: 5_200_000, condition: "like_new", warrantyMonths: 6, province: "Hà Nội", seller: "longdz99", daysAgo: 3 },
   { id: "l12", kind: "cpu", part: "Ryzen 5 7500F", priceVnd: 2_900_000, condition: "used", warrantyMonths: 12, province: "Bắc Ninh", seller: "datvaco", daysAgo: 4 },
   { id: "l13", kind: "cpu", part: "Core i3-12100F", priceVnd: 1_200_000, condition: "used", warrantyMonths: 0, province: "Thái Nguyên", seller: "linh.sv", daysAgo: 7 },
-  { id: "l14", kind: "ram", part: "DDR4 16 GB (2×8 GB) 3200 MHz", priceVnd: 650_000, condition: "used", warrantyMonths: 0, province: "Nam Định", seller: "bac.van", daysAgo: 1 },
+  { id: "l14", kind: "ram", part: "DDR4 16 GB (2×8 GB) 3200 MHz", priceVnd: 650_000, condition: "used", warrantyMonths: 0, province: "Ninh Bình", seller: "bac.van", daysAgo: 1 },
   { id: "l15", kind: "ram", part: "DDR5 32 GB (2×16 GB) 6000 MHz", priceVnd: 2_300_000, condition: "like_new", warrantyMonths: 24, province: "Huế", seller: "quang.edit", daysAgo: 5 },
-  { id: "l16", kind: "storage", part: "SSD NVMe Gen3 512 GB", priceVnd: 550_000, condition: "used", warrantyMonths: 0, province: "Bình Dương", seller: "chu.tieu", daysAgo: 2 },
+  { id: "l16", kind: "storage", part: "SSD NVMe Gen3 512 GB", priceVnd: 550_000, condition: "used", warrantyMonths: 0, province: "TP.HCM", seller: "chu.tieu", daysAgo: 2 },
 ];
 
 /** Màu nhận diện nhạt cho mỗi người (không phải màu dữ liệu) */

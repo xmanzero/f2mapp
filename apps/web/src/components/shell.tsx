@@ -5,6 +5,7 @@ import { Cpu, Search, Store, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import { SessionProvider, useSession } from "@/lib/session";
 import { Mark } from "./mark";
 
 const NAV = [
@@ -13,7 +14,35 @@ const NAV = [
   { href: "/cho", label: "Chợ linh kiện", short: "Chợ", icon: Store },
 ];
 
+function AccountControl() {
+  const { user } = useSession();
+  const path = usePathname();
+  if (user === undefined) return <div className="account" aria-hidden="true"><span className="skeleton" style={{ width: 32, height: 32, borderRadius: 999 }} /></div>;
+  if (user === null)
+    return path === "/dang-nhap" ? null : (
+      <div className="account">
+        <Link href={`/dang-nhap?next=${encodeURIComponent(path)}`} className="btn small primary">Đăng nhập</Link>
+      </div>
+    );
+  return (
+    <div className="account">
+      <Link href="/tai-khoan" className="me" aria-label={`Tài khoản: ${user.displayName}`}>
+        <span className="avatar" style={{ background: "var(--accent)" }} aria-hidden="true">{user.displayName.trim()[0]?.toUpperCase() ?? "?"}</span>
+        <span className="who"><span>{user.displayName}</span><small>@{user.handle}</small></span>
+      </Link>
+    </div>
+  );
+}
+
 export function Shell({ children }: { children: ReactNode }) {
+  return (
+    <SessionProvider>
+      <Frame>{children}</Frame>
+    </SessionProvider>
+  );
+}
+
+function Frame({ children }: { children: ReactNode }) {
   const path = usePathname();
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -54,7 +83,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <label htmlFor="q" className="sr-only">Tìm linh kiện trong chợ</label>
             <input id="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm linh kiện: RTX 3060, i5-12400F…" />
           </form>
-          <div className="scope">Toàn quốc · dữ liệu mẫu</div>
+          <AccountControl />
         </header>
 
         <main className="canvas">{children}</main>

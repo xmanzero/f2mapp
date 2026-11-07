@@ -225,3 +225,37 @@ table.data tr.me td:first-child { border-radius: 12px 0 0 12px; } table.data tr.
 .rank-line b { color: var(--text); font-weight: 600; }
 .card-link { color: var(--text); font-weight: 500; text-decoration: underline; text-decoration-color: var(--control); text-underline-offset: 4px; transition: text-decoration-color var(--t-hover) ease; }
 .card-link:hover { text-decoration-color: var(--text); }
+
+/* ---------- biểu mẫu ---------- */
+.form { display: grid; gap: 16px; }
+.field { display: grid; gap: 8px; }
+.field label { font-weight: 500; }
+.field .hint { color: var(--muted); font-size: 13px; }
+.input { width: 100%; height: 44px; padding: 0 14px; border: 1px solid var(--control); border-radius: 12px; background: var(--ground); color: var(--text); transition: border-color var(--t-hover) ease; }
+.input:hover { border-color: #5c6168; }
+.input:focus-visible { outline: none; border-color: var(--accent); }
+.input::placeholder { color: var(--faint); }
+select.input { appearance: none; cursor: pointer; }
+select.input option { background: var(--surface); }
+.input.code { font-size: 22px; letter-spacing: 0.3em; font-variant-numeric: tabular-nums; }
+.btn.block { width: 100%; height: 44px; }
+.btn.primary[disabled] { background: var(--raised); color: var(--faint); border-color: transparent; }
+.link { padding: 0; border: 0; background: none; color: var(--text); font-weight: 500; cursor: pointer; text-decoration: underline; text-decoration-color: var(--control); text-underline-offset: 4px; min-height: 44px; }
+.link[disabled] { color: var(--faint); cursor: not-allowed; text-decoration: none; }
+.form-links { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.form-error { margin-top: 12px; padding: 10px 14px; border-radius: 12px; background: var(--pill-negative-bg); color: var(--pill-negative-ink); }
+.notice { padding: 10px 14px; border-radius: 12px; background: var(--pill-warning-bg); color: var(--pill-warning-ink); }
+.notice b { color: var(--text); font-size: 16px; }
+.or { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; color: var(--faint); font-size: 13px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+.google-box { min-height: 44px; }
+
+/* ---------- tài khoản trên thanh trên ---------- */
+.account { margin-left: auto; align-self: stretch; display: flex; align-items: center; gap: 10px; padding-left: 16px; border-left: 1px solid var(--border); }
+.account a.me { display: flex; align-items: center; gap: 10px; min-height: 44px; border-radius: 999px; }
+.account .who { display: grid; line-height: 16px; }
+.account .who small { color: var(--faint); font-size: 12px; }
+@media (max-width: 860px) {
+  .account { padding-left: 0; border-left: 0; }
+  .account .who { display: none; }
+}

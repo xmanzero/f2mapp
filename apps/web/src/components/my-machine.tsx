@@ -20,7 +20,7 @@ const sevClass = (s: Severity) => (s === "critical" ? "neg" : s === "warning" ? 
 const PSU_OPTIONS = [300, 400, 450, 500, 550, 600, 650, 750, 850, 1000, 1200];
 
 export function MyMachine() {
-  const { machine, save, isSample, ready } = useMachine();
+  const { machine, save, isSample, ready, savedTo, saveState } = useMachine();
   const [preview, setPreview] = useState<UpgradeSuggestion | null>(null);
   const shown = preview ? toInput(preview.next) : machine;
 
@@ -43,7 +43,11 @@ export function MyMachine() {
           <h1>Máy của tôi</h1>
           <p className="sub">{lead.message}</p>
         </div>
-        <span className="stamp">{isSample ? "Đang là máy mẫu: sửa cấu hình để thành máy của bạn" : "Đã lưu trên trình duyệt này"}</span>
+        <span className="stamp" role="status">
+          {isSample ? "Đang là máy mẫu: sửa cấu hình để thành máy của bạn"
+            : savedTo === "account" ? (saveState === "saving" ? "Đang lưu…" : saveState === "error" ? "Chưa lưu được. Kiểm tra mạng rồi sửa lại." : "Đã lưu vào tài khoản")
+            : <>Lưu trên trình duyệt này · <Link href="/dang-nhap" className="card-link">Đăng nhập để lưu vào tài khoản</Link></>}
+        </span>
       </div>
 
       {preview && (

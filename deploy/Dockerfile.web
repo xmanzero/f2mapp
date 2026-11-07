@@ -12,6 +12,9 @@ RUN npm ci --include=dev -w @f2m/web -w @f2m/shared --no-audit --no-fund
 
 COPY packages/shared packages/shared
 COPY apps/web apps/web
+# Web chuyển tiếp /api/* sang API; địa chỉ được ghi vào bản build
+ARG API_URL=http://api:8140
+ENV API_URL=$API_URL
 RUN npm run build -w @f2m/web
 
 ENV NODE_ENV=production
