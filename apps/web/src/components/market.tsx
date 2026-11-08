@@ -8,14 +8,16 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import { n0, signedPct, vnd } from "@/lib/format";
 import {
-  CONDITION_LABEL, daysLabel, fitFor, KIND_LABEL, MIN_REAL_LISTINGS, SAMPLE_ROWS, toRow, valueOf,
+  CONDITION_LABEL, daysLabel, fitFor, KIND_LABEL, lifeOf, MIN_REAL_LISTINGS, rowTimes, SAMPLE_ROWS, toRow, valueOf,
   type Listing, type ListingKind, type MarketRow,
 } from "@/lib/listings";
 import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
+import { useNow } from "@/lib/use-now";
+import { LifeBar } from "./life-bar";
 
 const KINDS: (ListingKind | "all")[] = ["all", "gpu", "cpu", "mainboard", "ram", "storage", "psu"];
-type Sort = "new" | "value" | "gain";
+type Sort = "new" | "ending" | "value" | "gain";
 const KIND_ORDER: Record<ListingKind, number> = { gpu: 0, cpu: 1, mainboard: 2, ram: 3, storage: 4, psu: 5 };
 
 export function Market() {
@@ -27,6 +29,7 @@ export function Market() {
   const [sort, setSort] = useState<Sort>("new");
   const [real, setReal] = useState<MarketRow[] | null>(null);
   const { machine, isSample, ready } = useMachine();
+  const now = useNow();
 
   useEffect(() => { setQ(params.get("q") ?? ""); }, [params]);
   useEffect(() => {
@@ -35,12 +38,19 @@ export function Market() {
 
   const mine = useMemo(() => (ready ? resolveMachine(machine) : null), [ready, machine]);
   const all = useMemo(() => [...(real ?? []), ...((real?.length ?? 0) < MIN_REAL_LISTINGS ? SAMPLE_ROWS : [])], [real]);
-  const rows = useMemo(() => all.map((r) => ({ r, fit: fitFor(r.kind, r.partName, mine), value: valueOf(r.kind, r.partName, r.priceVnd) })), [all, mine]);
+  const rows = useMemo(() => all
+    .map((r) => {
+      const t = now ? rowTimes(r, now) : null;
+      return { r, fit: fitFor(r.kind, r.partName, mine), value: valueOf(r.kind, r.partName, r.priceVnd), life: t && now ? lifeOf(t.created, t.expires, now) : null };
+    })
+    // tin hết hạn tự hủy: không hiện (máy chủ đã lọc tin thật; đây là cho tin mẫu và tin vừa hết hạn khi trang đang mở)
+    .filter((x) => x.life?.state !== "expired"), [all, mine, now]);
   const scoped = rows.filter(({ r }) => !q || r.name.toLowerCase().includes(q.toLowerCase()));
   const shown = scoped
     .filter(({ r }) => kind === "all" || r.kind === kind)
     .sort((a, b) =>
-      sort === "new" ? a.r.daysAgo - b.r.daysAgo || Number(a.r.sample) - Number(b.r.sample)
+      sort === "new" ? (b.life?.created ?? 0) - (a.life?.created ?? 0) || Number(a.r.sample) - Number(b.r.sample)
+      : sort === "ending" ? (a.life?.expires ?? 0) - (b.life?.expires ?? 0)
       // điểm card và điểm CPU không so được với nhau: nhóm theo loại rồi mới xếp
       : sort === "value" ? KIND_ORDER[a.r.kind] - KIND_ORDER[b.r.kind] || (b.value ?? -1) - (a.value ?? -1)
       : (b.fit.gain ?? -9) - (a.fit.gain ?? -9));
@@ -82,8 +92,8 @@ export function Market() {
           <span className="meta">{real === null ? "Đang tải…" : `${realCount} tin thật${realCount < MIN_REAL_LISTINGS ? " + tin mẫu" : ""}`}</span>
         </header>
         <div className="toolbar">
-          <div className="segmented" role="group" aria-label="Sắp xếp">
-            {([["new", "Mới nhất"], ["value", "Đáng tiền"], ["gain", "Hợp máy tôi"]] as const).map(([k, l]) => (
+          <div className="segmented wrap" role="group" aria-label="Sắp xếp">
+            {([["new", "Mới nhất"], ["ending", "Sắp hết hạn"], ["value", "Đáng tiền"], ["gain", "Hợp máy tôi"]] as const).map(([k, l]) => (
               <button key={k} aria-pressed={sort === k} onClick={() => setSort(k)}>{l}</button>
             ))}
           </div>
@@ -103,8 +113,8 @@ export function Market() {
           <>
           {/* điện thoại: danh sách dòng hai tầng thay cho bảng */}
           <ul className="mlist show-sm-block" aria-label="Tin rao">
-            {shown.map(({ r, fit }) => (
-              <li key={r.id} className={r.href ? "linked" : undefined}>
+            {shown.map(({ r, fit, life }) => (
+              <li key={r.id} className={[r.href ? "linked" : "", life ? `life-${life.state}` : ""].join(" ").trim() || undefined}>
                 <div className="l1">
                   {r.href ? <Link href={r.href} className="row-link">{r.name}</Link> : <span>{r.name}</span>}
                   <b className="num">{vnd(r.priceVnd)}</b>
@@ -114,6 +124,7 @@ export function Market() {
                   <span className="faint">{[r.province, daysLabel(r.daysAgo), r.sample ? "tin mẫu" : null].filter(Boolean).join(" · ")}</span>
                   {fit.gain !== null && fit.gain > 0.005 && <span className="gain num">{signedPct(fit.gain)} điểm</span>}
                 </div>
+                {life && <div style={{ marginTop: 8 }}><LifeBar life={life} compact /></div>}
               </li>
             ))}
           </ul>
@@ -125,11 +136,12 @@ export function Market() {
                   <th className="r">Giá</th>
                   <th className="r hide-sm">Điểm / triệu</th>
                   <th className="r">Lắp vào máy {isSample ? "mẫu" : "bạn"}</th>
+                  <th className="r">Kết thúc</th>
                 </tr>
               </thead>
               <tbody>
-                {shown.map(({ r, fit, value }) => (
-                  <tr key={r.id} className={r.href ? "linked" : undefined}>
+                {shown.map(({ r, fit, value, life }) => (
+                  <tr key={r.id} className={[r.href ? "linked" : "", life ? `life-${life.state}` : ""].join(" ").trim() || undefined}>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                         {r.href ? <Link href={r.href} className="row-link" style={{ fontWeight: 500 }}>{r.name}</Link> : <span style={{ fontWeight: 500 }}>{r.name}</span>}
@@ -146,6 +158,7 @@ export function Market() {
                       {fit.gain === null ? <span className="faint">{fit.note}</span>
                         : <span style={{ color: fit.gain > 0.005 ? "var(--positive)" : "var(--faint)", fontWeight: 500 }}>{signedPct(fit.gain)} điểm</span>}
                     </td>
+                    <td className="r">{life ? <LifeBar life={life} /> : <span className="skeleton" style={{ display: "inline-block", width: 120, height: 32 }} />}</td>
                   </tr>
                 ))}
               </tbody>

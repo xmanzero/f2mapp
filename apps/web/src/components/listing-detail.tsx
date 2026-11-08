@@ -8,10 +8,12 @@ import { useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import { n0, signedPct, vnd } from "@/lib/format";
 import {
-  CONDITION_LABEL, daysLabel, daysSince, fitFor, KIND_LABEL, medianPrice, SAMPLE_ROWS, STATUS_LABEL, toRow, valueOf,
+  CONDITION_LABEL, daysLabel, daysSince, DURATIONS, fitFor, KIND_LABEL, lifeOf, medianPrice, SAMPLE_ROWS, STATUS_LABEL, toRow, valueOf,
   type Listing, type ListingStatus, type MarketRow,
 } from "@/lib/listings";
 import { useMachine } from "@/lib/use-machine";
+import { useNow } from "@/lib/use-now";
+import { LifeBar } from "./life-bar";
 
 export function ListingDetail() {
   const id = useSearchParams().get("id") ?? "";
@@ -19,6 +21,7 @@ export function ListingDetail() {
   const [error, setError] = useState<string | null>(null);
   const [others, setOthers] = useState<MarketRow[]>([]);
   const { machine, isSample, ready } = useMachine();
+  const now = useNow();
 
   useEffect(() => {
     if (!id) { setItem(null); setError("Thiếu mã tin"); return; }
@@ -61,6 +64,7 @@ export function ListingDetail() {
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-info">
           <header><h2 id="h-info">Thông tin</h2><span className="meta">Người bán: {item.seller.displayName} (@{item.seller.handle})</span></header>
+          {now && <div className="life-row"><LifeBar life={lifeOf(new Date(item.createdAt).getTime(), new Date(item.expiresAt).getTime(), now)} /></div>}
           {item.source && (
             <div className="source">
               <div className="grow">
@@ -155,9 +159,13 @@ function OwnerTools({ item, onChange }: { item: Listing; onChange: (l: Listing) 
       onChange(r.item); setMsg(done);
     } catch (e) { setMsg((e as ApiError).message); } finally { setBusy(false); }
   };
+  const [days, setDays] = useState<number>(7);
+  const live = item.status === "active" || item.status === "reserved";
   const actions: [ListingStatus, string][] = item.status === "active"
     ? [["reserved", "Đã có người hẹn"], ["sold", "Đã bán"], ["hidden", "Ẩn tin"]]
-    : item.status === "sold" ? [["active", "Đăng bán lại"]] : [["active", "Mở lại tin"], ["sold", "Đã bán"]];
+    : item.status === "reserved" ? [["active", "Hủy hẹn"], ["sold", "Đã bán"], ["hidden", "Ẩn tin"]]
+    : item.status === "hidden" ? [["sold", "Đã bán"]]
+    : [];
   return (
     <div className="owner">
       <h3>Quản lý tin của bạn</h3>
@@ -170,6 +178,18 @@ function OwnerTools({ item, onChange }: { item: Listing; onChange: (l: Listing) 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {actions.map(([s, label]) => <button key={s} className="btn small" disabled={busy} onClick={() => void patch({ status: s }, `Đã chuyển sang: ${STATUS_LABEL[s]}`)}>{label}</button>)}
       </div>
+      {item.status !== "sold" && (
+        <div className="owner-renew">
+          <span className="muted">{live ? "Gia hạn thêm, tính từ bây giờ" : "Đăng lại trong"}</span>
+          <div className="segmented wrap" role="group" aria-label="Thời gian bán">
+            {DURATIONS.map((d) => <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)}>{d} ngày</button>)}
+          </div>
+          <button className="btn small primary" disabled={busy}
+            onClick={() => void patch(live ? { durationDays: days } : { status: "active", durationDays: days }, live ? `Đã gia hạn ${days} ngày` : `Đã đăng lại, bán trong ${days} ngày`)}>
+            {live ? "Gia hạn" : "Đăng lại"}
+          </button>
+        </div>
+      )}
       {msg && <p className="stamp" role="status">{msg}</p>}
     </div>
   );

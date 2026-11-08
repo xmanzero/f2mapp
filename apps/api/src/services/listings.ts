@@ -10,6 +10,11 @@ export const LISTING_KINDS = ["cpu", "gpu", "mainboard", "ram", "storage", "psu"
 export const CONDITIONS = ["new", "like_new", "used", "for_parts"] as const;
 export const STATUSES = ["active", "reserved", "sold", "hidden"] as const;
 export const MAX_PER_DAY = 5;
+/** Thời gian bán người dùng chọn được (ngày) */
+export const DURATIONS = [1, 2, 3, 5, 7, 14, 30] as const;
+const durationField = z.number().int().refine((d) => (DURATIONS as readonly number[]).includes(d), "Chọn thời gian bán 1, 2, 3, 5, 7, 14 hoặc 30 ngày");
+const expiryFrom = (days: number, from = Date.now()) => new Date(from + days * 86_400_000);
+const LIVE = ["active", "reserved"] as const;
 
 export const createListingSchema = z.object({
   machinePartId: z.string({ required_error: "Chọn một linh kiện trong máy của bạn để đăng bán" }).uuid("Chọn một linh kiện trong máy của bạn để đăng bán"),
@@ -19,6 +24,7 @@ export const createListingSchema = z.object({
   province: z.string().trim().max(40).nullable().optional(),
   description: z.string().trim().max(1000, "Mô tả tối đa 1.000 ký tự").nullable().optional(),
   contact: z.string().trim().min(6, "Nhập số Zalo hoặc điện thoại để người mua liên hệ").max(60),
+  durationDays: durationField.default(7),
 });
 export type CreateListing = z.infer<typeof createListingSchema>;
 
@@ -28,6 +34,8 @@ export const updateListingSchema = z.object({
   contact: createListingSchema.shape.contact.optional(),
   warrantyMonths: createListingSchema.shape.warrantyMonths,
   status: z.enum(STATUSES).optional(),
+  /** Gia hạn / đăng lại: thời hạn mới tính từ bây giờ */
+  durationDays: durationField.optional(),
 });
 
 export class ListingError extends Error {
@@ -42,7 +50,7 @@ const baseQuery = (db: DB) => db.selectFrom("listings as l")
   .leftJoin("machine_scores as sc", (j) => j.onRef("sc.machine_id", "=", "m.id").on("sc.scale_version", "=", SCALE_VERSION))
   .select([
     "l.id", "l.kind", "l.title", "l.price_vnd", "l.condition", "l.warranty_months", "l.province", "l.description",
-    "l.status", "l.created_at", "l.updated_at", "l.sold_at", "l.contact", "l.seller_id", "l.part_was_in_use",
+    "l.status", "l.created_at", "l.updated_at", "l.sold_at", "l.expires_at", "l.contact", "l.seller_id", "l.part_was_in_use",
     "u.handle as seller_handle", "u.display_name as seller_name", "p.name as part_name",
     "mp.status as part_status", "mp.verified_at as part_verified_at", "mp.added_at as part_added_at", "mp.details as part_details",
     "m.id as machine_id", "m.name as machine_name", "sc.tier as machine_tier", "sc.power as machine_power",
@@ -68,7 +76,7 @@ function shape(r: Raw, viewerId: string | null, headlines: Map<string, string>) 
     id: r.id, kind: r.kind, name: r.title ?? r.part_name ?? "", partName: r.part_name, inCatalog: !!r.part_name,
     priceVnd: Number(r.price_vnd), condition: r.condition, warrantyMonths: r.warranty_months,
     province: r.province, description: r.description, status: r.status,
-    createdAt: r.created_at, updatedAt: r.updated_at, soldAt: r.sold_at,
+    createdAt: r.created_at, updatedAt: r.updated_at, soldAt: r.sold_at, expiresAt: r.expires_at,
     seller: { id: r.seller_id, handle: r.seller_handle, displayName: r.seller_name },
     /** Linh kiện này trong máy người bán */
     source: r.machine_id ? {
@@ -89,8 +97,22 @@ async function shapeAll(db: DB, rows: Raw[], viewerId: string | null) {
   return rows.map((r) => shape(r, viewerId, heads));
 }
 
+/**
+ * Tin hết hạn tự hủy: chuyển 'expired', linh kiện đã thay ra về kho (replaced); linh kiện đang lắp vẫn trong máy.
+ * Chạy định kỳ (index.ts) và trước mỗi lần đọc chợ, nên không có tin quá hạn nào lọt ra ngoài.
+ */
+export async function expireListings(db: DB) {
+  const gone = await db.updateTable("listings").set({ status: "expired", updated_at: new Date() })
+    .where("status", "in", LIVE).where("expires_at", "<=", new Date())
+    .returning(["id", "machine_part_id", "part_was_in_use"]).execute();
+  const back = gone.filter((l) => l.machine_part_id && !l.part_was_in_use).map((l) => l.machine_part_id!);
+  if (back.length) await db.updateTable("machine_parts").set({ status: "replaced" }).where("id", "in", back).where("status", "=", "for_sale").execute();
+  return gone.length;
+}
+
 export async function listListings(db: DB, opts: { kind?: string; q?: string; limit?: number; viewerId: string | null }) {
-  let q = baseQuery(db).where("l.status", "=", "active");
+  await expireListings(db);
+  let q = baseQuery(db).where("l.status", "=", "active").where("l.expires_at", ">", new Date());
   if (opts.kind && (LISTING_KINDS as readonly string[]).includes(opts.kind)) q = q.where("l.kind", "=", opts.kind as (typeof LISTING_KINDS)[number]);
   if (opts.q) {
     const like = `%${opts.q.trim().toLowerCase().replace(/[%_\\]/g, "")}%`;
@@ -100,13 +122,15 @@ export async function listListings(db: DB, opts: { kind?: string; q?: string; li
 }
 
 export async function getListing(db: DB, id: string, viewerId: string | null) {
+  await expireListings(db);
   const r = await baseQuery(db).where("l.id", "=", id).executeTakeFirst();
-  // tin đã ẩn chỉ người bán thấy
-  if (!r || (r.status === "hidden" && r.seller_id !== viewerId)) return null;
+  // tin đã ẩn / hết hạn chỉ người bán thấy
+  if (!r || ((r.status === "hidden" || r.status === "expired") && r.seller_id !== viewerId)) return null;
   return (await shapeAll(db, [r], viewerId))[0]!;
 }
 
 export async function myListings(db: DB, userId: string) {
+  await expireListings(db);
   return shapeAll(db, await baseQuery(db).where("l.seller_id", "=", userId).orderBy("l.created_at", "desc").execute(), userId);
 }
 
@@ -150,16 +174,25 @@ export async function createListing(db: DB, userId: string, input: CreateListing
       seller_id: userId, part_id: mp.part_id, machine_part_id: mp.id, kind: mp.kind, title: mp.label, part_was_in_use: inUse,
       price_vnd: input.priceVnd, condition: input.condition, warranty_months: input.warrantyMonths ?? null,
       province: input.province || null, description: input.description || null, contact: input.contact, sold_at: null,
+      expires_at: expiryFrom(input.durationDays),
     }).returning("id").executeTakeFirstOrThrow();
     return row.id;
   });
 }
 
 export async function updateListing(db: DB, userId: string, id: string, patch: z.infer<typeof updateListingSchema>) {
-  const l = await db.selectFrom("listings").select(["seller_id", "machine_part_id", "status", "part_was_in_use"]).where("id", "=", id).executeTakeFirst();
+  await expireListings(db);
+  const l = await db.selectFrom("listings").select(["seller_id", "machine_part_id", "status", "part_was_in_use", "expires_at"]).where("id", "=", id).executeTakeFirst();
   if (!l) throw new ListingError(404, "Không tìm thấy tin");
   if (l.seller_id !== userId) throw new ListingError(403, "Đây không phải tin của bạn");
-  if (patch.status && patch.status !== "sold" && l.status === "sold" && l.machine_part_id) {
+  const goingLive = patch.status === "active" || patch.status === "reserved";
+  const reopening = goingLive && (l.status === "expired" || l.status === "hidden" || l.status === "sold");
+  // mở lại tin đã quá hạn (hết hạn, hoặc hết hạn trong lúc ẩn / đã bán) phải chọn thời gian bán mới
+  if (reopening && new Date(l.expires_at).getTime() <= Date.now() && !patch.durationDays)
+    throw new ListingError(400, "Tin đã hết hạn. Chọn thời gian bán mới để đăng lại.");
+  if (patch.durationDays && !goingLive && l.status !== "active" && l.status !== "reserved")
+    throw new ListingError(400, "Chỉ gia hạn được tin đang bán");
+  if (reopening && l.machine_part_id) {
     const other = await db.selectFrom("listings").select("id").where("machine_part_id", "=", l.machine_part_id)
       .where("status", "in", ["active", "reserved"]).where("id", "!=", id).executeTakeFirst();
     if (other) throw new ListingError(409, "Linh kiện này đang có tin bán khác");
@@ -172,6 +205,7 @@ export async function updateListing(db: DB, userId: string, id: string, patch: z
       ...(patch.contact !== undefined && { contact: patch.contact }),
       ...(patch.warrantyMonths !== undefined && { warranty_months: patch.warrantyMonths }),
       ...(patch.status !== undefined && { status: patch.status, sold_at: patch.status === "sold" ? new Date() : null }),
+      ...(patch.durationDays !== undefined && { expires_at: expiryFrom(patch.durationDays) }),
       updated_at: new Date(),
     }).where("id", "=", id).execute();
     if (patch.status && l.machine_part_id) {

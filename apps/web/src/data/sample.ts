@@ -35,26 +35,28 @@ export interface SampleListing {
   part: string;
   priceVnd: number; condition: "like_new" | "used"; warrantyMonths: number;
   province: string; seller: string; daysAgo: number;
+  /** Thời gian bán (ngày) — để tin mẫu có đủ trạng thái mới đăng / đang bán / sắp hết hạn */
+  durationDays: number;
 }
 export const CONDITION_LABEL = { like_new: "Như mới", used: "Đã dùng" } as const;
 
 export const SAMPLE_LISTINGS: SampleListing[] = [
-  { id: "l1", kind: "gpu", part: "RTX 3060 12GB", priceVnd: 4_300_000, condition: "used", warrantyMonths: 0, province: "Hà Nội", seller: "son.gaming", daysAgo: 0 },
-  { id: "l2", kind: "gpu", part: "RX 6600", priceVnd: 2_900_000, condition: "used", warrantyMonths: 2, province: "TP.HCM", seller: "vy.creative", daysAgo: 1 },
-  { id: "l3", kind: "gpu", part: "RTX 3070", priceVnd: 5_900_000, condition: "used", warrantyMonths: 0, province: "Đà Nẵng", seller: "minhthu.rig", daysAgo: 1 },
-  { id: "l4", kind: "gpu", part: "RTX 4060", priceVnd: 5_600_000, condition: "like_new", warrantyMonths: 18, province: "Hải Phòng", seller: "hai.streamer", daysAgo: 2 },
-  { id: "l5", kind: "gpu", part: "RX 6700 XT", priceVnd: 4_800_000, condition: "used", warrantyMonths: 0, province: "Cần Thơ", seller: "phuc.lab", daysAgo: 3 },
-  { id: "l6", kind: "gpu", part: "RTX 3080 10GB", priceVnd: 8_200_000, condition: "used", warrantyMonths: 0, province: "Hà Nội", seller: "tuan_4k", daysAgo: 4 },
-  { id: "l7", kind: "gpu", part: "GTX 1660 Super", priceVnd: 1_900_000, condition: "used", warrantyMonths: 0, province: "Đồng Nai", seller: "trung.lienminh", daysAgo: 5 },
-  { id: "l8", kind: "gpu", part: "RTX 4070", priceVnd: 10_500_000, condition: "like_new", warrantyMonths: 20, province: "TP.HCM", seller: "khoa.render", daysAgo: 6 },
-  { id: "l9", kind: "cpu", part: "Core i5-12400F", priceVnd: 1_900_000, condition: "used", warrantyMonths: 0, province: "Nghệ An", seller: "thanh.bao", daysAgo: 0 },
-  { id: "l10", kind: "cpu", part: "Ryzen 5 5600", priceVnd: 1_700_000, condition: "used", warrantyMonths: 0, province: "Quảng Ninh", seller: "hoang.cs2", daysAgo: 2 },
-  { id: "l11", kind: "cpu", part: "Ryzen 7 5800X3D", priceVnd: 5_200_000, condition: "like_new", warrantyMonths: 6, province: "Hà Nội", seller: "longdz99", daysAgo: 3 },
-  { id: "l12", kind: "cpu", part: "Ryzen 5 7500F", priceVnd: 2_900_000, condition: "used", warrantyMonths: 12, province: "Bắc Ninh", seller: "datvaco", daysAgo: 4 },
-  { id: "l13", kind: "cpu", part: "Core i3-12100F", priceVnd: 1_200_000, condition: "used", warrantyMonths: 0, province: "Thái Nguyên", seller: "linh.sv", daysAgo: 7 },
-  { id: "l14", kind: "ram", part: "DDR4 16 GB (2×8 GB) 3200 MHz", priceVnd: 650_000, condition: "used", warrantyMonths: 0, province: "Ninh Bình", seller: "bac.van", daysAgo: 1 },
-  { id: "l15", kind: "ram", part: "DDR5 32 GB (2×16 GB) 6000 MHz", priceVnd: 2_300_000, condition: "like_new", warrantyMonths: 24, province: "Huế", seller: "quang.edit", daysAgo: 5 },
-  { id: "l16", kind: "storage", part: "SSD NVMe Gen3 512 GB", priceVnd: 550_000, condition: "used", warrantyMonths: 0, province: "TP.HCM", seller: "chu.tieu", daysAgo: 2 },
+  { id: "l1", kind: "gpu", part: "RTX 3060 12GB", priceVnd: 4_300_000, condition: "used", warrantyMonths: 0, province: "Hà Nội", seller: "son.gaming", daysAgo: 0, durationDays: 7 },
+  { id: "l2", kind: "gpu", part: "RX 6600", priceVnd: 2_900_000, condition: "used", warrantyMonths: 2, province: "TP.HCM", seller: "vy.creative", daysAgo: 1, durationDays: 2 },
+  { id: "l3", kind: "gpu", part: "RTX 3070", priceVnd: 5_900_000, condition: "used", warrantyMonths: 0, province: "Đà Nẵng", seller: "minhthu.rig", daysAgo: 1, durationDays: 7 },
+  { id: "l4", kind: "gpu", part: "RTX 4060", priceVnd: 5_600_000, condition: "like_new", warrantyMonths: 18, province: "Hải Phòng", seller: "hai.streamer", daysAgo: 2, durationDays: 3 },
+  { id: "l5", kind: "gpu", part: "RX 6700 XT", priceVnd: 4_800_000, condition: "used", warrantyMonths: 0, province: "Cần Thơ", seller: "phuc.lab", daysAgo: 3, durationDays: 5 },
+  { id: "l6", kind: "gpu", part: "RTX 3080 10GB", priceVnd: 8_200_000, condition: "used", warrantyMonths: 0, province: "Hà Nội", seller: "tuan_4k", daysAgo: 4, durationDays: 5 },
+  { id: "l7", kind: "gpu", part: "GTX 1660 Super", priceVnd: 1_900_000, condition: "used", warrantyMonths: 0, province: "Đồng Nai", seller: "trung.lienminh", daysAgo: 5, durationDays: 7 },
+  { id: "l8", kind: "gpu", part: "RTX 4070", priceVnd: 10_500_000, condition: "like_new", warrantyMonths: 20, province: "TP.HCM", seller: "khoa.render", daysAgo: 6, durationDays: 7 },
+  { id: "l9", kind: "cpu", part: "Core i5-12400F", priceVnd: 1_900_000, condition: "used", warrantyMonths: 0, province: "Nghệ An", seller: "thanh.bao", daysAgo: 0, durationDays: 3 },
+  { id: "l10", kind: "cpu", part: "Ryzen 5 5600", priceVnd: 1_700_000, condition: "used", warrantyMonths: 0, province: "Quảng Ninh", seller: "hoang.cs2", daysAgo: 2, durationDays: 3 },
+  { id: "l11", kind: "cpu", part: "Ryzen 7 5800X3D", priceVnd: 5_200_000, condition: "like_new", warrantyMonths: 6, province: "Hà Nội", seller: "longdz99", daysAgo: 3, durationDays: 14 },
+  { id: "l12", kind: "cpu", part: "Ryzen 5 7500F", priceVnd: 2_900_000, condition: "used", warrantyMonths: 12, province: "Bắc Ninh", seller: "datvaco", daysAgo: 4, durationDays: 5 },
+  { id: "l13", kind: "cpu", part: "Core i3-12100F", priceVnd: 1_200_000, condition: "used", warrantyMonths: 0, province: "Thái Nguyên", seller: "linh.sv", daysAgo: 7, durationDays: 7 },
+  { id: "l14", kind: "ram", part: "DDR4 16 GB (2×8 GB) 3200 MHz", priceVnd: 650_000, condition: "used", warrantyMonths: 0, province: "Ninh Bình", seller: "bac.van", daysAgo: 1, durationDays: 2 },
+  { id: "l15", kind: "ram", part: "DDR5 32 GB (2×16 GB) 6000 MHz", priceVnd: 2_300_000, condition: "like_new", warrantyMonths: 24, province: "Huế", seller: "quang.edit", daysAgo: 5, durationDays: 7 },
+  { id: "l16", kind: "storage", part: "SSD NVMe Gen3 512 GB", priceVnd: 550_000, condition: "used", warrantyMonths: 0, province: "TP.HCM", seller: "chu.tieu", daysAgo: 2, durationDays: 3 },
 ];
 
 /** Màu nhận diện nhạt cho mỗi người (không phải màu dữ liệu) */

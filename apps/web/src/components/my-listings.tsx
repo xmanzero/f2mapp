@@ -4,15 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { vnd } from "@/lib/format";
-import { daysLabel, daysSince, KIND_LABEL, STATUS_LABEL, type Listing, type ListingStatus, type SellablePart } from "@/lib/listings";
+import { daysLabel, daysSince, KIND_LABEL, remainingLabel, STATUS_LABEL, type Listing, type ListingStatus, type SellablePart } from "@/lib/listings";
 import { useSession } from "@/lib/session";
+import { useNow } from "@/lib/use-now";
 
-const STATUS_CLASS: Record<ListingStatus, string> = { active: "pos", reserved: "warn", sold: "", hidden: "" };
+const STATUS_CLASS: Record<ListingStatus, string> = { active: "pos", reserved: "warn", sold: "", hidden: "", expired: "neg" };
 
 export function MyListings() {
   const { user } = useSession();
   const [data, setData] = useState<{ items: Listing[]; parts: SellablePart[] } | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+  const now = useNow();
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -64,7 +66,12 @@ export function MyListings() {
                 <li key={l.id} className="row">
                   <div className="grow">
                     <Link href={`/cho/tin?id=${l.id}`} className="card-link">{l.name}</Link>
-                    <div className="line2">đăng {daysLabel(daysSince(l.createdAt))}{l.soldAt ? ` · bán ${daysLabel(daysSince(l.soldAt))}` : ""}</div>
+                    <div className="line2">
+                      đăng {daysLabel(daysSince(l.createdAt))}
+                      {l.soldAt ? ` · bán ${daysLabel(daysSince(l.soldAt))}` : ""}
+                      {now && (l.status === "active" || l.status === "reserved") ? ` · ${remainingLabel(new Date(l.expiresAt).getTime() - now)}` : ""}
+                      {l.status === "expired" ? " · mở tin để đăng lại" : ""}
+                    </div>
                   </div>
                   <span className={`pill ${STATUS_CLASS[l.status]}`}>{STATUS_LABEL[l.status]}</span>
                   <span className="num" style={{ fontWeight: 600, minWidth: 110, textAlign: "right" }}>{vnd(l.priceVnd)}</span>

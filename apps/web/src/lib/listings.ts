@@ -3,12 +3,12 @@ import { SAMPLE_LISTINGS } from "@/data/sample";
 
 export type ListingKind = "gpu" | "cpu" | "mainboard" | "ram" | "storage" | "psu";
 export type Condition = "new" | "like_new" | "used" | "for_parts";
-export type ListingStatus = "active" | "reserved" | "sold" | "hidden";
+export type ListingStatus = "active" | "reserved" | "sold" | "hidden" | "expired";
 
 export interface Listing {
   id: string; kind: ListingKind; name: string; partName: string | null; inCatalog: boolean;
   priceVnd: number; condition: Condition; warrantyMonths: number | null; province: string | null;
-  description: string | null; status: ListingStatus; createdAt: string; updatedAt: string; soldAt: string | null;
+  description: string | null; status: ListingStatus; createdAt: string; updatedAt: string; soldAt: string | null; expiresAt: string;
   seller: { id: string; handle: string; displayName: string };
   /** Linh kiện này trong máy người bán */
   source: { machineName: string; machine: string; tier: string | null; power: number | null; inUse: boolean; installedAt: string; verified: boolean; verifiedAt: string | null } | null;
@@ -22,7 +22,7 @@ export interface SellablePart {
 
 export const KIND_LABEL: Record<ListingKind, string> = { gpu: "Card đồ họa", cpu: "CPU", mainboard: "Mainboard", ram: "RAM", storage: "Ổ cứng", psu: "Nguồn" };
 export const CONDITION_LABEL: Record<Condition, string> = { new: "Mới", like_new: "Như mới", used: "Đã dùng", for_parts: "Hỏng, bán xác" };
-export const STATUS_LABEL: Record<ListingStatus, string> = { active: "Đang bán", reserved: "Đã có người hẹn", sold: "Đã bán", hidden: "Đã ẩn" };
+export const STATUS_LABEL: Record<ListingStatus, string> = { active: "Đang bán", reserved: "Đã có người hẹn", sold: "Đã bán", hidden: "Đã ẩn", expired: "Hết hạn" };
 
 /** Một dòng trong chợ: tin thật hoặc tin mẫu (chưa đủ tin thật) */
 export interface MarketRow {
@@ -30,6 +30,8 @@ export interface MarketRow {
   warrantyMonths: number | null; province: string | null; seller: string; daysAgo: number; sample: boolean; href: string | null;
   /** null = tin mẫu */
   verified: boolean | null; inUse: boolean;
+  /** Tin thật: thời điểm đăng / hết hạn (ISO). Tin mẫu: tính từ daysAgo + sampleDays khi biết giờ hiện tại */
+  createdAt: string | null; expiresAt: string | null; sampleDays: number;
 }
 
 export const daysSince = (iso: string) => Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
@@ -40,12 +42,14 @@ export function toRow(l: Listing): MarketRow {
     id: l.id, kind: l.kind, name: l.name, partName: l.partName, priceVnd: l.priceVnd, condition: l.condition,
     warrantyMonths: l.warrantyMonths, province: l.province, seller: l.seller.handle, daysAgo: daysSince(l.createdAt),
     sample: false, href: `/cho/tin?id=${l.id}`, verified: l.source?.verified ?? false, inUse: l.source?.inUse ?? false,
+    createdAt: l.createdAt, expiresAt: l.expiresAt, sampleDays: 0,
   };
 }
 export const SAMPLE_ROWS: MarketRow[] = SAMPLE_LISTINGS.map((s) => ({
   id: s.id, kind: s.kind, name: s.part, partName: s.kind === "gpu" || s.kind === "cpu" ? s.part : null,
   priceVnd: s.priceVnd, condition: s.condition, warrantyMonths: s.warrantyMonths, province: s.province,
   seller: s.seller, daysAgo: s.daysAgo, sample: true, href: null, verified: null, inUse: false,
+  createdAt: null, expiresAt: null, sampleDays: s.durationDays,
 }));
 /** Dưới số tin thật này thì ghép thêm tin mẫu (có nhãn) để chợ không trống */
 export const MIN_REAL_LISTINGS = 10;
@@ -85,3 +89,44 @@ export function medianPrice(rows: MarketRow[], partName: string, exceptId?: stri
   const mid = Math.floor(prices.length / 2);
   return { median: prices.length % 2 ? prices[mid]! : Math.round((prices[mid - 1]! + prices[mid]!) / 2), count: prices.length };
 }
+
+// ---------- thời hạn bán ----------
+export const DURATIONS = [1, 2, 3, 5, 7, 14, 30] as const;
+const HOUR = 3_600_000, DAY = 86_400_000;
+
+export type LifeState = "new" | "normal" | "ending" | "expired";
+export interface Life { state: LifeState; created: number; expires: number; remaining: number; fraction: number }
+
+/** Thời điểm đăng / hết hạn của một dòng (tin mẫu tính từ giờ hiện tại) */
+export function rowTimes(r: MarketRow, now: number) {
+  if (r.createdAt && r.expiresAt) return { created: new Date(r.createdAt).getTime(), expires: new Date(r.expiresAt).getTime() };
+  const created = now - r.daysAgo * DAY - 3 * HOUR;
+  return { created, expires: created + r.sampleDays * DAY };
+}
+
+/**
+ * Vòng đời tin: "mới đăng" trong 24 giờ đầu, "sắp hết hạn" khi còn dưới 24 giờ;
+ * tin ngắn ngày (1–2 ngày) dùng 1/4 thời gian thay cho 24 giờ.
+ */
+export function lifeOf(created: number, expires: number, now: number): Life {
+  const total = Math.max(expires - created, 1);
+  const window = Math.min(DAY, total / 4);
+  const remaining = expires - now;
+  const state: LifeState = remaining <= 0 ? "expired" : remaining <= window ? "ending" : now - created <= window ? "new" : "normal";
+  return { state, created, expires, remaining, fraction: Math.max(0, Math.min(1, remaining / total)) };
+}
+
+export const LIFE_LABEL: Record<LifeState, string> = { new: "Mới đăng", normal: "Đang bán", ending: "Sắp hết hạn", expired: "Hết hạn" };
+
+export function remainingLabel(ms: number) {
+  if (ms <= 0) return "đã hết hạn";
+  if (ms < HOUR) return `còn ${Math.max(1, Math.round(ms / 60_000))} phút`;
+  if (ms < DAY) return `còn ${Math.round(ms / HOUR)} giờ`;
+  const d = Math.floor(ms / DAY), h = Math.round((ms - d * DAY) / HOUR);
+  return h && d < 3 ? `còn ${d} ngày ${h} giờ` : `còn ${Math.round(ms / DAY)} ngày`;
+}
+/** "15/11 lúc 07:06" */
+export const endLabel = (t: number) => {
+  const d = new Date(t), p = (n: number) => String(n).padStart(2, "0");
+  return `${p(d.getDate())}/${p(d.getMonth() + 1)} lúc ${p(d.getHours())}:${p(d.getMinutes())}`;
+};

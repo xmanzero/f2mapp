@@ -6,11 +6,12 @@ import { useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import { n0, vnd } from "@/lib/format";
 import {
-  CONDITION_LABEL, KIND_LABEL, medianPrice, SAMPLE_ROWS, toRow, valueOf,
+  CONDITION_LABEL, DURATIONS, endLabel, KIND_LABEL, medianPrice, SAMPLE_ROWS, toRow, valueOf,
   type Condition, type Listing, type MarketRow, type SellablePart,
 } from "@/lib/listings";
 import { PROVINCES } from "@/lib/provinces";
 import { useSession } from "@/lib/session";
+import { useNow } from "@/lib/use-now";
 
 const CONTACT_KEY = "f2m.contact";
 
@@ -20,7 +21,8 @@ export function PostListing() {
   const { user } = useSession();
   const [parts, setParts] = useState<SellablePart[] | null>(null);
   const [market, setMarket] = useState<MarketRow[]>(SAMPLE_ROWS);
-  const [f, setF] = useState({ partId: "", price: "", condition: "used" as Condition, warranty: "0", province: "", contact: "", description: "" });
+  const [f, setF] = useState({ partId: "", price: "", condition: "used" as Condition, warranty: "0", province: "", contact: "", description: "", days: 7 });
+  const now = useNow(60_000);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +71,7 @@ export function PostListing() {
       const r = await api<{ item: Listing }>("/v1/listings", {
         body: {
           machinePartId: f.partId, priceVnd: price, condition: f.condition, warrantyMonths: Number(f.warranty) || 0,
-          province: f.province || null, description: f.description || null, contact: f.contact,
+          province: f.province || null, description: f.description || null, contact: f.contact, durationDays: f.days,
         },
       });
       try { localStorage.setItem(CONTACT_KEY, f.contact); } catch { /* bỏ qua */ }
@@ -148,6 +150,15 @@ export function PostListing() {
                 </div>
               </div>
               <div className="field">
+                <span className="label-like" id="days-label">Thời gian bán</span>
+                <div className="segmented wrap" role="group" aria-labelledby="days-label" aria-describedby="days-hint">
+                  {DURATIONS.map((d) => <button key={d} type="button" aria-pressed={f.days === d} onClick={() => set("days", d)}>{d} ngày</button>)}
+                </div>
+                <span id="days-hint" className="hint">
+                  {now ? `Tin tự hủy lúc ${endLabel(now + f.days * 86_400_000)}. ` : ""}Hết hạn mà chưa bán thì linh kiện về lại kho, bạn đăng lại được.
+                </span>
+              </div>
+              <div className="field">
                 <label htmlFor="contact">Zalo / số điện thoại liên hệ</label>
                 <input id="contact" className="input" type="tel" inputMode="tel" autoComplete="tel" required minLength={6} maxLength={60}
                   value={f.contact} onChange={(e) => set("contact", e.target.value)} aria-describedby="contact-hint" />
@@ -172,7 +183,7 @@ export function PostListing() {
               <span className={`pill ${f.condition === "like_new" || f.condition === "new" ? "pos" : f.condition === "for_parts" ? "warn" : ""}`}>{CONDITION_LABEL[f.condition]}</span>
             </div>
             <div className="faint" style={{ fontSize: 13, marginTop: 4 }}>
-              {[f.province || null, `@${user.handle}`, "hôm nay", Number(f.warranty) ? `bảo hành ${f.warranty} tháng` : null].filter(Boolean).join(" · ")}
+              {[f.province || null, `@${user.handle}`, "hôm nay", Number(f.warranty) ? `bảo hành ${f.warranty} tháng` : null, `bán trong ${f.days} ngày`].filter(Boolean).join(" · ")}
             </div>
             {part && <div className="faint" style={{ fontSize: 13, marginTop: 4 }}>Từ máy “{part.machineName}” · {part.inUse ? "đang dùng" : "đã thay ra"} · <span style={{ color: part.verified ? "var(--positive)" : undefined }}>{part.verified ? "xác thực đang dùng" : "chưa xác thực"}</span></div>}
             <div className="answer num" style={{ marginTop: 12 }}>{price ? vnd(price) : "— ₫"}</div>

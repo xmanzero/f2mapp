@@ -77,10 +77,11 @@ export interface Database {
     province: string | null;
     description: string | null;
     contact: string | null;
-    status: Generated<"active" | "reserved" | "sold" | "hidden">;
+    status: Generated<"active" | "reserved" | "sold" | "hidden" | "expired">;
     created_at: Generated<Date>;
     updated_at: Generated<Date>;
     sold_at: Date | null;
+    expires_at: Date;
     part_was_in_use: Generated<boolean>;
   };
   machine_scores: {

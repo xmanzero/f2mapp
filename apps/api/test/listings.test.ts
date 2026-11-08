@@ -110,3 +110,56 @@ describe("linh kiện đã thay ra", () => {
     expect((await req("PATCH", `/v1/listings/${id}`, { priceVnd: 2_000_000 }, b)).statusCode).toBe(403);
   });
 });
+
+describe("thời hạn bán", () => {
+  let tk: string;
+  let parts: Part[];
+  beforeAll(async () => {
+    tk = await register("hanban@test.vn");
+    await req("POST", "/v1/me/machines", { spec: spec() }, tk);
+    parts = await partsOf(tk);
+  });
+  const backdate = (id: string) => t.db.updateTable("listings").set({ expires_at: new Date(Date.now() - 1000) }).where("id", "=", id).execute();
+
+  it("chọn thời gian bán; ngày kết thúc đúng; thời gian lạ bị từ chối", async () => {
+    const r = await req("POST", "/v1/listings", { ...sale, machinePartId: parts[0]!.id, durationDays: 2 }, tk);
+    const left = new Date(r.json().item.expiresAt).getTime() - Date.now();
+    expect(left).toBeGreaterThan(2 * 86_400_000 - 60_000);
+    expect(left).toBeLessThanOrEqual(2 * 86_400_000);
+    const odd = await req("POST", "/v1/listings", { ...sale, machinePartId: parts[1]!.id, durationDays: 4 }, tk);
+    expect(odd.statusCode).toBe(400);
+    expect(odd.json().message).toContain("1, 2, 3");
+  });
+
+  it("hết hạn thì tự hủy: rời chợ, người khác không xem được, linh kiện đã thay ra về kho", async () => {
+    // linh kiện đã thay ra
+    await ageParts(t.db);
+    const mid = (await req("GET", "/v1/me/machines", undefined, tk)).json().machines[0].id;
+    await req("PUT", `/v1/me/machines/${mid}`, { spec: spec({ psu: { wattage: 850, model: "MSI A850G" } }) }, tk);
+    const oldPsu = (await partsOf(tk)).find((p) => p.kind === "psu" && !p.inUse)!;
+    const id = (await req("POST", "/v1/listings", { ...sale, machinePartId: oldPsu.id, durationDays: 1 }, tk)).json().item.id;
+    await backdate(id);
+    expect((await req("GET", "/v1/listings")).json().items.map((x: { id: string }) => x.id)).not.toContain(id);
+    expect((await req("GET", `/v1/listings/${id}`)).statusCode).toBe(404);
+    const mine = (await req("GET", "/v1/me/listings", undefined, tk)).json();
+    expect(mine.items.find((x: { id: string }) => x.id === id).status).toBe("expired");
+    const st = await t.db.selectFrom("machine_parts").select("status").where("id", "=", oldPsu.id).executeTakeFirstOrThrow();
+    expect(st.status).toBe("replaced");
+    // linh kiện về kho thì đăng tin mới được
+    expect(mine.parts.find((p: Part) => p.id === oldPsu.id).listingId).toBeNull();
+  });
+
+  it("đăng lại tin hết hạn phải chọn thời gian mới; gia hạn tin đang bán", async () => {
+    const id = (await req("POST", "/v1/listings", { ...sale, machinePartId: parts[2]!.id, durationDays: 1 }, tk)).json().item.id;
+    await backdate(id);
+    await req("GET", "/v1/listings"); // lượt đọc chợ tự quét tin hết hạn
+    const noDays = await req("PATCH", `/v1/listings/${id}`, { status: "active" }, tk);
+    expect(noDays.statusCode).toBe(400);
+    expect(noDays.json().message).toContain("thời gian bán mới");
+    const renewed = await req("PATCH", `/v1/listings/${id}`, { status: "active", durationDays: 3 }, tk);
+    expect(renewed.json().item.status).toBe("active");
+    expect(new Date(renewed.json().item.expiresAt).getTime()).toBeGreaterThan(Date.now() + 2.9 * 86_400_000);
+    const extended = await req("PATCH", `/v1/listings/${id}`, { durationDays: 14 }, tk);
+    expect(new Date(extended.json().item.expiresAt).getTime()).toBeGreaterThan(Date.now() + 13.9 * 86_400_000);
+  });
+});
