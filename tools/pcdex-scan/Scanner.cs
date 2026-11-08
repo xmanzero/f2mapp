@@ -5,7 +5,7 @@ using System.Management;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
-namespace F2mScan
+namespace PcdexScan
 {
     /// <summary>
     /// Đọc cấu hình máy. Chỗ nào không đọc được thì bỏ trống (null), không bao giờ làm phần mềm dừng.

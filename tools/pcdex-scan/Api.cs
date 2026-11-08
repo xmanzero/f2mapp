@@ -6,11 +6,11 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace F2mScan
+namespace PcdexScan
 {
     public class ApiException : Exception { public ApiException(string m) : base(m) { } }
 
-    /// <summary>Gọi máy chủ f2m qua địa chỉ web (web chuyển /api sang API)</summary>
+    /// <summary>Gọi máy chủ pcdex qua địa chỉ web (web chuyển /api sang API)</summary>
     public class Api
     {
         readonly HttpClient http;
@@ -21,7 +21,7 @@ namespace F2mScan
             Server = server.TrimEnd('/');
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("f2m-scan/" + Program.Version);
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("pcdex-scan/" + Program.Version);
         }
 
         public async Task<CreateScanReply> SendAsync(ScanReport report)
@@ -29,7 +29,7 @@ namespace F2mScan
             var body = new StringContent(ToJson(report), Encoding.UTF8, "application/json");
             HttpResponseMessage res;
             try { res = await http.PostAsync(Server + "/api/v1/scans", body); }
-            catch (Exception) { throw new ApiException("Không kết nối được máy chủ f2m. Kiểm tra mạng rồi thử lại."); }
+            catch (Exception) { throw new ApiException("Không kết nối được máy chủ pcdex. Kiểm tra mạng rồi thử lại."); }
             var text = await res.Content.ReadAsStringAsync();
             var reply = FromJson<CreateScanReply>(text);
             if (!res.IsSuccessStatusCode || reply?.Code == null)

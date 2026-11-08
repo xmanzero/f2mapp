@@ -21,20 +21,20 @@ SKIP_FILES = {".env"}
 sys.stdout.reconfigure(encoding="utf-8")
 
 
-SCANNER_OUT = ROOT / "apps/web/public/tai/f2m-scan.exe"
+SCANNER_OUT = ROOT / "apps/web/public/tai/pcdex-scan.exe"
 
 
 def build_scanner():
-    """Build phần mềm quét Windows (tools/f2m-scan) rồi đặt vào web: /tai/f2m-scan.exe. Không có .NET SDK thì giữ bản cũ."""
+    """Build phần mềm quét Windows (tools/pcdex-scan) rồi đặt vào web: /tai/pcdex-scan.exe. Không có .NET SDK thì giữ bản cũ."""
     import shutil, subprocess, tempfile
     if not shutil.which("dotnet"):
-        print("Không có .NET SDK: giữ nguyên f2m-scan.exe cũ" if SCANNER_OUT.exists() else "Không có .NET SDK: web chưa có f2m-scan.exe")
+        print("Không có .NET SDK: giữ nguyên pcdex-scan.exe cũ" if SCANNER_OUT.exists() else "Không có .NET SDK: web chưa có pcdex-scan.exe")
         return
     with tempfile.TemporaryDirectory() as tmp:
-        subprocess.run(["dotnet", "build", str(ROOT / "tools/f2m-scan"), "-c", "Release", "-o", tmp, "-nologo", "-v", "q"], check=True)
+        subprocess.run(["dotnet", "build", str(ROOT / "tools/pcdex-scan"), "-c", "Release", "-o", tmp, "-nologo", "-v", "q"], check=True)
         SCANNER_OUT.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(Path(tmp) / "f2m-scan.exe", SCANNER_OUT)
-    print(f"f2m-scan.exe: {SCANNER_OUT.stat().st_size / 1024:.0f} KB")
+        shutil.copyfile(Path(tmp) / "pcdex-scan.exe", SCANNER_OUT)
+    print(f"pcdex-scan.exe: {SCANNER_OUT.stat().st_size / 1024:.0f} KB")
 
 
 def make_tarball() -> bytes:

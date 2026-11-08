@@ -20,7 +20,7 @@ export const scanRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
   const webBase = (req: FastifyRequest) => (deps.webUrl
     ?? `${req.headers["x-forwarded-proto"] ?? req.protocol}://${req.headers["x-forwarded-host"] ?? req.headers.host}`).replace(/\/+$/, "");
 
-  /** Phần mềm f2m-scan gửi kết quả quét (không cần đăng nhập) → mã ngắn + QR */
+  /** Phần mềm pcdex-scan gửi kết quả quét (không cần đăng nhập) → mã ngắn + QR */
   app.post("/scans", { bodyLimit: 64 * 1024, config: { rateLimit: { max: 30, timeWindow: "1 hour" } } }, async (req, reply) => {
     const body = scanReportSchema.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "bad_request", message: "Dữ liệu quét không hợp lệ", issues: body.error.issues.slice(0, 3) });

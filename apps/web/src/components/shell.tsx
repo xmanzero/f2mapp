@@ -53,7 +53,7 @@ function Frame({ children }: { children: ReactNode }) {
     <div className="app">
       <aside className="sidebar" aria-label="Điều hướng">
         <Link href="/" className="brand">
-          <Mark /> f2m <small>mạng xã hội PC</small>
+          <Mark /> pcdex <small>mạng xã hội PC</small>
         </Link>
         <nav className="nav">
           {NAV.map(({ href, label, icon: Icon }) => (
@@ -69,8 +69,8 @@ function Frame({ children }: { children: ReactNode }) {
 
       <div className="main">
         <header className="topbar">
-          <Link href="/" className="brand-mobile" aria-label="f2m, trang chủ">
-            <Mark size={22} /> f2m
+          <Link href="/" className="brand-mobile" aria-label="pcdex, trang chủ">
+            <Mark size={22} /> pcdex
           </Link>
           <form
             className="search"

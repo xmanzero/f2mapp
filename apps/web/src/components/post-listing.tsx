@@ -162,7 +162,7 @@ export function PostListing() {
                 ))}
               </fieldset>
               {show("part") && <p id="part-err" className="field-error" role="alert">{show("part")}</p>}
-              {part?.inUse && <p className="notice" style={{ margin: 0 }}>Linh kiện này đang lắp trong máy. Bán xong, f2m sẽ nhắc bạn khai linh kiện thay thế.</p>}
+              {part?.inUse && <p className="notice" style={{ margin: 0 }}>Linh kiện này đang lắp trong máy. Bán xong, pcdex sẽ nhắc bạn khai linh kiện thay thế.</p>}
 
               <div className="row2">
                 <div className="field">
@@ -254,7 +254,7 @@ export function PostListing() {
             </li>
             <li className="row">
               <div className="grow"><div style={{ fontWeight: 500 }}>Muốn có nhãn “Xác thực đang dùng”?</div>
-                <div className="line2">Chạy phần mềm <a href="/tai/f2m-scan.exe" download className="card-link">f2m-scan</a> trên máy: linh kiện nào phần mềm quét thấy đang dùng sẽ có nhãn này.</div></div>
+                <div className="line2">Chạy phần mềm <a href="/tai/pcdex-scan.exe" download className="card-link">pcdex-scan</a> trên máy: linh kiện nào phần mềm quét thấy đang dùng sẽ có nhãn này.</div></div>
             </li>
           </ul>
         </section>

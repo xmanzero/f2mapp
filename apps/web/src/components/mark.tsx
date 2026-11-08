@@ -1,4 +1,4 @@
-/** Dấu hiệu f2m: ba cột điểm tăng dần — thang hạng của máy. Màu theo chế độ Ngày/Đêm. */
+/** Dấu hiệu pcdex: ba cột điểm tăng dần — thang hạng của máy. Màu theo chế độ Ngày/Đêm. */
 export function Mark({ size = 24 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">

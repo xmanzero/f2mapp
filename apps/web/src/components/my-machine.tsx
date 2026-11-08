@@ -103,7 +103,7 @@ export function MyMachine() {
             </header>
             {!active.lastScanAt && (
               <p className="scan-cta">
-                Máy chạy Windows? <a href="/tai/f2m-scan.exe" download className="card-link">Tải f2m-scan</a> để tự đọc cấu hình và có nhãn “Xác thực đang dùng”. <Link href="/quet" className="card-link">Đã có mã quét</Link>
+                Máy chạy Windows? <a href="/tai/pcdex-scan.exe" download className="card-link">Tải pcdex-scan</a> để tự đọc cấu hình và có nhãn “Xác thực đang dùng”. <Link href="/quet" className="card-link">Đã có mã quét</Link>
               </p>
             )}
             <ConfigEditor spec={shownSpec} parts={active.parts} locked={!!preview} canSell={!!user && !!active.id} onChange={save} />
@@ -235,7 +235,7 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
           <p className="muted" style={{ marginTop: 10 }}>Gấp <span className="num">{ratio(s.power / 10000)}</span> lần máy mốc (i5-12400F + RTX 3060)</p>
           {isAccount && (
             <p style={{ marginTop: 8 }}>
-              <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm f2m-scan đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa quét bằng phần mềm f2m-scan"}>
+              <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm pcdex-scan đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa quét bằng phần mềm pcdex-scan"}>
                 {verified ? "Xác thực đang dùng" : "Chưa xác thực"}
               </span>
             </p>

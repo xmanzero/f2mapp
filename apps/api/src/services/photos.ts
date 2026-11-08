@@ -1,7 +1,7 @@
 /**
  * Ảnh tin rao: tối đa 5 ảnh / tin, mỗi ảnh gửi lên tối đa 3 MB (trình duyệt đã thu nhỏ trước khi gửi).
  * Nhận diện định dạng bằng chữ ký tệp (không tin Content-Type). Máy chủ xoay đúng chiều, thu về cạnh dài 1600 px,
- * đóng dấu "F2m" góc dưới phải rồi lưu WebP (nhẹ hơn JPEG ~30%); mọi metadata (EXIF, vị trí GPS…) bị bỏ.
+ * đóng dấu "pcdex" góc dưới phải rồi lưu WebP (nhẹ hơn JPEG ~30%); mọi metadata (EXIF, vị trí GPS…) bị bỏ.
  */
 import sharp from "sharp";
 import type { DB } from "../db.js";
@@ -18,14 +18,14 @@ export function sniff(b: Uint8Array): Mime | null {
   return null;
 }
 
-export const WATERMARK = "F2m";
+export const WATERMARK = "pcdex";
 const MAX_SIDE = 1600;
 
-/** Dấu "F2m": chữ trắng trên viên nền tối mờ (đọc được trên mọi nền), góc dưới phải; cao ~4% cạnh ngắn của ảnh */
+/** Dấu "pcdex": chữ trắng trên viên nền tối mờ (đọc được trên mọi nền), góc dưới phải; cao ~4% cạnh ngắn của ảnh */
 function watermarkSvg(w: number, h: number) {
   const size = Math.max(16, Math.round(Math.min(w, h) * 0.04));
   const padX = Math.round(size * 0.5), padY = Math.round(size * 0.28), margin = Math.round(size * 0.6);
-  const pillW = Math.round(size * 2.05) + padX * 2, pillH = size + padY * 2;
+  const pillW = Math.round(size * 0.69 * WATERMARK.length) + padX * 2, pillH = size + padY * 2;
   const boxW = pillW + margin, boxH = pillH + margin;
   return {
     svg: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${boxW}" height="${boxH}">

@@ -1,4 +1,4 @@
-# Thiết kế giao diện f2m
+# Thiết kế giao diện pcdex
 
 Áp dụng cho website và app (Expo). Làm theo skill `ui-ux-pro-max` và `taste-skill` (phần màn hình ứng dụng).
 

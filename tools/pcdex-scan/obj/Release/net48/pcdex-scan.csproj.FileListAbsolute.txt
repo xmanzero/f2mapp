@@ -1,0 +1,17 @@
+E:\workspace\f2mapp\tools\pcdex-scan\bin\Release\net48\pcdex-scan.exe.config
+E:\workspace\f2mapp\tools\pcdex-scan\bin\Release\net48\pcdex-scan.exe
+E:\workspace\f2mapp\tools\pcdex-scan\bin\Release\net48\pcdex-scan.pdb
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.csproj.AssemblyReference.cache
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.GeneratedMSBuildEditorConfig.editorconfig
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.AssemblyInfoInputs.cache
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.AssemblyInfo.cs
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.csproj.CoreCompileInputs.cache
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.sourcelink.json
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.exe
+E:\workspace\f2mapp\tools\pcdex-scan\obj\Release\net48\pcdex-scan.pdb
+C:\Users\smile\AppData\Local\Temp\tmpw6wl2ll6\pcdex-scan.exe.config
+C:\Users\smile\AppData\Local\Temp\tmpw6wl2ll6\pcdex-scan.exe
+C:\Users\smile\AppData\Local\Temp\tmpw6wl2ll6\pcdex-scan.pdb
+C:\Users\smile\AppData\Local\Temp\tmp7uxkkc2g\pcdex-scan.exe.config
+C:\Users\smile\AppData\Local\Temp\tmp7uxkkc2g\pcdex-scan.exe
+C:\Users\smile\AppData\Local\Temp\tmp7uxkkc2g\pcdex-scan.pdb

@@ -15,7 +15,7 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title">f2m</ThemedText>
+        <ThemedText type="title">pcdex</ThemedText>
         <ThemedText type="small">
           Thang điểm v{SCALE_VERSION} · máy mốc {ANCHOR_CPU} + {ANCHOR_GPU}
         </ThemedText>

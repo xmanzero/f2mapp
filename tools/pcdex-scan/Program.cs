@@ -4,24 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace F2mScan
+namespace PcdexScan
 {
     static class Program
     {
         public const string Version = "0.1.0";
-        /// <summary>Địa chỉ web f2m mặc định. Đổi bằng tham số --server hoặc biến môi trường F2M_SERVER.</summary>
+        /// <summary>Địa chỉ web pcdex mặc định. Đổi bằng tham số --server hoặc biến môi trường PCDEX_SERVER.</summary>
         const string DefaultServer = "http://192.168.110.136:8141";
 
         [STAThread]
         static int Main(string[] args)
         {
-            string server = Arg(args, "--server") ?? Environment.GetEnvironmentVariable("F2M_SERVER") ?? DefaultServer;
+            string server = Arg(args, "--server") ?? Environment.GetEnvironmentVariable("PCDEX_SERVER") ?? DefaultServer;
 
             // --json: in kết quả quét ra màn hình / tệp, không mở cửa sổ (để kiểm tra, gửi hỗ trợ)
             var json = Arg(args, "--json");
             if (json != null || args.Contains("--json"))
             {
-                var text = Api.ToJson(Scanner.Scan("f2m-scan/" + Version));
+                var text = Api.ToJson(Scanner.Scan("pcdex-scan/" + Version));
                 if (!string.IsNullOrEmpty(json)) File.WriteAllText(json, text, new UTF8Encoding(false));
                 else Console.WriteLine(text);
                 return 0;

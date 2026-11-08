@@ -5,12 +5,12 @@
     <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>f2m-scan</AssemblyName>
-    <RootNamespace>F2mScan</RootNamespace>
+    <AssemblyName>pcdex-scan</AssemblyName>
+    <RootNamespace>PcdexScan</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Version>0.1.0</Version>
-    <Product>f2m-scan</Product>
-    <Description>Quét cấu hình máy tính cho f2m</Description>
+    <Product>pcdex-scan</Product>
+    <Description>Quét cấu hình máy tính cho pcdex</Description>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Deterministic>true</Deterministic>
   </PropertyGroup>

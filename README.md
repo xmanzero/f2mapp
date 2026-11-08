@@ -1,4 +1,4 @@
-# f2m
+# pcdex (repo f2mapp)
 
 Mạng xã hội máy tính: khai báo cấu hình PC, xem điểm sức mạnh và hạng, nhận gợi ý nâng cấp, rao bán / tìm mua linh kiện. Chạy trên website, Android và iOS.
 
@@ -47,10 +47,10 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 | `GET/PUT /v1/me/machine` | API cũ: máy chính dạng tóm tắt |
 | `GET /v1/leaderboard` | Bảng xếp hạng máy chính của mọi người |
 | `GET /v1/leaderboard/:userId` | Chi tiết máy chính của một người (cấu hình đầy đủ, linh kiện đã xác thực); ai cũng xem được |
-| `POST /v1/listings/:id/photos` | Thêm ảnh cho tin (thân yêu cầu là tệp JPEG/PNG/WebP, tối đa 3 MB, 5 ảnh / tin; máy chủ đổi sang WebP + dấu "F2m", bỏ metadata) |
+| `POST /v1/listings/:id/photos` | Thêm ảnh cho tin (thân yêu cầu là tệp JPEG/PNG/WebP, tối đa 3 MB, 5 ảnh / tin; máy chủ đổi sang WebP + dấu "pcdex", bỏ metadata) |
 | `DELETE /v1/listings/:id/photos/:photoId`, `PUT /v1/listings/:id/photos` | Xóa ảnh; sắp lại thứ tự `{ order: [id…] }` (ảnh đầu là ảnh bìa) |
 | `GET /v1/photos/:photoId` | Tệp ảnh (lưu đệm lâu) |
-| `POST /v1/scans` | Phần mềm f2m-scan gửi kết quả quét (không cần đăng nhập, 30 lần / giờ / IP) → mã 8 ký tự, link `/quet?ma=…`, ma trận QR, cấu hình đã nhận diện. Mã sống 30 phút, dùng một lần |
+| `POST /v1/scans` | Phần mềm pcdex-scan gửi kết quả quét (không cần đăng nhập, 30 lần / giờ / IP) → mã 8 ký tự, link `/quet?ma=…`, ma trận QR, cấu hình đã nhận diện. Mã sống 30 phút, dùng một lần |
 | `GET /v1/scans/:code` | Xem kết quả quét theo mã (gõ tay có gạch, chữ thường vẫn được) |
 | `POST /v1/scans/:code/claim` | Gắn vào tài khoản `{ machineId \| null, cpu?, gpu?, psuW? }`: cập nhật máy đang có hoặc tạo máy mới (tối đa 2). Linh kiện đọc được → "Xác thực đang dùng" |
 | `GET /v1/listings`, `/v1/listings/:id` | Tin rao đang bán (lọc `kind`, tìm `q`); số liên hệ chỉ trả cho người đã đăng nhập |

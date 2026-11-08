@@ -160,7 +160,7 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
           {config?.google.clientId ? (
             <div ref={googleBox} className="google-box" />
           ) : (
-            <p className="muted">Đăng nhập bằng Google sẽ bật khi f2m có tên miền riêng.</p>
+            <p className="muted">Đăng nhập bằng Google sẽ bật khi pcdex có tên miền riêng.</p>
           )}
         </section>
 
@@ -181,7 +181,7 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
             <li className="row">
               <div className="grow">
                 <div style={{ fontWeight: 500 }}>Cấu hình theo bạn sang máy khác</div>
-                <div className="line2">Mở f2m trên điện thoại hay máy tính đều thấy đúng máy của mình. Máy đang khai báo trên trình duyệt này được lưu vào tài khoản.</div>
+                <div className="line2">Mở pcdex trên điện thoại hay máy tính đều thấy đúng máy của mình. Máy đang khai báo trên trình duyệt này được lưu vào tài khoản.</div>
               </div>
             </li>
             <li className="row">
@@ -199,7 +199,7 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
             <li className="row">
               <div className="grow">
                 <div style={{ fontWeight: 500 }}>Mật khẩu được băm một chiều</div>
-                <div className="line2">f2m không lưu mật khẩu gốc. Nhập sai 5 lần, tài khoản tạm khóa 15 phút để chặn dò mật khẩu.</div>
+                <div className="line2">pcdex không lưu mật khẩu gốc. Nhập sai 5 lần, tài khoản tạm khóa 15 phút để chặn dò mật khẩu.</div>
               </div>
             </li>
           </ul>

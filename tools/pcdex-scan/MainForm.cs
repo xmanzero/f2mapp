@@ -6,12 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace F2mScan
+namespace PcdexScan
 {
     /// <summary>
     /// Cửa sổ chính: quét xong hiện cấu hình ngay (không cần tài khoản).
-    /// "Gắn vào tài khoản" gửi dữ liệu phần cứng lên f2m, nhận mã + QR; người dùng mở mã trên web hoặc điện thoại để chọn máy.
-    /// Theo bản sắc f2m (docs/design.md): nền đen phẳng, chữ trắng, lime cho dữ liệu và nút chính; không bóng, không gradient.
+    /// "Gắn vào tài khoản" gửi dữ liệu phần cứng lên pcdex, nhận mã + QR; người dùng mở mã trên web hoặc điện thoại để chọn máy.
+    /// Theo bản sắc pcdex (docs/design.md): nền đen phẳng, chữ trắng, lime cho dữ liệu và nút chính; không bóng, không gradient.
     /// </summary>
     public class MainForm : Form
     {
@@ -40,7 +40,7 @@ namespace F2mScan
         public MainForm(Api api)
         {
             this.api = api;
-            Text = "f2m — Quét cấu hình máy";
+            Text = "pcdex — Quét cấu hình máy";
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScaleDimensions = new SizeF(96F, 96F);
             ClientSize = new Size(940, 660);
@@ -52,17 +52,18 @@ namespace F2mScan
 
             // ---------- đầu trang ----------
             var head = new Panel { Dock = DockStyle.Top, Height = 64, BackColor = Ground, Padding = new Padding(24, 16, 24, 0) };
-            var brand = new Label { Text = "f2m", Font = new Font(FontName, 18F, FontStyle.Bold), ForeColor = Ink, AutoSize = true, Location = new Point(24, 14) };
+            var brand = new Label { Text = "pcdex", Font = new Font(FontName, 18F, FontStyle.Bold), ForeColor = Ink, AutoSize = true, Location = new Point(24, 14) };
             var sub = new Label { Text = "Quét cấu hình máy", Font = new Font(FontName, 11F), ForeColor = Muted, AutoSize = true, Location = new Point(80, 23) };
             var ver = new Label { Text = "phiên bản " + Program.Version, ForeColor = Faint, AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             head.Controls.AddRange(new Control[] { brand, sub, ver });
             head.Resize += (s, e) => ver.Location = new Point(head.ClientSize.Width - ver.Width - 24, 26);
+            head.Layout += (s, e) => sub.Location = new Point(brand.Right + 8, sub.Top);
 
             // ---------- cột phải: gắn vào tài khoản ----------
             side.Dock = DockStyle.Right; side.Width = 340; side.BackColor = Surface; side.Padding = new Padding(24);
             sideTitle.Text = "Gắn vào tài khoản"; sideTitle.Font = new Font(FontName, 13F, FontStyle.Bold); sideTitle.AutoSize = true;
             sideText.ForeColor = Muted; sideText.AutoSize = true; sideText.MaximumSize = new Size(280, 0);
-            sideText.Text = "Gắn kết quả quét vào tài khoản f2m để cập nhật máy đã khai hoặc tạo máy mới. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng” trên bảng xếp hạng và chợ.";
+            sideText.Text = "Gắn kết quả quét vào tài khoản pcdex để cập nhật máy đã khai hoặc tạo máy mới. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng” trên bảng xếp hạng và chợ.";
             qr.Size = new Size(200, 200); qr.Visible = false;
             codeLabel.Font = new Font(FontName, 22F, FontStyle.Bold); codeLabel.ForeColor = Lime; codeLabel.AutoSize = true; codeLabel.Visible = false;
             expiryLabel.ForeColor = Faint; expiryLabel.AutoSize = true; expiryLabel.MaximumSize = new Size(280, 0); expiryLabel.Visible = false;
@@ -82,7 +83,7 @@ namespace F2mScan
             specTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
             var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 124, FlowDirection = FlowDirection.LeftToRight, BackColor = Ground, Padding = new Padding(0, 12, 0, 0) };
-            sendBtn = MakeButton("Gắn vào tài khoản f2m", true); sendBtn.Width = 220; sendBtn.Enabled = false;
+            sendBtn = MakeButton("Gắn vào tài khoản pcdex", true); sendBtn.Width = 220; sendBtn.Enabled = false;
             rescanBtn = MakeButton("Quét lại", false); rescanBtn.Width = 110; rescanBtn.Enabled = false;
             sendBtn.Click += async (s, e) => await Send();
             rescanBtn.Click += async (s, e) => await RunScan();
@@ -116,7 +117,7 @@ namespace F2mScan
             ResetSide();
             status.ForeColor = Muted;
             status.Text = "Đang đọc cấu hình…";
-            report = await Task.Run(() => Scanner.Scan("f2m-scan/" + Program.Version));
+            report = await Task.Run(() => Scanner.Scan("pcdex-scan/" + Program.Version));
             ShowSpec(report);
             status.Text = $"Đọc lúc {DateTime.Now:HH:mm}. Nguồn (PSU) không đọc được bằng phần mềm — khai trên web.";
             sendBtn.Enabled = rescanBtn.Enabled = true;
@@ -215,7 +216,7 @@ namespace F2mScan
             catch (ApiException ex)
             {
                 MessageBox.Show(this, ex.Message, "Chưa gửi được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                sendBtn.Text = "Gắn vào tài khoản f2m";
+                sendBtn.Text = "Gắn vào tài khoản pcdex";
                 sendBtn.Enabled = true;
             }
         }
@@ -249,9 +250,9 @@ namespace F2mScan
             poll.Stop();
             sent = null;
             sideTitle.Text = "Gắn vào tài khoản";
-            sideText.Text = "Gắn kết quả quét vào tài khoản f2m để cập nhật máy đã khai hoặc tạo máy mới. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng” trên bảng xếp hạng và chợ.";
+            sideText.Text = "Gắn kết quả quét vào tài khoản pcdex để cập nhật máy đã khai hoặc tạo máy mới. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng” trên bảng xếp hạng và chợ.";
             qr.Visible = codeLabel.Visible = expiryLabel.Visible = openBtn.Visible = claimedLabel.Visible = false;
-            sendBtn.Text = "Gắn vào tài khoản f2m";
+            sendBtn.Text = "Gắn vào tài khoản pcdex";
         }
 
         // ---------- tiện ích giao diện ----------
@@ -274,7 +275,7 @@ namespace F2mScan
         void Open(string url)
         {
             try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
-            catch { Clipboard.SetText(url); MessageBox.Show(this, "Không mở được trình duyệt. Đã chép đường dẫn, dán vào trình duyệt:\n" + url, "f2m"); }
+            catch { Clipboard.SetText(url); MessageBox.Show(this, "Không mở được trình duyệt. Đã chép đường dẫn, dán vào trình duyệt:\n" + url, "pcdex"); }
         }
     }
 

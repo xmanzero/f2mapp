@@ -116,14 +116,14 @@ export function ClaimScan() {
     return (
       <>
         <div className="title-row"><div><h1>Gắn kết quả quét máy</h1>
-          <p className="sub">Chạy phần mềm f2m-scan trên máy tính cần quét, bấm “Gắn vào tài khoản”, rồi quét mã QR bằng điện thoại hoặc nhập mã ở đây.</p></div></div>
+          <p className="sub">Chạy phần mềm pcdex-scan trên máy tính cần quét, bấm “Gắn vào tài khoản”, rồi quét mã QR bằng điện thoại hoặc nhập mã ở đây.</p></div></div>
         <div className="scan-start">
         <section className="panel scan-entry scan-get">
           <div>
-            <h2>Phần mềm f2m-scan</h2>
+            <h2>Phần mềm pcdex-scan</h2>
             <p className="muted">Windows 10 / 11, không cần cài đặt, không cần quyền quản trị. Đọc CPU, card, mainboard, RAM, ổ cứng, màn hình trong vài giây. Chỉ gửi thông tin phần cứng khi bạn bấm gắn vào tài khoản.</p>
           </div>
-          <a href="/tai/f2m-scan.exe" download className="btn primary">Tải f2m-scan.exe</a>
+          <a href="/tai/pcdex-scan.exe" download className="btn primary">Tải pcdex-scan.exe</a>
         </section>
         <section className="panel scan-entry">
           <form className="form" onSubmit={(e) => { e.preventDefault(); if (typed.trim()) router.push(`/quet?ma=${encodeURIComponent(typed.trim().toUpperCase())}`); }}>

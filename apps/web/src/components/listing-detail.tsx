@@ -85,7 +85,7 @@ export function ListingDetail() {
                 </div>
               </div>
               <span className={`pill ${item.source.verified ? "pos" : ""}`}
-                title={item.source.verified ? "Phần mềm f2m-scan đã quét thấy linh kiện này đang dùng trong máy người bán" : "Người bán tự khai, chưa quét bằng phần mềm f2m-scan để xác nhận"}>
+                title={item.source.verified ? "Phần mềm pcdex-scan đã quét thấy linh kiện này đang dùng trong máy người bán" : "Người bán tự khai, chưa quét bằng phần mềm pcdex-scan để xác nhận"}>
                 {item.source.verified ? "Xác thực đang dùng" : "Chưa xác thực"}
               </span>
             </div>
@@ -133,7 +133,7 @@ export function ListingDetail() {
               </li>
             </ul>
           ) : (
-            <p className="empty">Linh kiện này chưa có trong danh mục điểm của f2m nên chưa so được điểm và giá.</p>
+            <p className="empty">Linh kiện này chưa có trong danh mục điểm của pcdex nên chưa so được điểm và giá.</p>
           )}
           {isSample && item.inCatalog && <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>Đang so với máy mẫu. <Link href="/" className="card-link">Khai báo máy của bạn</Link> để thấy đúng mức tăng.</p>}
         </section>

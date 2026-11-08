@@ -186,13 +186,13 @@ Script lấy trung vị `samples_per_minute` của 3 cảnh (monster, junkshop, 
 
 ## 8. Tool thu thập cấu hình trên Windows
 
-**Đã có (08/11/2026): `tools/f2m-scan`**, C# .NET Framework 4.8 (có sẵn trong Windows 10/11 → một file exe ~50 KB, không cài, không cần quyền quản trị). Đọc thẳng WMI / registry / CfgMgr32, không dùng thư viện ngoài.
+**Đã có (08/11/2026): `tools/pcdex-scan`**, C# .NET Framework 4.8 (có sẵn trong Windows 10/11 → một file exe ~50 KB, không cài, không cần quyền quản trị). Đọc thẳng WMI / registry / CfgMgr32, không dùng thư viện ngoài.
 
 Luồng: quét → hiện cấu hình ngay (không cần tài khoản) → "Gắn vào tài khoản" gửi dữ liệu thô lên `POST /v1/scans` → nhận mã 8 ký tự + QR trỏ tới `WEB_URL/quet?ma=…` (sống 30 phút, dùng một lần) → người dùng mở trên web hoặc quét bằng điện thoại (đã đăng nhập), chọn **cập nhật máy đang có** (xem từng thay đổi) hoặc **tạo máy mới** (đủ 2 máy thì phải xóa bớt) → phần mềm tự thấy "Đã gắn".
 
 Phần mềm chỉ gửi dữ liệu thô; **luật nhận diện nằm ở `packages/shared/src/scan.ts`** (sửa một chỗ, không phải phát hành lại phần mềm): khớp tên CPU / card với danh mục (KF ≈ K), chọn bản VRAM, chipset → thế hệ PCIe khe card, gom thanh RAM thành bộ, bỏ ổ USB. CPU / card chưa có trong danh mục: người dùng chọn mẫu gần nhất (gợi ý sẵn), mẫu tự chọn **không** được xác thực. Khi cập nhật máy, linh kiện đã khai sơ sài (thiếu tốc độ RAM, model ổ…) được khớp lỏng (`sameScannedPart`) để giữ nguyên linh kiện và tin đang bán, chỉ bổ sung chi tiết.
 
-Chạy `f2m-scan.exe --json <tệp>` để xuất dữ liệu thô (kiểm tra, gửi hỗ trợ). Địa chỉ máy chủ: `--server <url>` hoặc biến `F2M_SERVER`. `deploy.py web|all` tự build và đặt vào web ở `/tai/f2m-scan.exe`.
+Chạy `pcdex-scan.exe --json <tệp>` để xuất dữ liệu thô (kiểm tra, gửi hỗ trợ). Địa chỉ máy chủ: `--server <url>` hoặc biến `PCDEX_SERVER`. `deploy.py web|all` tự build và đặt vào web ở `/tai/pcdex-scan.exe`.
 
 Phương án ban đầu (để tham khảo): dựng trên [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (MPL-2.0) hoặc [Hardware.Info](https://github.com/Jinjinov/Hardware.Info) (MIT).
 

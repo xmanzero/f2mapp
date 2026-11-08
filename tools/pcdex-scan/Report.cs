@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace F2mScan
+namespace PcdexScan
 {
     // Dữ liệu thô gửi lên máy chủ — khớp với scanReportSchema ở packages/shared/src/scan.ts.
     // Không có tên máy, tên người dùng, số serial hay tệp nào.
