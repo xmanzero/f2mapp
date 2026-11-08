@@ -14,9 +14,9 @@ import {
 import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 
-const KINDS: (ListingKind | "all")[] = ["all", "gpu", "cpu", "ram", "storage", "other"];
+const KINDS: (ListingKind | "all")[] = ["all", "gpu", "cpu", "mainboard", "ram", "storage", "psu"];
 type Sort = "new" | "value" | "gain";
-const KIND_ORDER: Record<ListingKind, number> = { gpu: 0, cpu: 1, ram: 2, storage: 3, other: 4 };
+const KIND_ORDER: Record<ListingKind, number> = { gpu: 0, cpu: 1, mainboard: 2, ram: 3, storage: 4, psu: 5 };
 
 export function Market() {
   const router = useRouter();
@@ -136,7 +136,8 @@ export function Market() {
                         <span className={`pill ${r.condition === "like_new" || r.condition === "new" ? "pos" : r.condition === "for_parts" ? "warn" : ""}`}>{CONDITION_LABEL[r.condition]}</span>
                       </div>
                       <div className="faint" style={{ fontSize: 13, marginTop: 2 }}>
-                        {[r.province, r.seller, daysLabel(r.daysAgo), r.warrantyMonths ? `bảo hành ${r.warrantyMonths} tháng` : null, r.sample ? "tin mẫu" : null].filter(Boolean).join(" · ")}
+                        {[r.province, r.seller, daysLabel(r.daysAgo), r.warrantyMonths ? `bảo hành ${r.warrantyMonths} tháng` : null, r.sample ? "tin mẫu" : r.inUse ? "đang dùng trong máy" : null].filter(Boolean).join(" · ")}
+                        {r.verified !== null && <span className={`verify${r.verified ? " ok" : ""}`}>{r.verified ? "Đã xác thực" : "Chưa xác thực"}</span>}
                       </div>
                     </td>
                     <td className="r num" style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{vnd(r.priceVnd)}</td>

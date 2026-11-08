@@ -6,7 +6,7 @@ import type { MachineConfig } from "./types";
 export const machineInputSchema = z.object({
   cpu: z.string().min(1),
   gpu: z.string().min(1),
-  ramGb: z.union([z.literal(8), z.literal(16), z.literal(32), z.literal(64), z.literal(128)]),
+  ramGb: z.number().int().min(2).max(512),
   ramChannels: z.union([z.literal(1), z.literal(2)]),
   storage: z.enum(["hdd", "sata", "nvme3", "nvme4", "nvme5"]),
   pcieGen: z.union([z.literal(3), z.literal(4), z.literal(5)]),

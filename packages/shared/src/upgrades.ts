@@ -67,10 +67,10 @@ export function suggestUpgrades(cfg: MachineConfig): UpgradeSuggestion[] {
   const need = psuNeeded(cfg);
   if (cfg.psuW < need)
     out.push(build("psu", `Thay nguồn ${need} W`, `Nguồn ${cfg.psuW} W thiếu cho cấu hình hiện tại.`, cfg, { ...cfg, psuW: need }));
-  if (cfg.ramChannels === 1 || cfg.ramGb === 8) {
-    const ramGb = cfg.ramGb === 8 ? 16 : cfg.ramGb;
-    out.push(build("ram", cfg.ramGb === 8 ? "Lên 16 GB RAM kênh đôi" : "Lắp thêm 1 thanh RAM cho kênh đôi",
-      cfg.ramChannels === 1 ? "RAM kênh đơn chỉ có một nửa băng thông." : "8 GB đã thiếu cho game và trình duyệt.",
+  if (cfg.ramChannels === 1 || cfg.ramGb <= 8) {
+    const ramGb = cfg.ramGb <= 8 ? 16 : cfg.ramGb;
+    out.push(build("ram", cfg.ramGb <= 8 ? "Lên 16 GB RAM kênh đôi" : "Lắp thêm 1 thanh RAM cho kênh đôi",
+      cfg.ramChannels === 1 ? "RAM kênh đơn chỉ có một nửa băng thông." : `${cfg.ramGb} GB đã thiếu cho game và trình duyệt.`,
       cfg, { ...cfg, ramGb, ramChannels: 2 }));
   }
   if (cfg.storage === "hdd")

@@ -304,3 +304,60 @@ textarea.input { height: auto; min-height: 112px; padding: 12px 14px; resize: ve
 .mlist .l2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; font-size: 13px; }
 .mlist .gain { margin-left: auto; color: var(--positive); font-weight: 500; }
 @media (max-width: 640px) { .show-sm-block { display: grid; } }
+
+/* ---------- khai báo cấu hình chi tiết ---------- */
+.cfg { display: grid; }
+.cfg-row { padding: 12px 0; }
+.cfg-row + .cfg-row { border-top: 1px solid var(--rule); }
+.cfg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.cfg-title { font-weight: 500; }
+.cfg-sub { margin-left: 8px; color: var(--faint); font-size: 13px; }
+.cfg-meta { display: flex; align-items: center; gap: 10px; }
+.part-status { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; }
+.cfg-fields { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-top: 8px; margin-left: -12px; }
+.select-wrap.wide select { min-width: 220px; text-align: left; }
+.cfg .select-wrap select { text-align: left; }
+.mini-input { height: 34px; min-width: 0; width: 220px; max-width: 100%; padding: 0 12px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--text); font-weight: 500; transition: border-color var(--t-hover) ease, background-color var(--t-hover) ease; }
+.mini-input::placeholder { color: var(--faint); font-weight: 400; }
+.mini-input:hover { background: var(--raised); }
+.mini-input:focus-visible { outline: none; border-color: var(--accent); background: var(--ground); }
+.icon-btn { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 8px; background: none; color: var(--faint); cursor: pointer; }
+.icon-btn:hover { background: var(--raised); color: var(--text); }
+.icon-btn svg { width: 16px; height: 16px; }
+.add-btn { display: inline-flex; align-items: center; gap: 6px; justify-self: start; min-height: 40px; padding: 0 4px; border: 0; background: none; color: var(--muted); font-weight: 500; cursor: pointer; }
+.add-btn:hover { color: var(--text); }
+.add-btn svg { width: 16px; height: 16px; }
+.link.small { min-height: 34px; font-size: 13px; padding: 0 8px; }
+.machine-tabs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: var(--gap); }
+/* nhãn xác thực nhỏ trong dòng tin */
+.verify { margin-left: 8px; color: var(--faint); }
+.verify.ok { color: var(--positive); }
+.verify::before { content: "·"; margin-right: 8px; color: var(--faint); }
+/* chọn linh kiện để bán */
+.pick { border: 0; margin: 0; padding: 0; display: grid; gap: 14px; }
+.pick-group { display: grid; gap: 6px; }
+.pick-machine { color: var(--faint); font-size: 13px; }
+.pick-item { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 12px; border: 1.5px solid transparent; border-radius: 12px; background: var(--raised); cursor: pointer; }
+.pick-item:has(input:checked) { border-color: var(--accent); background: var(--pill-positive-bg); }
+.pick-item:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pick-item.taken { cursor: not-allowed; opacity: 0.7; }
+.pick-item input { accent-color: #c6f24e; width: 18px; height: 18px; flex: none; }
+.pick-item .grow { display: grid; min-width: 0; }
+.pick-name { font-weight: 500; }
+.pick-item .line2 { color: var(--faint); font-size: 13px; }
+.source { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 12px 14px; border-radius: var(--radius-inner); background: var(--raised); }
+.source .grow { flex: 1; min-width: 0; }
+.source .line2 { color: var(--faint); font-size: 13px; margin-top: 2px; }
+/* Máy của tôi: hai cột độc lập, khối cấu hình dài không đẩy các khối khác xuống */
+.split .col { display: grid; gap: var(--gap); align-content: start; min-width: 0; }
+.split .col > .panel { grid-column: auto; }
+.split .col-l { grid-column: span 7; }
+.split .col-r { grid-column: span 5; }
+@media (max-width: 1100px) {
+  .split .col { display: contents; }
+  .split .col > *, .split .col > .panel { grid-column: 1 / -1; }
+  /* điện thoại / tablet: điểm → cấu hình → khung hình → nhu cầu → gợi ý → kiểm tra */
+  .split .col-l > :nth-child(1) { order: 1; } .split .col-r > :nth-child(1) { order: 2; }
+  .split .col-l > :nth-child(2) { order: 3; } .split .col-l > :nth-child(3) { order: 4; }
+  .split .col-l > :nth-child(4) { order: 5; } .split .col-r > :nth-child(2) { order: 6; }
+}

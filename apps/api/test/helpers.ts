@@ -39,3 +39,17 @@ export async function setup(opts: { registerPerIpHour?: number } = {}) {
   });
   return { app, db, googleToken, close: async () => { await app.close(); await db.destroy(); } };
 }
+
+/** Cấu hình chi tiết mẫu cho test */
+export const spec = (o: Record<string, unknown> = {}) => ({
+  cpu: "Core i5-12400F", gpu: "RTX 3060 12GB",
+  mainboard: { model: "MSI PRO B660M-A", chipset: "B660", pcieGen: 4 },
+  ram: [{ sticks: 2, perStickGb: 8, type: "DDR4", speedMhz: 3200, model: "Kingston Fury" }],
+  drives: [{ interface: "nvme4", capacityGb: 1000, model: "Samsung 980 Pro", healthPct: 97, isBoot: true }],
+  psu: { wattage: 650, model: "Corsair CX650", rating: "80 Plus Bronze" }, resolution: 1080, ...o,
+});
+
+/** Lùi thời điểm lắp mọi linh kiện về 1 ngày trước — để lần thay sau là "thay thật", không phải sửa nhầm */
+export async function ageParts(db: Kysely<Database>) {
+  await db.updateTable("machine_parts").set({ added_at: new Date(Date.now() - 86_400_000) }).execute();
+}

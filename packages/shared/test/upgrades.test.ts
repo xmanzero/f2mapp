@@ -34,3 +34,48 @@ describe("gợi ý nâng cấp", () => {
     expect(s).toEqual([]);
   });
 });
+
+describe("cấu hình chi tiết", () => {
+  it("quy đổi về dạng tóm tắt: cộng dung lượng RAM, kênh theo số thanh, ổ hệ điều hành", async () => {
+    const { specToInput, machineSpecSchema, partLabel, computeScores, resolveMachine, ramScore } = await import("../src");
+    const spec = machineSpecSchema.parse({
+      cpu: "Ryzen 5 7500F", gpu: "RTX 4060", mainboard: { model: "MSI B650M", chipset: "B650", pcieGen: 4 },
+      ram: [{ sticks: 2, perStickGb: 16, type: "DDR5", speedMhz: 6000, model: "Kingston Fury" }],
+      drives: [{ interface: "hdd", capacityGb: 2000, model: null, isBoot: false }, { interface: "nvme4", capacityGb: 1000, model: "Samsung 990 Pro", healthPct: 98, isBoot: true }],
+      psu: { wattage: 650, model: null, rating: "80 Plus Gold" }, resolution: 1440,
+    });
+    expect(specToInput(spec)).toMatchObject({ ramGb: 32, ramChannels: 2, storage: "nvme4", pcieGen: 4, psuW: 650 });
+    expect(partLabel.ram(spec.ram[0]!)).toBe("Kingston Fury · 2×16 GB DDR5 6000 MHz");
+    expect(partLabel.drive(spec.drives[1]!)).toBe("Samsung 990 Pro · NVMe Gen4 1 TB");
+    // 24 GB nằm giữa 16 và 32: điểm RAM nội suy
+    expect(ramScore(24)).toBe(12000);
+    expect(Math.round(computeScores(resolveMachine(specToInput(spec))).power)).toBeGreaterThan(0);
+  });
+  it("tối đa 8 thanh RAM, phải có ít nhất 1 ổ", async () => {
+    const { machineSpecSchema } = await import("../src");
+    const base = { cpu: "Core i5-12400F", gpu: "RTX 3060 12GB", mainboard: { pcieGen: 4 }, psu: { wattage: 550 }, resolution: 1080 };
+    expect(machineSpecSchema.safeParse({ ...base, ram: [{ sticks: 8, perStickGb: 8, type: "DDR4" }, { sticks: 1, perStickGb: 8, type: "DDR4" }], drives: [{ interface: "sata", capacityGb: 512 }] }).success).toBe(false);
+    expect(machineSpecSchema.safeParse({ ...base, ram: [{ sticks: 2, perStickGb: 8, type: "DDR4" }], drives: [] }).success).toBe(false);
+  });
+});
+
+describe("RAM: DDR4/DDR5, ECC, RDIMM, SO-DIMM", () => {
+  it("cảnh báo RAM không hợp với máy", async () => {
+    const { ramFindings, partLabel } = await import("../src");
+    const codes = (cpu: string, ram: object[]) => ramFindings({ cpu, ram: ram as never }).map((f) => f.code);
+    const k = (o: object) => ({ sticks: 2, perStickGb: 16, type: "DDR5", speedMhz: 6000, model: null, formFactor: "dimm", ecc: false, registered: false, ...o });
+    expect(codes("Ryzen 5 7500F", [k({})])).toEqual([]);
+    expect(codes("Ryzen 5 5600", [k({})])).toContain("ram_type_platform");          // AM4 chỉ DDR4
+    expect(codes("Core i5-12400F", [k({ type: "DDR4" })])).toEqual([]);               // LGA1700 nhận cả hai
+    expect(codes("Core i5-12400F", [k({ type: "DDR4" }), k({})])).toContain("ram_mixed_type");
+    expect(codes("Ryzen 5 7500F", [k({ formFactor: "sodimm" })])).toContain("ram_sodimm");
+    expect(codes("Ryzen 5 7500F", [k({ ecc: true, registered: true })])).toContain("ram_registered");
+    expect(codes("Ryzen 5 7500F", [k({ ecc: true })])).toContain("ram_ecc");
+    expect(partLabel.ram(k({ ecc: true, registered: true }) as never)).toBe("2×16 GB DDR5 6000 MHz ECC RDIMM");
+  });
+  it("RDIMM bắt buộc có ECC; mặc định là DIMM thường", async () => {
+    const { ramKitSchema } = await import("../src");
+    expect(ramKitSchema.safeParse({ sticks: 1, perStickGb: 32, type: "DDR4", registered: true, ecc: false }).success).toBe(false);
+    expect(ramKitSchema.parse({ sticks: 1, perStickGb: 8, type: "DDR4" })).toMatchObject({ formFactor: "dimm", ecc: false, registered: false });
+  });
+});

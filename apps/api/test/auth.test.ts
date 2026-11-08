@@ -1,7 +1,7 @@
 import { computeScores, resolveMachine, tierOf, type MachineInput } from "@f2m/shared";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { hashPassword, verifyPassword } from "../src/auth/password.js";
-import { setup } from "./helpers.js";
+import { ageParts, setup } from "./helpers.js";
 
 let t: Awaited<ReturnType<typeof setup>>;
 beforeAll(async () => { t = await setup(); }, 60_000);
@@ -72,6 +72,7 @@ describe("tài khoản và máy", () => {
     const { token, user } = (await register("may@test.vn")).json();
     const r = await req("PUT", "/v1/me/machine", machine, token);
     expect(Math.round(r.json().scores.power)).toBe(10000);
+    await ageParts(t.db);
     await req("PUT", "/v1/me/machine", { ...machine, gpu: "RTX 4070 Super" }, token);
     expect((await req("GET", "/v1/me/machine", undefined, token)).json().machine.gpu).toBe("RTX 4070 Super");
     const replaced = await t.db.selectFrom("machine_parts as mp").innerJoin("parts as p", "p.id", "mp.part_id")

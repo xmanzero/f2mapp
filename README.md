@@ -41,11 +41,14 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 | `POST /v1/auth/register`, `/login` | Đăng ký / đăng nhập bằng email + mật khẩu (scrypt; sai 5 lần khóa 15 phút) |
 | `POST /v1/auth/google` | Đăng nhập Google (ID token). Email trùng tài khoản mật khẩu thì gộp, xóa mật khẩu cũ chưa xác minh |
 | `POST /v1/me/password` | Đặt / đổi mật khẩu, đăng xuất các thiết bị khác |
-| `GET/PATCH /v1/me`, `GET/PUT /v1/me/machine` | Hồ sơ, máy chính (lưu kèm điểm theo phiên bản thang điểm) |
+| `GET/PATCH /v1/me` | Hồ sơ |
+| `GET/POST /v1/me/machines`, `PUT/DELETE /v1/me/machines/:id`, `POST /v1/me/machines/:id/primary` | Tối đa 2 máy, cấu hình chi tiết: CPU, card, mainboard, RAM (DDR, ECC/RDIMM, DIMM/SO-DIMM), ổ cứng (loại, dung lượng, sức khỏe), nguồn. Lưu theo so khớp: linh kiện đổi → "đã thay ra" |
+| `DELETE /v1/me/parts/:id` | Xóa linh kiện đã thay ra khỏi kho |
+| `GET/PUT /v1/me/machine` | API cũ: máy chính dạng tóm tắt |
 | `GET /v1/leaderboard` | Bảng xếp hạng máy chính của mọi người |
 | `GET /v1/listings`, `/v1/listings/:id` | Tin rao đang bán (lọc `kind`, tìm `q`); số liên hệ chỉ trả cho người đã đăng nhập |
-| `POST /v1/listings`, `PATCH /v1/listings/:id` | Đăng tin (card/CPU theo danh mục, RAM/ổ/khác nhập tên; có thể gắn linh kiện đã thay ra khỏi máy), đổi giá, đã hẹn / đã bán / ẩn |
-| `GET /v1/me/listings` | Tin của tôi + linh kiện đã thay ra chưa đăng bán |
+| `POST /v1/listings`, `PATCH /v1/listings/:id` | Đăng tin **chỉ từ linh kiện trong máy mình** (đang lắp hoặc đã thay ra), tối đa 5 tin / 24 giờ, mỗi linh kiện một tin; đổi giá, đã hẹn / đã bán / ẩn |
+| `GET /v1/me/listings` | Tin của tôi + linh kiện bán được |
 
 Phiên đăng nhập: cookie `f2m_session` (web, qua `/api` của Next) hoặc `Authorization: Bearer` (app). Biến môi trường: [apps/api/.env.example](apps/api/.env.example).
 

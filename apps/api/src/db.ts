@@ -47,15 +47,21 @@ export interface Database {
     psu_w: number;
     resolution: number;
     verified_at: Date | null;
+    last_scan_at: Generated<Date | null>;
     created_at: Generated<Date>;
     updated_at: Generated<Date>;
   };
   machine_parts: {
     id: Generated<string>;
     machine_id: string;
-    part_id: string;
+    part_id: string | null;
+    kind: "cpu" | "gpu" | "mainboard" | "ram" | "storage" | "psu";
+    label: string;
+    details: Generated<unknown>; // jsonb
     quantity: Generated<number>;
-    status: Generated<string>;
+    status: Generated<"in_use" | "replaced" | "for_sale" | "sold">;
+    verified_at: Date | null;
+    replaced_at: Date | null;
     added_at: Generated<Date>;
   };
   listings: {
@@ -63,7 +69,7 @@ export interface Database {
     seller_id: string;
     part_id: string | null;
     machine_part_id: string | null;
-    kind: "gpu" | "cpu" | "ram" | "storage" | "other";
+    kind: "gpu" | "cpu" | "mainboard" | "ram" | "storage" | "psu" | "other";
     title: string | null;
     price_vnd: string | number; // bigint: pg trả về chuỗi
     condition: "new" | "like_new" | "used" | "for_parts";
@@ -75,6 +81,7 @@ export interface Database {
     created_at: Generated<Date>;
     updated_at: Generated<Date>;
     sold_at: Date | null;
+    part_was_in_use: Generated<boolean>;
   };
   machine_scores: {
     machine_id: string;

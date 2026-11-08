@@ -1,6 +1,6 @@
 "use client";
 
-import { findCpu, findGpu, resolveMachine, RESOLUTION_LABEL } from "@f2m/shared";
+import { findCpu, findGpu, resolveMachine, RESOLUTION_LABEL, TIERS } from "@f2m/shared";
 import { Copy } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -61,6 +61,22 @@ export function ListingDetail() {
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-info">
           <header><h2 id="h-info">Thông tin</h2><span className="meta">Người bán: {item.seller.displayName} (@{item.seller.handle})</span></header>
+          {item.source && (
+            <div className="source">
+              <div className="grow">
+                <div style={{ fontWeight: 500 }}>{item.source.inUse ? "Đang dùng trong máy người bán" : "Đã thay ra khỏi máy người bán"}</div>
+                <div className="line2">
+                  Máy “{item.source.machineName}”{item.source.machine ? `: ${item.source.machine}` : ""}
+                  {item.source.tier ? ` · hạng ${TIERS.find((t) => t.code === item.source!.tier)?.name ?? item.source.tier}` : ""}
+                  {` · có trong máy từ ${new Date(item.source.installedAt).toLocaleDateString("vi-VN")}`}
+                </div>
+              </div>
+              <span className={`pill ${item.source.verified ? "pos" : ""}`}
+                title={item.source.verified ? "Phần mềm quét máy đã thấy linh kiện này trong máy người bán" : "Người bán tự khai, chưa được phần mềm quét máy xác nhận"}>
+                {item.source.verified ? "Đã xác thực" : "Chưa xác thực"}
+              </span>
+            </div>
+          )}
           <dl className="rows">
             <div className="row"><dt className="grow muted">Tình trạng</dt><dd>{CONDITION_LABEL[item.condition]}</dd></div>
             <div className="row"><dt className="grow muted">Bảo hành</dt><dd>{item.warrantyMonths ? `${item.warrantyMonths} tháng` : "Không"}</dd></div>

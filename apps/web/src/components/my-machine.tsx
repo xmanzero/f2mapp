@@ -1,58 +1,71 @@
 "use client";
 
 import {
-  computeScores, CPUS, estimateFps, evaluate, GPUS, hardwareFindings, psuNeeded, resolveMachine, RESOLUTION_LABEL, SOCKET_MEMORY, suggestUpgrades, TIERS,
-  type Finding, type MachineConfig, type MachineInput, type Resolution, type Severity, type UpgradeSuggestion,
+  computeScores, estimateFps, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS,
+  type Finding, type MachineConfig, type MachineSpec, type Resolution, type Severity, type UpgradeSuggestion,
 } from "@f2m/shared";
-import { ChevronDown } from "lucide-react";
+import { Star } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_MACHINES } from "@/data/sample";
 import { api } from "@/lib/api";
-import type { ReplacedPart } from "@/lib/listings";
-import { useSession } from "@/lib/session";
-import { n0, ratio, RES_LABEL, signedPct, STORAGE_LABEL } from "@/lib/format";
+import type { SellablePart } from "@/lib/listings";
+import { n0, ratio, signedPct } from "@/lib/format";
 import { useMachine } from "@/lib/use-machine";
+import { ConfigEditor } from "./config-editor";
 
-const toInput = (c: MachineConfig): MachineInput => ({
-  cpu: c.cpu.name, gpu: c.gpu.name, ramGb: c.ramGb, ramChannels: c.ramChannels, storage: c.storage,
-  pcieGen: c.pcieGen, psuW: c.psuW, resolution: c.resolution,
-});
 const SEV_ORDER: Record<Severity, number> = { critical: 0, warning: 1, info: 2, ok: 3 };
 const sevClass = (s: Severity) => (s === "critical" ? "neg" : s === "warning" ? "warn" : s === "ok" ? "pos" : "");
-const PSU_OPTIONS = [300, 400, 450, 500, 550, 600, 650, 750, 850, 1000, 1200];
+const KIND_VI: Record<string, string> = { cpu: "CPU", gpu: "card đồ họa", mainboard: "mainboard", ram: "RAM", storage: "ổ cứng", psu: "nguồn" };
+
+/** Áp gợi ý nâng cấp (dạng tóm tắt) vào cấu hình chi tiết */
+function applySuggestion(spec: MachineSpec, next: MachineConfig): MachineSpec {
+  const cur = specToInput(spec);
+  const out: MachineSpec = { ...spec, cpu: next.cpu.name, gpu: next.gpu.name, psu: { ...spec.psu, wattage: next.psuW } };
+  if (next.ramGb !== cur.ramGb || next.ramChannels !== cur.ramChannels) {
+    const sticks = next.ramChannels === 2 ? 2 : 1;
+    out.ram = [{ ...spec.ram[0]!, sticks, perStickGb: Math.max(2, Math.round(next.ramGb / sticks)), model: null }];
+  }
+  if (next.storage !== cur.storage) out.drives = spec.drives.map((d) => (d.isBoot ? { ...d, interface: next.storage, model: null, healthPct: null } : d));
+  return out;
+}
 
 export function MyMachine() {
-  const { machine, save, isSample, ready, savedTo, saveState } = useMachine();
+  const m = useMachine();
+  const { spec, save, isSample, ready, savedTo, saveState, user, machines, active } = m;
   const [preview, setPreview] = useState<UpgradeSuggestion | null>(null);
-  const shown = preview ? toInput(preview.next) : machine;
+  const shownSpec = preview ? applySuggestion(spec, preview.next) : spec;
 
   const view = useMemo(() => {
     if (!ready) return null;
-    const cfg = resolveMachine(shown);
-    const base = resolveMachine(machine);
+    const cfg = resolveMachine(specToInput(shownSpec));
+    const base = resolveMachine(specToInput(spec));
     return { cfg, r: evaluate(cfg, new Date().getFullYear()), base: evaluate(base).scores.power, upgrades: suggestUpgrades(base) };
-  }, [ready, shown, machine]);
+  }, [ready, shownSpec, spec]);
 
+  useEffect(() => { setPreview(null); }, [active.id]);
   if (!view) return <Loading />;
   const { cfg, r, upgrades } = view;
-  const findings = [...r.findings].sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity]);
+  const findings = [...specFindings(shownSpec), ...r.findings].sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity]);
   const lead = findings[0]!;
 
   return (
     <>
       <div className="title-row">
         <div>
-          <h1>Máy của tôi</h1>
-          <p className="sub">{lead.message}</p>
+          <h1>{machines.length > 1 ? active.name : "Máy của tôi"}</h1>
+          <p className="sub">{active.missing.length > 0
+            ? `Bạn đã bán ${active.missing.map((k) => KIND_VI[k]).join(", ")} của máy này. Chọn linh kiện thay thế ở phần cấu hình.`
+            : lead.message}</p>
         </div>
         <span className="stamp" role="status">
           {isSample ? "Đang là máy mẫu: sửa cấu hình để thành máy của bạn"
-            : savedTo === "account" ? (saveState === "saving" ? "Đang lưu…" : saveState === "error" ? "Chưa lưu được. Kiểm tra mạng rồi sửa lại." : "Đã lưu vào tài khoản")
+            : savedTo === "account" ? (saveState === "saving" ? "Đang lưu…" : saveState === "error" ? (m.error ?? "Chưa lưu được. Kiểm tra mạng rồi sửa lại.") : "Đã lưu vào tài khoản")
             : <>Lưu trên trình duyệt này · <Link href="/dang-nhap" className="card-link">Đăng nhập để lưu vào tài khoản</Link></>}
         </span>
       </div>
 
+      {user && machines[0]?.id && <MachineTabs m={m} />}
       <ReplacedNotice saveState={saveState} />
 
       {preview && (
@@ -61,36 +74,85 @@ export function MyMachine() {
             Đang xem thử <b>{preview.title.replace(/^Lên /, "")}</b>: điểm {n0(view.base)} → {n0(r.scores.power)} ({signedPct(preview.powerGain)}),
             game {RESOLUTION_LABEL[cfg.resolution]} ~{preview.fpsBefore} → ~{preview.fpsAfter} FPS.
           </p>
-          <button className="btn small primary" onClick={() => { save(toInput(preview.next)); setPreview(null); }}>Lắp vào máy tôi</button>
+          <button className="btn small primary" onClick={() => { save(applySuggestion(spec, preview.next)); setPreview(null); }}>Lắp vào máy tôi</button>
           <button className="btn small" onClick={() => setPreview(null)}>Bỏ xem thử</button>
         </div>
       )}
 
-      <div className="grid">
-        <ScoreCard r={r} />
-        <ConfigCard cfg={cfg} locked={!!preview} onChange={(next) => save(next)} />
-        <OsdCard cfg={cfg} bottlenecks={r.bottlenecks} />
-        <NeedsCard needs={r.needs} />
-        <UpgradesCard items={upgrades} active={preview} onPreview={setPreview} />
-        <FindingsCard findings={hardwareFindings(cfg)} cfg={cfg} />
+      <div className="grid split">
+        <div className="col col-l">
+          <ScoreCard r={r} verified={active.verified} isAccount={!!active.id} />
+          <OsdCard cfg={cfg} bottlenecks={r.bottlenecks} />
+          <NeedsCard needs={r.needs} />
+          <UpgradesCard items={upgrades} active={preview} onPreview={setPreview} />
+        </div>
+        <div className="col col-r">
+          <section className="panel" aria-labelledby="h-config">
+            <header>
+              <h2 id="h-config">Cấu hình</h2>
+              <span className="meta">{preview ? "Bỏ xem thử để sửa" : "Bấm vào giá trị để đổi"}</span>
+            </header>
+            <ConfigEditor spec={shownSpec} parts={active.parts} locked={!!preview} canSell={!!user && !!active.id} onChange={save} />
+          </section>
+          <FindingsCard findings={[...specFindings(shownSpec), ...hardwareFindings(cfg)]} cfg={cfg} />
+        </div>
       </div>
     </>
   );
 }
 
-/** Linh kiện vừa thay ra khỏi máy (đã đăng nhập) → nhắc đăng bán */
+/** Chuyển giữa 2 máy, thêm máy, đặt máy chính, đổi tên, xóa máy phụ */
+function MachineTabs({ m }: { m: ReturnType<typeof useMachine> }) {
+  const [naming, setNaming] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const canManage = m.machines.length > 1 && !m.active.isPrimary && !!m.active.id;
+  return (
+    <div className="machine-tabs">
+      {m.machines.length > 1 && (
+        <div className="segmented" role="group" aria-label="Chọn máy">
+          {m.machines.map((x) => (
+            <button key={x.id} aria-pressed={x.id === m.active.id} onClick={() => m.setActiveId(x.id)}>
+              {x.isPrimary && <Star size={13} aria-label="Máy chính" style={{ marginRight: 6, verticalAlign: -1 }} />}{x.name}
+            </button>
+          ))}
+        </div>
+      )}
+      {naming !== null ? (
+        <form style={{ display: "flex", gap: 8 }} onSubmit={(e) => { e.preventDefault(); if (naming.trim()) void m.rename(naming.trim()); setNaming(null); }}>
+          <input className="mini-input" style={{ border: "1px solid var(--control)" }} aria-label="Tên máy" value={naming} maxLength={40} autoFocus onChange={(e) => setNaming(e.target.value)} />
+          <button className="btn small primary">Lưu tên</button>
+          <button type="button" className="btn small" onClick={() => setNaming(null)}>Hủy</button>
+        </form>
+      ) : (
+        <button className="btn small" onClick={() => setNaming(m.active.name)}>Đổi tên máy</button>
+      )}
+      {canManage && <button className="btn small" onClick={() => void m.setPrimary(m.active.id!)}>Đặt làm máy chính</button>}
+      {canManage && (confirmDelete ? (
+        <>
+          <span className="stamp">Xóa “{m.active.name}”? Tin đang bán từ máy này sẽ bị ẩn.</span>
+          <button className="btn small" style={{ color: "var(--negative)" }} onClick={() => { void m.removeMachine(m.active.id!); setConfirmDelete(false); }}>Xóa máy</button>
+          <button className="btn small" onClick={() => setConfirmDelete(false)}>Giữ lại</button>
+        </>
+      ) : <button className="btn small" onClick={() => setConfirmDelete(true)}>Xóa máy này</button>)}
+      {m.canAdd && <button className="btn small" onClick={() => void m.addMachine("Máy 2")}>Thêm máy thứ hai</button>}
+      {m.error && <span className="stamp" role="alert" style={{ color: "var(--negative)" }}>{m.error}</span>}
+    </div>
+  );
+}
+
+/** Linh kiện đã thay ra, chưa đăng bán → nhắc đăng bán */
 function ReplacedNotice({ saveState }: { saveState: string }) {
-  const { user } = useSession();
-  const [parts, setParts] = useState<ReplacedPart[]>([]);
+  const { user } = useMachine();
+  const [parts, setParts] = useState<SellablePart[]>([]);
   useEffect(() => {
     if (!user || saveState === "saving") return;
-    api<{ replacedParts: ReplacedPart[] }>("/v1/me/listings").then((r) => setParts(r.replacedParts)).catch(() => {});
+    api<{ parts: SellablePart[] }>("/v1/me/listings").then((r) => setParts(r.parts.filter((p) => !p.inUse && !p.listingId))).catch(() => {});
   }, [user, saveState]);
   if (parts.length === 0) return null;
   const first = parts[0]!;
   return (
     <div className="sell-bar" role="status">
-      <p>Bạn đã thay ra <b>{first.name}</b>{parts.length > 1 ? ` và ${parts.length - 1} linh kiện khác` : ""}. Đăng bán để có thêm tiền nâng cấp.</p>
+      <p>Bạn đã thay ra <b>{first.label}</b>{parts.length > 1 ? ` và ${parts.length - 1} linh kiện khác` : ""}. Đăng bán để có thêm tiền nâng cấp.</p>
       <Link href={`/cho/dang-tin?mp=${first.id}`} className="btn small primary">Đăng bán</Link>
       {parts.length > 1 && <Link href="/cho/cua-toi" className="btn small">Xem tất cả</Link>}
     </div>
@@ -139,7 +201,7 @@ function RankLine({ power }: { power: number }) {
   );
 }
 
-function ScoreCard({ r }: { r: Result }) {
+function ScoreCard({ r, verified, isAccount }: { r: Result; verified: boolean; isAccount: boolean }) {
   const s = r.scores;
   return (
     <section className="panel s5" aria-labelledby="h-score">
@@ -150,6 +212,7 @@ function ScoreCard({ r }: { r: Result }) {
       <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <span className="answer num">{n0(s.power)}</span>
         <span className="pill">Hạng {r.tier.name}</span>
+        {isAccount && <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm quét máy đã xác nhận cấu hình" : "Cấu hình tự khai, chưa được phần mềm quét máy xác nhận"}>{verified ? "Đã xác thực" : "Chưa xác thực"}</span>}
       </div>
       <p className="muted" style={{ marginTop: 6 }}>Gấp <span className="num">{ratio(s.power / 10000)}</span> lần máy mốc (i5-12400F + RTX 3060 = 10.000)</p>
       <TierProgress power={s.power} />
@@ -174,74 +237,6 @@ function ScoreCard({ r }: { r: Result }) {
           </div>
         ))}
       </div>
-    </section>
-  );
-}
-
-function Select({ label, value, onChange, children, disabled }: {
-  label: string; value: string | number; onChange: (v: string) => void; children: React.ReactNode; disabled?: boolean;
-}) {
-  return (
-    <span className="select-wrap">
-      <select aria-label={label} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)}>{children}</select>
-      <ChevronDown aria-hidden="true" />
-    </span>
-  );
-}
-
-function ConfigCard({ cfg, onChange, locked }: { cfg: MachineConfig; onChange: (m: MachineInput) => void; locked: boolean }) {
-  const input = toInput(cfg);
-  const set = <K extends keyof MachineInput>(k: K, v: MachineInput[K]) => onChange({ ...input, [k]: v });
-  const sockets = [...new Set(CPUS.map((c) => c.socket))];
-  const gpuGroups: [string, (g: (typeof GPUS)[number]) => boolean][] = [
-    ["NVIDIA", (g) => /^(RTX|GTX)/.test(g.name)], ["AMD", (g) => g.name.startsWith("RX")],
-    ["Intel", (g) => g.name.startsWith("Arc")], ["Khác", (g) => g.integrated],
-  ];
-  const rows: [string, React.ReactNode, string?][] = [
-    ["CPU", <Select key="cpu" label="CPU" value={input.cpu} disabled={locked} onChange={(v) => set("cpu", v)}>
-      {sockets.map((s) => <optgroup key={s} label={`${s} · ${SOCKET_MEMORY[s]}`}>{CPUS.filter((c) => c.socket === s).map((c) => <option key={c.name}>{c.name}</option>)}</optgroup>)}
-    </Select>, `${cfg.cpu.socket} · ${cfg.cpu.powerW} W`],
-    ["Card đồ họa", <Select key="gpu" label="Card đồ họa" value={input.gpu} disabled={locked} onChange={(v) => set("gpu", v)}>
-      {gpuGroups.map(([g, f]) => <optgroup key={g} label={g}>{GPUS.filter(f).map((x) => <option key={x.name}>{x.name}</option>)}</optgroup>)}
-    </Select>, cfg.gpu.integrated ? "Dùng chung RAM" : `${cfg.gpu.vramGb} GB · PCIe x${cfg.gpu.pcieLanes} · ${cfg.gpu.boardPowerW} W`],
-    ["RAM", <span key="ram" style={{ display: "inline-flex" }}>
-      <Select label="Dung lượng RAM" value={input.ramGb} disabled={locked} onChange={(v) => set("ramGb", Number(v) as MachineInput["ramGb"])}>
-        {[8, 16, 32, 64, 128].map((g) => <option key={g} value={g}>{g} GB</option>)}
-      </Select>
-      <Select label="Kênh RAM" value={input.ramChannels} disabled={locked} onChange={(v) => set("ramChannels", Number(v) as 1 | 2)}>
-        <option value={2}>kênh đôi</option><option value={1}>kênh đơn</option>
-      </Select>
-    </span>],
-    ["Ổ hệ điều hành", <Select key="ssd" label="Ổ hệ điều hành" value={input.storage} disabled={locked} onChange={(v) => set("storage", v as MachineInput["storage"])}>
-      {Object.entries(STORAGE_LABEL).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-    </Select>],
-    ["Khe card trên mainboard", <Select key="pcie" label="Khe PCIe" value={input.pcieGen} disabled={locked} onChange={(v) => set("pcieGen", Number(v) as 3 | 4 | 5)}>
-      {[3, 4, 5].map((g) => <option key={g} value={g}>PCIe {g}.0</option>)}
-    </Select>],
-    ["Nguồn", <Select key="psu" label="Nguồn" value={input.psuW} disabled={locked} onChange={(v) => set("psuW", Number(v))}>
-      {PSU_OPTIONS.map((w) => <option key={w} value={w}>{w} W</option>)}
-    </Select>, `Cần từ ${psuNeeded(cfg)} W`],
-    ["Màn hình", <Select key="res" label="Màn hình" value={input.resolution} disabled={locked} onChange={(v) => set("resolution", Number(v) as Resolution)}>
-      {([1080, 1440, 2160] as const).map((r) => <option key={r} value={r}>{RES_LABEL[r]}</option>)}
-    </Select>],
-  ];
-  return (
-    <section className="panel s7" aria-labelledby="h-config">
-      <header>
-        <h2 id="h-config">Cấu hình</h2>
-        <span className="meta">{locked ? "Bỏ xem thử để sửa" : "Bấm vào giá trị để đổi"}</span>
-      </header>
-      <dl className="rows">
-        {rows.map(([label, control, sub]) => (
-          <div key={label} className="row" style={{ padding: "3px 0", minHeight: 42 }}>
-            <dt className="grow">
-              <span className="muted">{label}</span>
-              {sub && <div className="line2">{sub}</div>}
-            </dt>
-            <dd className="end" style={{ marginRight: -12 }}>{control}</dd>
-          </div>
-        ))}
-      </dl>
     </section>
   );
 }

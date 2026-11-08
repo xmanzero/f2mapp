@@ -1,6 +1,7 @@
 export type Socket = "LGA1200" | "LGA1700" | "LGA1851" | "AM4" | "AM5";
 export type Resolution = 1080 | 1440 | 2160;
-export type RamGb = 8 | 16 | 32 | 64 | 128;
+/** Tổng dung lượng RAM (GB) */
+export type RamGb = number;
 export type StorageKind = "hdd" | "sata" | "nvme3" | "nvme4" | "nvme5";
 export type PcieGen = 3 | 4 | 5;
 export type DataSource = "toms" | "blender" | "est";

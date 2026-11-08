@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { AppDeps } from "../app.js";
 import { userIdFromRequest } from "../auth/session.js";
 import {
-  createListing, createListingSchema, getListing, listListings, ListingError, myListings, replacedParts, updateListing, updateListingSchema,
+  createListing, createListingSchema, getListing, listListings, ListingError, myListings, sellableParts, updateListing, updateListingSchema,
 } from "../services/listings.js";
 
 const idParam = z.object({ id: z.string().uuid() });
@@ -66,6 +66,6 @@ export const listingRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) 
   app.get("/me/listings", async (req, reply) => {
     const uid = await requireUser(req, reply);
     if (!uid) return;
-    return { items: await myListings(db, uid), replacedParts: await replacedParts(db, uid) };
+    return { items: await myListings(db, uid), parts: await sellableParts(db, uid) };
   });
 };

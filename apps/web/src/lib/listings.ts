@@ -1,7 +1,7 @@
 import { computeScores, estimateFps, findCpu, findGpu, type MachineConfig } from "@f2m/shared";
 import { SAMPLE_LISTINGS } from "@/data/sample";
 
-export type ListingKind = "gpu" | "cpu" | "ram" | "storage" | "other";
+export type ListingKind = "gpu" | "cpu" | "mainboard" | "ram" | "storage" | "psu";
 export type Condition = "new" | "like_new" | "used" | "for_parts";
 export type ListingStatus = "active" | "reserved" | "sold" | "hidden";
 
@@ -10,11 +10,17 @@ export interface Listing {
   priceVnd: number; condition: Condition; warrantyMonths: number | null; province: string | null;
   description: string | null; status: ListingStatus; createdAt: string; updatedAt: string; soldAt: string | null;
   seller: { id: string; handle: string; displayName: string };
+  /** Linh kiện này trong máy người bán */
+  source: { machineName: string; machine: string; tier: string | null; power: number | null; inUse: boolean; installedAt: string; verified: boolean; verifiedAt: string | null } | null;
   mine: boolean; contact: string | null; contactHidden: boolean;
 }
-export interface ReplacedPart { id: string; kind: "cpu" | "gpu"; name: string; added_at: string }
+/** Linh kiện bán được (đang lắp / đã thay ra) trong các máy của người dùng */
+export interface SellablePart {
+  id: string; kind: ListingKind; label: string; inUse: boolean; verified: boolean; addedAt: string; replacedAt: string | null;
+  machineId: string; machineName: string; isPrimary: boolean; listingId: string | null;
+}
 
-export const KIND_LABEL: Record<ListingKind, string> = { gpu: "Card đồ họa", cpu: "CPU", ram: "RAM", storage: "Ổ SSD / HDD", other: "Khác" };
+export const KIND_LABEL: Record<ListingKind, string> = { gpu: "Card đồ họa", cpu: "CPU", mainboard: "Mainboard", ram: "RAM", storage: "Ổ cứng", psu: "Nguồn" };
 export const CONDITION_LABEL: Record<Condition, string> = { new: "Mới", like_new: "Như mới", used: "Đã dùng", for_parts: "Hỏng, bán xác" };
 export const STATUS_LABEL: Record<ListingStatus, string> = { active: "Đang bán", reserved: "Đã có người hẹn", sold: "Đã bán", hidden: "Đã ẩn" };
 
@@ -22,6 +28,8 @@ export const STATUS_LABEL: Record<ListingStatus, string> = { active: "Đang bán
 export interface MarketRow {
   id: string; kind: ListingKind; name: string; partName: string | null; priceVnd: number; condition: Condition;
   warrantyMonths: number | null; province: string | null; seller: string; daysAgo: number; sample: boolean; href: string | null;
+  /** null = tin mẫu */
+  verified: boolean | null; inUse: boolean;
 }
 
 export const daysSince = (iso: string) => Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
@@ -31,13 +39,13 @@ export function toRow(l: Listing): MarketRow {
   return {
     id: l.id, kind: l.kind, name: l.name, partName: l.partName, priceVnd: l.priceVnd, condition: l.condition,
     warrantyMonths: l.warrantyMonths, province: l.province, seller: l.seller.handle, daysAgo: daysSince(l.createdAt),
-    sample: false, href: `/cho/tin?id=${l.id}`,
+    sample: false, href: `/cho/tin?id=${l.id}`, verified: l.source?.verified ?? false, inUse: l.source?.inUse ?? false,
   };
 }
 export const SAMPLE_ROWS: MarketRow[] = SAMPLE_LISTINGS.map((s) => ({
   id: s.id, kind: s.kind, name: s.part, partName: s.kind === "gpu" || s.kind === "cpu" ? s.part : null,
   priceVnd: s.priceVnd, condition: s.condition, warrantyMonths: s.warrantyMonths, province: s.province,
-  seller: s.seller, daysAgo: s.daysAgo, sample: true, href: null,
+  seller: s.seller, daysAgo: s.daysAgo, sample: true, href: null, verified: null, inUse: false,
 }));
 /** Dưới số tin thật này thì ghép thêm tin mẫu (có nhãn) để chợ không trống */
 export const MIN_REAL_LISTINGS = 10;

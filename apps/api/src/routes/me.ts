@@ -1,10 +1,14 @@
-import { evaluate, machineInputSchema, resolveMachine, SCALE_VERSION, UnknownPartError } from "@f2m/shared";
+import {
+  evaluate, machineInputSchema, machineSpecSchema, ramFindings, resolveMachine, SCALE_VERSION, specToInput, UnknownPartError,
+} from "@f2m/shared";
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { AppDeps } from "../app.js";
 import { revokeOtherSessions, userIdFromRequest } from "../auth/session.js";
 import { passwordField } from "./auth.js";
-import { leaderboard, loadPrimaryMachine, savePrimaryMachine } from "../services/machines.js";
+import {
+  deleteMachine, deleteStoredPart, leaderboard, loadMachines, loadPrimaryMachine, MachineError, saveSpec, savePrimaryMachine, setPrimary,
+} from "../services/machines.js";
 import { AuthError, changePassword, getProfile, HANDLE_RE } from "../services/users.js";
 
 const patchBody = z.object({
@@ -61,6 +65,74 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     }
     await revokeOtherSessions(db, req, uid);
     return { ok: true, user: await publicProfile(uid) };
+  });
+
+  // ---------- máy chi tiết (tối đa 2) ----------
+  const machineBody = z.object({ name: z.string().trim().min(1).max(40).optional(), spec: machineSpecSchema });
+  const idParam = z.object({ id: z.string().uuid() });
+  const machinesReply = async (uid: string) => ({ scaleVersion: SCALE_VERSION, machines: await loadMachines(db, uid) });
+  const machineFail = (reply: FastifyReply, e: unknown) => {
+    if (e instanceof MachineError) return reply.code(e.status).send({ error: "machine", message: e.message });
+    if (e instanceof UnknownPartError) return reply.code(400).send({ error: "unknown_part", message: e.message });
+    throw e;
+  };
+  const parseSpec = (req: FastifyRequest, reply: FastifyReply) => {
+    const body = machineBody.safeParse(req.body);
+    if (!body.success) { reply.code(400).send({ error: "bad_request", message: body.error.issues[0]?.message ?? "Cấu hình chưa đúng", issues: body.error.issues }); return null; }
+    // RAM không lắp được vào máy này thì chặn ngay
+    const bad = ramFindings(body.data.spec).filter((f) => f.severity === "critical");
+    if (bad.length) { reply.code(400).send({ error: "ram_incompatible", message: bad[0]!.message }); return null; }
+    try { resolveMachine(specToInput(body.data.spec)); } catch (e) { machineFail(reply, e); return null; }
+    return body.data;
+  };
+
+  app.get("/me/machines", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    return machinesReply(uid);
+  });
+  app.post("/me/machines", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const body = parseSpec(req, reply);
+    if (!body) return;
+    try { await saveSpec(db, uid, null, body.spec, body.name); } catch (e) { return machineFail(reply, e); }
+    return reply.code(201).send(await machinesReply(uid));
+  });
+  app.put("/me/machines/:id", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const p = idParam.safeParse(req.params);
+    if (!p.success) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy máy" });
+    const body = parseSpec(req, reply);
+    if (!body) return;
+    try { await saveSpec(db, uid, p.data.id, body.spec, body.name); } catch (e) { return machineFail(reply, e); }
+    return machinesReply(uid);
+  });
+  app.post("/me/machines/:id/primary", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const p = idParam.safeParse(req.params);
+    if (!p.success) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy máy" });
+    try { await setPrimary(db, uid, p.data.id); } catch (e) { return machineFail(reply, e); }
+    return machinesReply(uid);
+  });
+  app.delete("/me/machines/:id", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const p = idParam.safeParse(req.params);
+    if (!p.success) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy máy" });
+    try { await deleteMachine(db, uid, p.data.id); } catch (e) { return machineFail(reply, e); }
+    return machinesReply(uid);
+  });
+
+  app.delete("/me/parts/:id", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const p = idParam.safeParse(req.params);
+    if (!p.success) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy linh kiện" });
+    try { await deleteStoredPart(db, uid, p.data.id); } catch (e) { return machineFail(reply, e); }
+    return { ok: true };
   });
 
   app.get("/me/machine", async (req, reply) => {

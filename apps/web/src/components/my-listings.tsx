@@ -4,20 +4,30 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { vnd } from "@/lib/format";
-import { daysLabel, daysSince, STATUS_LABEL, type Listing, type ListingStatus, type ReplacedPart } from "@/lib/listings";
+import { daysLabel, daysSince, KIND_LABEL, STATUS_LABEL, type Listing, type ListingStatus, type SellablePart } from "@/lib/listings";
 import { useSession } from "@/lib/session";
 
 const STATUS_CLASS: Record<ListingStatus, string> = { active: "pos", reserved: "warn", sold: "", hidden: "" };
 
 export function MyListings() {
   const { user } = useSession();
-  const [data, setData] = useState<{ items: Listing[]; replacedParts: ReplacedPart[] } | null>(null);
+  const [data, setData] = useState<{ items: Listing[]; parts: SellablePart[] } | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (!user) return;
-    api<{ items: Listing[]; replacedParts: ReplacedPart[] }>("/v1/me/listings").then(setData).catch(() => setFailed(true));
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+  function load() {
+    api<{ items: Listing[]; parts: SellablePart[] }>("/v1/me/listings").then(setData).catch(() => setFailed(true));
+  }
+  async function removePart(p: SellablePart) {
+    setMsg(null);
+    try { await api(`/v1/me/parts/${p.id}`, { method: "DELETE" }); setMsg(`Đã xóa ${p.label} khỏi kho.`); load(); }
+    catch (e) { setMsg((e as Error).message); }
+  }
 
   if (user === undefined) return <div className="title-row"><div><h1>Tin của tôi</h1><p className="sub">Đang tải…</p></div></div>;
   if (user === null)
@@ -65,21 +75,26 @@ export function MyListings() {
         </section>
 
         <section className="panel s5" aria-labelledby="h-replaced">
-          <header><h2 id="h-replaced">Đã thay ra khỏi máy</h2></header>
+          <header><h2 id="h-replaced">Đã thay ra, chưa bán</h2></header>
           {!data ? (
             <div className="skeleton" style={{ height: 52 }} aria-busy="true" />
-          ) : data.replacedParts.length === 0 ? (
-            <p className="empty">Khi bạn đổi card hoặc CPU ở <Link href="/" className="card-link">Máy của tôi</Link>, linh kiện cũ sẽ hiện ở đây để đăng bán nhanh.</p>
-          ) : (
-            <ul className="rows">
-              {data.replacedParts.map((p) => (
-                <li key={p.id} className="row">
-                  <div className="grow"><div style={{ fontWeight: 500 }}>{p.name}</div><div className="line2">{p.kind === "gpu" ? "Card đồ họa" : "CPU"} cũ trong máy của bạn</div></div>
-                  <Link href={`/cho/dang-tin?mp=${p.id}`} className="btn small">Đăng bán</Link>
-                </li>
-              ))}
-            </ul>
-          )}
+          ) : (() => {
+            const stored = data.parts.filter((p) => !p.inUse && !p.listingId);
+            return stored.length === 0 ? (
+              <p className="empty">Khi bạn đổi linh kiện ở <Link href="/" className="card-link">Máy của tôi</Link>, linh kiện cũ sẽ hiện ở đây để đăng bán nhanh. Linh kiện đang lắp cũng bán được từ trang đăng tin.</p>
+            ) : (
+              <ul className="rows">
+                {stored.map((p) => (
+                  <li key={p.id} className="row">
+                    <div className="grow"><div style={{ fontWeight: 500 }}>{p.label}</div><div className="line2">{KIND_LABEL[p.kind]} · từ máy “{p.machineName}”</div></div>
+                    <Link href={`/cho/dang-tin?mp=${p.id}`} className="btn small">Đăng bán</Link>
+                    <button className="btn small" onClick={() => void removePart(p)} aria-label={`Xóa ${p.label} khỏi kho`}>Xóa</button>
+                  </li>
+                ))}
+              </ul>
+            );
+          })()}
+          {msg && <p className="stamp" role="status" style={{ marginTop: 10 }}>{msg}</p>}
         </section>
       </div>
     </>

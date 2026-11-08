@@ -9,7 +9,18 @@ import type {
 export const RESOLUTIONS: Resolution[] = [1080, 1440, 2160];
 export const RESOLUTION_LABEL: Record<Resolution, string> = { 1080: "1080p", 1440: "1440p", 2160: "4K" };
 
-const RAM_SCORE: Record<RamGb, number> = { 8: 5000, 16: 10000, 32: 14000, 64: 17000, 128: 19000 };
+/** Điểm RAM theo dung lượng: nội suy tuyến tính giữa các mốc (8 GB 5.000 · 16 GB 10.000 · 32 GB 14.000 · 64 GB 17.000 · 128 GB 19.000) */
+const RAM_POINTS: [number, number][] = [[2, 1000], [4, 2500], [8, 5000], [16, 10000], [32, 14000], [64, 17000], [128, 19000]];
+export function ramScore(gb: RamGb): number {
+  if (gb <= RAM_POINTS[0]![0]) return RAM_POINTS[0]![1];
+  for (let i = 1; i < RAM_POINTS.length; i++) {
+    const [x1, y1] = RAM_POINTS[i]!, [x0, y0] = RAM_POINTS[i - 1]!;
+    if (gb <= x1) return y0 + ((gb - x0) / (x1 - x0)) * (y1 - y0);
+  }
+  return RAM_POINTS.at(-1)![1];
+}
+/** RAM từ 8 GB trở xuống bị coi là thiếu */
+const lowRam = (gb: RamGb) => gb <= 8;
 export const STORAGE_SCORE: Record<StorageKind, number> = { hdd: 2000, sata: 7000, nvme3: 10000, nvme4: 12000, nvme5: 13000 };
 export const SOCKET_MEMORY: Record<Socket, "DDR4" | "DDR5" | "DDR4/DDR5"> = {
   LGA1200: "DDR4", LGA1700: "DDR4/DDR5", LGA1851: "DDR5", AM4: "DDR4", AM5: "DDR5",
@@ -35,7 +46,7 @@ export function pcieFactor(cfg: Pick<MachineConfig, "gpu" | "pcieGen">): number 
   return 1;
 }
 
-const ramGamingFactor = (cfg: MachineConfig) => (cfg.ramChannels === 1 ? 0.9 : 1) * (cfg.ramGb === 8 ? 0.9 : 1);
+const ramGamingFactor = (cfg: MachineConfig) => (cfg.ramChannels === 1 ? 0.9 : 1) * (lowRam(cfg.ramGb) ? 0.9 : 1);
 
 export function bottleneck(cfg: MachineConfig, res: Resolution = cfg.resolution): Bottleneck {
   const gpuFps = cfg.gpu.fps[String(res) as "1080"] * pcieFactor(cfg);
@@ -47,13 +58,13 @@ export function bottleneck(cfg: MachineConfig, res: Resolution = cfg.resolution)
 
 /** FPS ước tính game AAA mới, thiết lập Ultra */
 export const estimateFps = (cfg: MachineConfig, res: Resolution = cfg.resolution) =>
-  bottleneck(cfg, res).fps * (cfg.ramGb === 8 ? 0.9 : 1);
+  bottleneck(cfg, res).fps * (lowRam(cfg.ramGb) ? 0.9 : 1);
 
 export function computeScores(cfg: MachineConfig): Scores {
-  const ram = RAM_SCORE[cfg.ramGb] * (cfg.ramChannels === 1 ? 0.85 : 1);
+  const ram = ramScore(cfg.ramGb) * (cfg.ramChannels === 1 ? 0.85 : 1);
   const pf = pcieFactor(cfg);
   const vram = (Math.max(cfg.gpu.vramGb, 1) / 12) * 10000;
-  const gaming = (bottleneck(cfg, 1080).fps / ANCHOR_FPS) * 10000 * (cfg.ramGb === 8 ? 0.9 : 1);
+  const gaming = (bottleneck(cfg, 1080).fps / ANCHOR_FPS) * 10000 * (lowRam(cfg.ramGb) ? 0.9 : 1);
   const render = harmonic([[cfg.cpu.render, 0.5], [cfg.gpu.render * pf, 0.3], [ram, 0.2]]);
   const ai = harmonic([[vram, 0.6], [cfg.gpu.raster * pf, 0.3], [ram, 0.1]]);
   const office = harmonic([[cfg.cpu.single, 0.5], [STORAGE_SCORE[cfg.storage], 0.3], [ram, 0.2]]);
@@ -96,8 +107,8 @@ export function hardwareFindings(cfg: MachineConfig): Finding[] {
     });
   if (cfg.ramChannels === 1)
     out.push({ code: "ram_single_channel", severity: "warning", message: "RAM chạy kênh đơn, băng thông chỉ còn một nửa. Lắp thêm một thanh cùng loại để chạy kênh đôi." });
-  if (cfg.ramGb === 8)
-    out.push({ code: "ram_8gb", severity: "warning", message: "8 GB RAM đã thiếu cho game và trình duyệt hiện nay. Nâng lên 16 GB kênh đôi." });
+  if (lowRam(cfg.ramGb))
+    out.push({ code: "ram_8gb", severity: "warning", message: `${cfg.ramGb} GB RAM đã thiếu cho game và trình duyệt hiện nay. Nâng lên 16 GB kênh đôi.` });
   if (cfg.storage === "hdd")
     out.push({ code: "os_on_hdd", severity: "warning", message: "Hệ điều hành nằm trên HDD nên máy khởi động và mở ứng dụng chậm. SSD là nâng cấp đáng tiền nhất." });
   return out;
@@ -143,7 +154,7 @@ export function needLevels(cfg: MachineConfig, s: Scores = computeScores(cfg)): 
   const oDetail =
     of[0] === 4 ? "Dư sức cho Word, Excel, trình duyệt, họp trực tuyến"
     : cfg.storage === "hdd" ? "Ổ HDD làm máy khởi động, mở ứng dụng chậm"
-    : cfg.ramGb === 8 ? "Mở nhiều tab trình duyệt sẽ chậm vì 8 GB RAM"
+    : lowRam(cfg.ramGb) ? `Mở nhiều tab trình duyệt sẽ chậm vì ${cfg.ramGb} GB RAM`
     : "Dùng ổn, mở nhiều ứng dụng cùng lúc hơi chậm";
 
   const lv = (x: (string | number)[]) => ({ level: x[0] as NeedLevel["level"], levelLabel: x[1] as string });
