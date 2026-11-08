@@ -14,6 +14,7 @@ if (process.env.DATABASE_URL) {
     db,
     googleClientIds: (process.env.GOOGLE_CLIENT_IDS ?? "").split(",").map((s) => s.trim()).filter(Boolean),
     cookieSecure: process.env.COOKIE_SECURE === "1",
+    webUrl: process.env.WEB_URL || undefined,
   };
 }
 

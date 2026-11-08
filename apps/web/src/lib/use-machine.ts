@@ -15,6 +15,9 @@ export const SAMPLE_MACHINE: MachineInput = {
 };
 export const SAMPLE_SPEC: MachineSpec = specFromInput(SAMPLE_MACHINE);
 
+/** Trang /quet ghi id máy vừa cập nhật vào đây để trang Máy của tôi mở đúng máy đó */
+export const OPEN_MACHINE_KEY = "f2m.openMachine";
+
 export interface PartView {
   /** null = máy chưa lưu lên tài khoản */
   id: string | null; kind: PartKind; label: string; status: "in_use" | "replaced" | "for_sale" | "sold";
@@ -75,6 +78,7 @@ export function useMachine() {
   const [localLoaded, setLocalLoaded] = useState(false);
   const [server, setServer] = useState<MachineView[] | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [justScanned, setJustScanned] = useState(false);
   const [draft, setDraft] = useState<MachineSpec | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -91,7 +95,11 @@ export function useMachine() {
 
   useEffect(() => {
     if (!user) { setServer(null); return; }
-    void reload().catch(() => setServer([]));
+    void reload().then((ms) => {
+      let open: string | null = null;
+      try { open = sessionStorage.getItem(OPEN_MACHINE_KEY); sessionStorage.removeItem(OPEN_MACHINE_KEY); } catch { /* bỏ qua */ }
+      if (open && ms.some((m) => m.id === open)) { setActiveId(open); setJustScanned(true); }
+    }).catch(() => setServer([]));
   }, [user, reload]);
 
   // Đăng nhập lần đầu: tài khoản chưa có máy, trình duyệt có → đưa lên
@@ -151,6 +159,6 @@ export function useMachine() {
     ready, user, machines, active, activeId: active.id, setActiveId, spec, machine: specToInput(spec), isSample,
     save, saveState, error, savedTo: user ? ("account" as const) : ("browser" as const),
     canAdd: !!user && (server?.length ?? 0) > 0 && (server?.length ?? 0) < MAX_MACHINES,
-    addMachine, rename, setPrimary, removeMachine, reload,
+    addMachine, rename, setPrimary, removeMachine, reload, justScanned, dismissScanned: () => setJustScanned(false),
   };
 }

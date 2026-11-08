@@ -21,6 +21,22 @@ SKIP_FILES = {".env"}
 sys.stdout.reconfigure(encoding="utf-8")
 
 
+SCANNER_OUT = ROOT / "apps/web/public/tai/f2m-scan.exe"
+
+
+def build_scanner():
+    """Build phần mềm quét Windows (tools/f2m-scan) rồi đặt vào web: /tai/f2m-scan.exe. Không có .NET SDK thì giữ bản cũ."""
+    import shutil, subprocess, tempfile
+    if not shutil.which("dotnet"):
+        print("Không có .NET SDK: giữ nguyên f2m-scan.exe cũ" if SCANNER_OUT.exists() else "Không có .NET SDK: web chưa có f2m-scan.exe")
+        return
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["dotnet", "build", str(ROOT / "tools/f2m-scan"), "-c", "Release", "-o", tmp, "-nologo", "-v", "q"], check=True)
+        SCANNER_OUT.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(Path(tmp) / "f2m-scan.exe", SCANNER_OUT)
+    print(f"f2m-scan.exe: {SCANNER_OUT.stat().st_size / 1024:.0f} KB")
+
+
 def make_tarball() -> bytes:
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w:gz") as tar:
@@ -49,6 +65,8 @@ def main():
     services = {"api": "api", "web": "web", "all": ""}[target]
     password = os.environ.get("DEPLOY_PASS") or sys.exit("Thiếu biến môi trường DEPLOY_PASS")
 
+    if target in ("web", "all"):
+        build_scanner()
     data = make_tarball()
     print(f"Gói mã nguồn: {len(data) / 1024:.0f} KB")
 

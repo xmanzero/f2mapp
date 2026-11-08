@@ -69,6 +69,12 @@ export function MyMachine() {
       </div>
 
       {user && machines[0]?.id && <MachineTabs m={m} />}
+      {m.justScanned && (
+        <div className="scan-done" role="status">
+          <p>Đã cập nhật <b>{active.name}</b> theo kết quả quét. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng”.</p>
+          <button type="button" className="btn small" onClick={m.dismissScanned}>Đã hiểu</button>
+        </div>
+      )}
       <ReplacedNotice saveState={saveState} />
 
       {preview && (
@@ -95,6 +101,11 @@ export function MyMachine() {
               <h2 id="h-config">Cấu hình</h2>
               <span className="meta">{preview ? "Bỏ xem thử để sửa" : "Bấm vào giá trị để đổi"}</span>
             </header>
+            {!active.lastScanAt && (
+              <p className="scan-cta">
+                Máy chạy Windows? <a href="/tai/f2m-scan.exe" download className="card-link">Tải f2m-scan</a> để tự đọc cấu hình và có nhãn “Xác thực đang dùng”. <Link href="/quet" className="card-link">Đã có mã quét</Link>
+              </p>
+            )}
             <ConfigEditor spec={shownSpec} parts={active.parts} locked={!!preview} canSell={!!user && !!active.id} onChange={save} />
           </section>
           <FindingsCard findings={[...specFindings(shownSpec), ...hardwareFindings(cfg)]} cfg={cfg} />

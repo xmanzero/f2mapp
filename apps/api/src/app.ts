@@ -9,6 +9,7 @@ import { listingRoutes } from "./routes/listings.js";
 import { machineRoutes } from "./routes/machines.js";
 import { meRoutes } from "./routes/me.js";
 import { partsRoutes } from "./routes/parts.js";
+import { scanRoutes } from "./routes/scans.js";
 
 export interface AppDeps {
   db: DB;
@@ -20,6 +21,8 @@ export interface AppDeps {
   /** Giới hạn theo IP (mặc định 10 đăng ký/giờ, 30 lần đăng nhập/10 phút) — test đặt cao hơn */
   registerPerIpHour?: number;
   loginPerIp10Min?: number;
+  /** Địa chỉ web (QR của phần mềm quét trỏ tới WEB_URL/quet). Trống = lấy theo yêu cầu */
+  webUrl?: string;
 }
 
 export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: AppDeps } = {}) {
@@ -36,6 +39,7 @@ export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: A
     app.register(authRoutes(opts.deps), { prefix: "/v1/auth" });
     app.register(meRoutes(opts.deps), { prefix: "/v1" });
     app.register(listingRoutes(opts.deps), { prefix: "/v1" });
+    app.register(scanRoutes(opts.deps), { prefix: "/v1" });
   }
   return app;
 }

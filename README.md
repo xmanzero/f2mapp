@@ -50,6 +50,9 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 | `POST /v1/listings/:id/photos` | Thêm ảnh cho tin (thân yêu cầu là tệp JPEG/PNG/WebP, tối đa 3 MB, 5 ảnh / tin; máy chủ đổi sang WebP + dấu "F2m", bỏ metadata) |
 | `DELETE /v1/listings/:id/photos/:photoId`, `PUT /v1/listings/:id/photos` | Xóa ảnh; sắp lại thứ tự `{ order: [id…] }` (ảnh đầu là ảnh bìa) |
 | `GET /v1/photos/:photoId` | Tệp ảnh (lưu đệm lâu) |
+| `POST /v1/scans` | Phần mềm f2m-scan gửi kết quả quét (không cần đăng nhập, 30 lần / giờ / IP) → mã 8 ký tự, link `/quet?ma=…`, ma trận QR, cấu hình đã nhận diện. Mã sống 30 phút, dùng một lần |
+| `GET /v1/scans/:code` | Xem kết quả quét theo mã (gõ tay có gạch, chữ thường vẫn được) |
+| `POST /v1/scans/:code/claim` | Gắn vào tài khoản `{ machineId \| null, cpu?, gpu?, psuW? }`: cập nhật máy đang có hoặc tạo máy mới (tối đa 2). Linh kiện đọc được → "Xác thực đang dùng" |
 | `GET /v1/listings`, `/v1/listings/:id` | Tin rao đang bán (lọc `kind`, tìm `q`); số liên hệ chỉ trả cho người đã đăng nhập |
 | `POST /v1/listings`, `PATCH /v1/listings/:id` | Đăng tin **chỉ từ linh kiện trong máy mình** (đang lắp hoặc đã thay ra), tối đa 5 tin / 24 giờ, mỗi linh kiện một tin, thời hạn 1–30 ngày (hết hạn tự hủy, quét mỗi phút); đổi giá, đã hẹn / đã bán / ẩn, gia hạn / đăng lại (`durationDays`) |
 | `GET /v1/me/listings` | Tin của tôi + linh kiện bán được |

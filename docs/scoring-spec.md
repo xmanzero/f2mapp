@@ -186,14 +186,22 @@ Script lấy trung vị `samples_per_minute` của 3 cảnh (monster, junkshop, 
 
 ## 8. Tool thu thập cấu hình trên Windows
 
-Dựng trên [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (MPL-2.0) hoặc [Hardware.Info](https://github.com/Jinjinov/Hardware.Info) (MIT). Tool đọc cấu hình rồi hiện mã QR hoặc gửi thẳng lên tài khoản.
+**Đã có (08/11/2026): `tools/f2m-scan`**, C# .NET Framework 4.8 (có sẵn trong Windows 10/11 → một file exe ~50 KB, không cài, không cần quyền quản trị). Đọc thẳng WMI / registry / CfgMgr32, không dùng thư viện ngoài.
+
+Luồng: quét → hiện cấu hình ngay (không cần tài khoản) → "Gắn vào tài khoản" gửi dữ liệu thô lên `POST /v1/scans` → nhận mã 8 ký tự + QR trỏ tới `WEB_URL/quet?ma=…` (sống 30 phút, dùng một lần) → người dùng mở trên web hoặc quét bằng điện thoại (đã đăng nhập), chọn **cập nhật máy đang có** (xem từng thay đổi) hoặc **tạo máy mới** (đủ 2 máy thì phải xóa bớt) → phần mềm tự thấy "Đã gắn".
+
+Phần mềm chỉ gửi dữ liệu thô; **luật nhận diện nằm ở `packages/shared/src/scan.ts`** (sửa một chỗ, không phải phát hành lại phần mềm): khớp tên CPU / card với danh mục (KF ≈ K), chọn bản VRAM, chipset → thế hệ PCIe khe card, gom thanh RAM thành bộ, bỏ ổ USB. CPU / card chưa có trong danh mục: người dùng chọn mẫu gần nhất (gợi ý sẵn), mẫu tự chọn **không** được xác thực. Khi cập nhật máy, linh kiện đã khai sơ sài (thiếu tốc độ RAM, model ổ…) được khớp lỏng (`sameScannedPart`) để giữ nguyên linh kiện và tin đang bán, chỉ bổ sung chi tiết.
+
+Chạy `f2m-scan.exe --json <tệp>` để xuất dữ liệu thô (kiểm tra, gửi hỗ trợ). Địa chỉ máy chủ: `--server <url>` hoặc biến `F2M_SERVER`. `deploy.py web|all` tự build và đặt vào web ở `/tai/f2m-scan.exe`.
+
+Phương án ban đầu (để tham khảo): dựng trên [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (MPL-2.0) hoặc [Hardware.Info](https://github.com/Jinjinov/Hardware.Info) (MIT).
 
 | Dữ liệu | Cách đọc | Lưu ý |
 |---|---|---|
 | CPU | `Win32_Processor` → tra tên trong danh mục | **Socket không lấy từ WMI**, tra theo model |
 | GPU | Tên từ `Win32_VideoController`; VRAM qua DXGI hoặc registry | `AdapterRAM` **tối đa chỉ báo 4 GB** (số 32 bit) |
 | RAM | `Win32_PhysicalMemory`: dung lượng, tốc độ, khe (`DeviceLocator`/`BankLabel`) | Kênh chỉ suy ra được, cho người dùng xác nhận |
-| Ổ | `MSFT_PhysicalDisk.BusType` (NVMe/SATA) + tốc độ liên kết PCIe của bộ điều khiển | BusType không cho biết Gen |
+| Ổ | `MSFT_PhysicalDisk.BusType` (NVMe/SATA) + `DEVPKEY_PciDevice_MaxLinkSpeed` của bộ điều khiển NVMe (thiết bị cha) | BusType không cho biết Gen. Độ hao mòn (`MSFT_StorageReliabilityCounter.Wear`) cần quyền quản trị |
 | PCIe card | Tốc độ/số làn liên kết hiện tại của thiết bị PCI | Dùng cho luật PCIe |
 | Mainboard | `Win32_BaseBoard`, `Win32_BIOS` | Tra chipset → thế hệ PCIe |
 | Màn hình | `EnumDisplaySettings` / DXGI | Độ phân giải để tính điểm nghẽn |

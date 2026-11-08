@@ -85,6 +85,17 @@ export interface Database {
     expires_at: Date;
     part_was_in_use: Generated<boolean>;
   };
+  scans: {
+    id: Generated<string>;
+    code: string;
+    report: unknown; // jsonb
+    result: unknown; // jsonb
+    created_at: Generated<Date>;
+    expires_at: Date;
+    claimed_by: string | null;
+    claimed_machine: string | null;
+    claimed_at: Date | null;
+  };
   listing_photos: {
     id: Generated<string>;
     listing_id: string;

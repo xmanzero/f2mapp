@@ -1,5 +1,5 @@
 import {
-  badgesFor, computeScores, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, SCALE_VERSION, specFromInput, specToInput,
+  badgesFor, computeScores, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
   tierOf, VERIFIABLE_KINDS, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
 } from "@f2m/shared";
 import { sql } from "kysely";
@@ -153,7 +153,7 @@ export async function loadMachines(db: DB, userId: string) {
  * Linh kiện cùng khóa giữ nguyên (kể cả trạng thái xác thực, cập nhật chi tiết như sức khỏe ổ);
  * linh kiện bị bỏ ra → "đã thay ra"; linh kiện mới → "chưa xác thực".
  */
-export async function saveSpec(db: DB, userId: string, machineId: string | null, spec: MachineSpec, name?: string) {
+export async function saveSpec(db: DB, userId: string, machineId: string | null, spec: MachineSpec, name?: string, opts: { loose?: boolean } = {}) {
   const cfg = resolveMachine(specToInput(spec));
   return db.transaction().execute(async (tx) => {
     const t = tx as unknown as DB;
@@ -175,10 +175,21 @@ export async function saveSpec(db: DB, userId: string, machineId: string | null,
 
     const existing = (await partsOf(t, id)).filter((p) => p.status === "in_use");
     const used = new Set<string>();
-    for (const w of explode(spec)) {
-      const match = existing.find((p) => !used.has(p.id) && p.kind === w.kind && keyOf(p) === w.key);
+    const wants = explode(spec);
+    // Khớp đúng khóa trước; chế độ quét máy khớp thêm kiểu lỏng (bản quét đọc thêm chi tiết người dùng chưa khai)
+    const matched = new Map<Want, (typeof existing)[number]>();
+    for (const w of wants) {
+      const m = existing.find((p) => !used.has(p.id) && p.kind === w.kind && keyOf(p) === w.key);
+      if (m) { matched.set(w, m); used.add(m.id); }
+    }
+    if (opts.loose) for (const w of wants) {
+      if (matched.has(w)) continue;
+      const m = existing.find((p) => !used.has(p.id) && p.kind === w.kind && sameScannedPart(w.kind, p.details, w.details, p.label, w.label));
+      if (m) { matched.set(w, m); used.add(m.id); }
+    }
+    for (const w of wants) {
+      const match = matched.get(w);
       if (match) {
-        used.add(match.id);
         await t.updateTable("machine_parts").set({ details: JSON.stringify(w.details), label: w.label }).where("id", "=", match.id).execute();
       } else {
         await t.insertInto("machine_parts").values({
