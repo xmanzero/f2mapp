@@ -346,11 +346,13 @@ textarea.input { height: auto; min-height: 112px; padding: 12px 14px; resize: ve
 @media (max-width: 640px) { .show-sm-block { display: grid; } }
 
 /* ---------- khai báo cấu hình chi tiết ---------- */
-.cfg { display: grid; }
-.cfg-row { padding: 12px 0; }
-.cfg-row + .cfg-row { border-top: 1px solid var(--rule); }
+.cfg { display: grid; gap: 8px; }
+/* Mỗi linh kiện là một ô nền riêng, tên in đậm để dễ dò từng phần */
+.cfg-row { padding: 12px 14px 10px; border-radius: var(--radius-inner); background: var(--raised); border: 1px solid var(--rule); }
 .cfg-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
-.cfg-title { font-weight: 500; }
+.cfg-row .select-wrap select:hover, .cfg-row .mini-input:hover, .cfg-row .icon-btn:hover { background: var(--surface); }
+.cfg-row .pill:not(.pos) { background: var(--surface); }
+.cfg-title { font-size: 15px; font-weight: 700; letter-spacing: -0.005em; }
 .cfg-sub { margin-left: 8px; color: var(--faint); font-size: 13px; }
 .cfg-meta { display: flex; align-items: center; gap: 10px; }
 .part-status { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; }
