@@ -36,7 +36,9 @@ function TextField({ label, value, onCommit, placeholder, disabled, numeric, wid
   const commit = () => { if (v.trim() !== value) onCommit(v.trim()); };
   return (
     <input className="mini-input" aria-label={label} value={v} placeholder={placeholder} disabled={disabled}
-      inputMode={numeric ? "numeric" : undefined} style={width ? { width } : undefined}
+      inputMode={numeric ? "numeric" : undefined}
+      // giãn theo nội dung (tên model dài như "ASUS TUF GAMING B660M-PLUS D4"), không vượt khung
+      style={{ width: `max(${width ?? 220}px, calc(${Math.max(v.length, placeholder?.length ?? 0)}ch + 28px))` }}
       onChange={(e) => setV(numeric ? e.target.value.replace(/\D/g, "") : e.target.value)}
       onBlur={commit} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); commit(); } }} />
   );
