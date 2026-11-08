@@ -19,7 +19,7 @@ Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.c
 
 ## Đa ngôn ngữ (08/11/2026)
 
-- Nút đổi ngôn ngữ (biểu tượng + mã ngôn ngữ sẽ chuyển sang, VD "EN") cạnh nút Ngày / Đêm; trên landing ở góc phải cạnh link đăng nhập. Điện thoại: chỉ mã ngôn ngữ.
+- Nút đổi ngôn ngữ: cờ SVG + mã của ngôn ngữ sẽ chuyển sang (đang tiếng Việt: cờ Anh "EN"; đang tiếng Anh: cờ Việt Nam "VI"), cạnh nút Ngày / Đêm; trên landing ở góc phải cạnh link đăng nhập. Điện thoại: chỉ cờ. Không dùng emoji cờ (Windows không vẽ).
 - Chữ tiếng Anh dài hơn tiếng Việt ~10–20%: nút, nhãn dùng `white-space: nowrap` khi cần; kiểm tra cả hai ngôn ngữ ở 390px.
 - Số theo ngôn ngữ (10.000 / 10,000); giá luôn bằng đồng (chợ Việt Nam).
 
