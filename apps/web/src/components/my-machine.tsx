@@ -217,7 +217,7 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
           <div className="score-head">
             <TierEmblem code={r.tier.code} label={r.tier.name} />
             <div>
-              <CountUp to={s.power} separator="." duration={1.1} trigger="load" className="answer num tier-ink" />
+              <CountUp to={Math.round(s.power)} decimals={0} separator="." duration={1.1} trigger="load" className="answer num tier-ink" />
               <div className="tier-name">Hạng {r.tier.name}</div>
             </div>
           </div>
