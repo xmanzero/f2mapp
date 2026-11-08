@@ -47,7 +47,7 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 | `GET/PUT /v1/me/machine` | API cũ: máy chính dạng tóm tắt |
 | `GET /v1/leaderboard` | Bảng xếp hạng máy chính của mọi người |
 | `GET /v1/leaderboard/:userId` | Chi tiết máy chính của một người (cấu hình đầy đủ, linh kiện đã xác thực); ai cũng xem được |
-| `POST /v1/listings/:id/photos` | Thêm ảnh cho tin (thân yêu cầu là tệp JPEG/PNG/WebP, tối đa 3 MB, 5 ảnh / tin; bỏ EXIF) |
+| `POST /v1/listings/:id/photos` | Thêm ảnh cho tin (thân yêu cầu là tệp JPEG/PNG/WebP, tối đa 3 MB, 5 ảnh / tin; máy chủ đổi sang WebP + dấu "F2m", bỏ metadata) |
 | `DELETE /v1/listings/:id/photos/:photoId`, `PUT /v1/listings/:id/photos` | Xóa ảnh; sắp lại thứ tự `{ order: [id…] }` (ảnh đầu là ảnh bìa) |
 | `GET /v1/photos/:photoId` | Tệp ảnh (lưu đệm lâu) |
 | `GET /v1/listings`, `/v1/listings/:id` | Tin rao đang bán (lọc `kind`, tìm `q`); số liên hệ chỉ trả cho người đã đăng nhập |

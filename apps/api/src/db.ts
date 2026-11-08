@@ -92,6 +92,7 @@ export interface Database {
     mime: "image/jpeg" | "image/png" | "image/webp";
     size_bytes: number;
     data: Buffer | Uint8Array;
+    processed: Generated<boolean>;
     created_at: Generated<Date>;
   };
   machine_scores: {

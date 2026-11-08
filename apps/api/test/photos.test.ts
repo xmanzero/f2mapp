@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { stripJpegMeta } from "../src/services/photos.js";
+import sharp from "sharp";
+import { processPhoto } from "../src/services/photos.js";
 import { setup, spec } from "./helpers.js";
 
 let t: Awaited<ReturnType<typeof setup>>;
@@ -14,14 +15,13 @@ const req = (method: string, url: string, payload?: unknown, token?: string, typ
 const register = async (email: string) =>
   (await req("POST", "/v1/auth/register", { email, password: "matkhau-dai-123", displayName: email.split("@")[0] })).json().token as string;
 
-// JPEG nhỏ nhất: SOI + APP1 (EXIF giả, có "GPS") + DQT giả + SOS + dữ liệu + EOI
-const exif = Buffer.concat([Buffer.from([0xff, 0xe1, 0x00, 0x0a]), Buffer.from("Exif\0GPS!")]).subarray(0, 12);
-const jpeg = Buffer.concat([
-  Buffer.from([0xff, 0xd8]), exif,
-  Buffer.from([0xff, 0xdb, 0x00, 0x04, 0x01, 0x02]),
-  Buffer.from([0xff, 0xda, 0x00, 0x02, 0x11, 0x22, 0x33, 0xff, 0xd9]),
-]);
-const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+// ảnh thật tạo bằng sharp; JPEG có EXIF (bản quyền "GPSTEST") để kiểm tra metadata bị bỏ
+let jpeg: Buffer, png: Buffer;
+beforeAll(async () => {
+  jpeg = await sharp({ create: { width: 2400, height: 1800, channels: 3, background: "#808080" } })
+    .withExif({ IFD0: { Copyright: "GPSTEST" } }).jpeg().toBuffer();
+  png = await sharp({ create: { width: 640, height: 480, channels: 4, background: { r: 20, g: 40, b: 60, alpha: 0.5 } } }).png().toBuffer();
+});
 
 describe("ảnh tin rao", () => {
   let seller: string, other: string, listingId: string;
@@ -33,11 +33,22 @@ describe("ảnh tin rao", () => {
     listingId = (await req("POST", "/v1/listings", { machinePartId: gpu.id, priceVnd: 4_000_000, condition: "used", contact: "0912345678" }, seller)).json().item.id;
   });
 
-  it("bỏ EXIF của JPEG, giữ phần ảnh", () => {
-    const out = stripJpegMeta(jpeg);
-    expect(out.includes(Buffer.from("GPS"))).toBe(false);
-    expect(out.subarray(-3)).toEqual(Buffer.from([0x33, 0xff, 0xd9]));
-    expect(out.length).toBe(jpeg.length - exif.length);
+  it("đổi sang WebP, thu về cạnh dài 1600 px, đóng dấu, bỏ metadata", async () => {
+    expect(jpeg.includes(Buffer.from("GPSTEST"))).toBe(true);
+    const out = await processPhoto(jpeg);
+    const meta = await sharp(out).metadata();
+    expect(meta).toMatchObject({ format: "webp", width: 1600, height: 1200 });
+    expect(meta.exif).toBeUndefined();
+    expect(out.includes(Buffer.from("GPSTEST"))).toBe(false);
+    // góc dưới phải có dấu (sáng hơn nền xám), góc trên trái giữ nguyên
+    // stats() đọc ảnh đầu vào nên phải cắt ra buffer trước
+    const region = async (left: number, top: number) =>
+      (await sharp(await sharp(out).extract({ left, top, width: 160, height: 90 }).toBuffer()).stats()).channels[0]!;
+    const corner = await region(1600 - 160, 1200 - 90);
+    expect(corner.max).toBeGreaterThan(200); // chữ trắng
+    expect(corner.min).toBeLessThan(100); // viên nền tối
+    expect((await region(0, 0)).stdev).toBeLessThan(3); // góc khác giữ nguyên
+    expect(out.length).toBeLessThan(jpeg.length);
   });
 
   it("đăng ảnh: chỉ chủ tin; kiểm định dạng theo nội dung; tối đa 5 ảnh; ảnh đầu là ảnh bìa", async () => {
@@ -58,8 +69,8 @@ describe("ảnh tin rao", () => {
 
     const img = await req("GET", `/v1/photos/${first.json().id}`);
     expect(img.statusCode).toBe(200);
-    expect(img.headers["content-type"]).toBe("image/jpeg");
-    expect(img.rawPayload.includes(Buffer.from("GPS"))).toBe(false);
+    expect(img.headers["content-type"]).toBe("image/webp");
+    expect(img.rawPayload.includes(Buffer.from("GPSTEST"))).toBe(false);
   });
 
   it("đổi ảnh bìa, xóa ảnh", async () => {

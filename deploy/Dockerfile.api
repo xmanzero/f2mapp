@@ -2,6 +2,8 @@
 FROM node:22-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production
+# Font cho dấu "F2m" trên ảnh tin rao (sharp vẽ chữ SVG qua fontconfig)
+RUN apt-get update && apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core && rm -rf /var/lib/apt/lists/*
 
 # Chép package.json của mọi workspace để npm ci khớp lockfile, nhưng chỉ cài phần của API + shared
 COPY package.json package-lock.json tsconfig.base.json ./
