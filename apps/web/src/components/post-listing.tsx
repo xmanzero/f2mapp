@@ -135,11 +135,11 @@ export function PostListing() {
 
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-form">
-          <header><h2 id="h-form">Linh kiện bán</h2><Link href="/" className="card-link" style={{ fontSize: 13 }}>Sửa cấu hình máy</Link></header>
+          <header><h2 id="h-form">Linh kiện bán</h2><Link href="/may" className="card-link" style={{ fontSize: 13 }}>Sửa cấu hình máy</Link></header>
           {parts === null ? (
             <div className="skeleton" style={{ height: 160 }} aria-busy="true" />
           ) : parts.length === 0 ? (
-            <p className="empty">Bạn chưa khai báo máy. Chỉ bán được linh kiện có trong máy của mình. <Link href="/" className="card-link">Khai báo ở Máy của tôi</Link></p>
+            <p className="empty">Bạn chưa khai báo máy. Chỉ bán được linh kiện có trong máy của mình. <Link href="/may" className="card-link">Khai báo ở Máy của tôi</Link></p>
           ) : (
             <form className="form" noValidate onSubmit={(e) => { e.preventDefault(); void submit(); }}>
               <p className="hint" style={{ margin: 0 }}>Ô có dấu <span className="req">*</span> là bắt buộc.</p>

@@ -208,7 +208,7 @@ export function Market() {
           </>
         )}
         <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>
-          “Lắp vào máy” tính theo cấu hình ở <Link href="/" className="card-link">Máy của tôi</Link>. Điểm / triệu: điểm linh kiện (card: sức mạnh game, CPU: gaming) chia cho giá.
+          “Lắp vào máy” tính theo cấu hình ở <Link href="/may" className="card-link">Máy của tôi</Link>. Điểm / triệu: điểm linh kiện (card: sức mạnh game, CPU: gaming) chia cho giá.
         </p>
       </section>
     </>

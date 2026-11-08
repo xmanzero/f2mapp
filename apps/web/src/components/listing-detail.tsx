@@ -135,7 +135,7 @@ export function ListingDetail() {
           ) : (
             <p className="empty">Linh kiện này chưa có trong danh mục điểm của pcdex nên chưa so được điểm và giá.</p>
           )}
-          {isSample && item.inCatalog && <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>Đang so với máy mẫu. <Link href="/" className="card-link">Khai báo máy của bạn</Link> để thấy đúng mức tăng.</p>}
+          {isSample && item.inCatalog && <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>Đang so với máy mẫu. <Link href="/may" className="card-link">Khai báo máy của bạn</Link> để thấy đúng mức tăng.</p>}
         </section>
       </div>
     </>

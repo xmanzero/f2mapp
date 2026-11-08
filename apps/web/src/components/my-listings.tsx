@@ -90,7 +90,7 @@ export function MyListings() {
           ) : (() => {
             const stored = data.parts.filter((p) => !p.inUse && !p.listingId);
             return stored.length === 0 ? (
-              <p className="empty">Khi bạn đổi linh kiện ở <Link href="/" className="card-link">Máy của tôi</Link>, linh kiện cũ sẽ hiện ở đây để đăng bán nhanh. Linh kiện đang lắp cũng bán được từ trang đăng tin.</p>
+              <p className="empty">Khi bạn đổi linh kiện ở <Link href="/may" className="card-link">Máy của tôi</Link>, linh kiện cũ sẽ hiện ở đây để đăng bán nhanh. Linh kiện đang lắp cũng bán được từ trang đăng tin.</p>
             ) : (
               <ul className="rows">
                 {stored.map((p) => (

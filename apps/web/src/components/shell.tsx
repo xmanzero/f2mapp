@@ -10,7 +10,7 @@ import { Mark } from "./mark";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV = [
-  { href: "/", label: "Máy của tôi", short: "Máy", icon: Cpu },
+  { href: "/may", label: "Máy của tôi", short: "Máy", icon: Cpu },
   { href: "/xep-hang", label: "Bảng xếp hạng", short: "Xếp hạng", icon: Trophy },
   { href: "/cho", label: "Chợ linh kiện", short: "Chợ", icon: Store },
 ];
@@ -48,7 +48,10 @@ function Frame({ children }: { children: ReactNode }) {
   const { user } = useSession();
   const router = useRouter();
   const [q, setQ] = useState("");
-  const current = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+  const current = (href: string) => path.startsWith(href);
+
+  // Trang chủ (landing) chiếm toàn trang, không có thanh bên / thanh trên của app
+  if (path === "/") return <>{children}</>;
 
   return (
     <div className="app">

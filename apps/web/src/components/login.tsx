@@ -40,7 +40,7 @@ export function PasswordInput({ id, value, onChange, autoComplete, describedBy, 
 export function Login({ initialMode = "login" }: { initialMode?: "login" | "register" }) {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") ?? "/";
+  const next = params.get("next") ?? "/may";
   const { setUser, refresh } = useSession();
   const { machine, isSample, ready } = useMachine();
   const [config, setConfig] = useState<AuthConfig | null>(null);

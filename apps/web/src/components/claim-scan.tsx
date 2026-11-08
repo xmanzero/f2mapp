@@ -95,7 +95,7 @@ export function ClaimScan() {
         body: { machineId: target === "new" ? null : target, cpu, gpu, ...(target === "new" ? { psuW } : {}) },
       });
       try { sessionStorage.setItem(OPEN_MACHINE_KEY, r.machineId); } catch { /* bỏ qua */ }
-      router.push("/");
+      router.push("/may");
     } catch (e) {
       setError((e as ApiError).message);
       setBusy(false);
@@ -147,7 +147,7 @@ export function ClaimScan() {
     return <>{title}<p className="empty">{loadError} <Link href="/quet" className="card-link">Nhập mã khác</Link></p></>;
   if (!scan) return title;
   if (scan.claimed)
-    return <>{title}<p className="empty">Kết quả quét này đã được gắn vào {scan.claimed.machineName ? <b>{scan.claimed.machineName}</b> : "một máy"}{scan.claimed.handle ? <> của @{scan.claimed.handle}</> : null}. <Link href="/" className="card-link">Xem máy của tôi</Link></p></>;
+    return <>{title}<p className="empty">Kết quả quét này đã được gắn vào {scan.claimed.machineName ? <b>{scan.claimed.machineName}</b> : "một máy"}{scan.claimed.handle ? <> của @{scan.claimed.handle}</> : null}. <Link href="/may" className="card-link">Xem máy của tôi</Link></p></>;
   if (scan.expired)
     return <>{title}<p className="empty">Mã đã hết hạn (dùng được 30 phút). Bấm “Quét lại” trên phần mềm để lấy mã mới.</p></>;
 

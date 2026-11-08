@@ -45,7 +45,7 @@ export default function Page() {
 
         <h2>Quyền của bạn</h2>
         <ul>
-          <li>Xem và sửa thông tin trong trang <Link href="/tai-khoan" className="card-link">Tài khoản</Link> và <Link href="/" className="card-link">Máy của tôi</Link>.</li>
+          <li>Xem và sửa thông tin trong trang <Link href="/tai-khoan" className="card-link">Tài khoản</Link> và <Link href="/may" className="card-link">Máy của tôi</Link>.</li>
           <li><b>Xóa tài khoản</b> bất cứ lúc nào ở cuối trang Tài khoản: toàn bộ máy, linh kiện, tin rao, ảnh và liên kết Google bị xóa vĩnh viễn ngay lập tức.</li>
           <li>Yêu cầu khác (trích xuất dữ liệu, hỏi đáp): gửi email tới <a href={`mailto:${CONTACT}`} className="card-link">{CONTACT}</a>.</li>
         </ul>

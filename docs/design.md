@@ -37,13 +37,22 @@ Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.c
 
 | Màn hình | Câu hỏi chính | Khối lớn nhất |
 |---|---|---|
-| Máy của tôi `/` | Máy mạnh cỡ nào, nghẽn ở đâu, nên nâng gì? | Điểm sức mạnh 36px + hạng. Dòng dưới tiêu đề là phát hiện quan trọng nhất |
+| Máy của tôi `/may` | Máy mạnh cỡ nào, nghẽn ở đâu, nên nâng gì? | Điểm sức mạnh 36px + hạng. Dòng dưới tiêu đề là phát hiện quan trọng nhất |
 | Bảng xếp hạng `/xep-hang` | Máy tôi đứng thứ mấy? | Bảng xếp theo điểm, dòng của bạn được tô nền |
 | Chợ linh kiện `/cho` | Mua gì đáng tiền cho máy tôi? | Danh sách tin; dòng dưới tiêu đề là tin đáng tiền nhất cho máy bạn |
 
 - Cấu hình sửa ngay trong dòng (select hiện như chữ), điểm cập nhật tức thì.
 - Gợi ý nâng cấp có **Xem thử**: cả màn hình chuyển sang cấu hình mới, có băng "Lắp vào máy tôi / Bỏ xem thử".
 - Điện thoại: thanh bên gập thành thanh dưới đáy 3 mục; bảng thành dòng hai tầng; thẻ đếm lọc cuộn ngang.
+
+## Landing page `/` (08/11/2026)
+
+- taste-skill hướng **"The product performs"** (seed 1221121649, `.taste-skill/direction.json`), giữ màu và chữ của app. Ý tưởng: cấu hình máy của chính người xem thành dụng cụ chấm điểm — màn đầu là **công cụ chấm điểm sống** (chọn CPU + card → điểm, hạng, FPS 1080p/1440p/4K, chỗ nghẽn; dùng đúng công thức `packages/shared`).
+- Luôn tối (token đêm đặt lại trong `.lp`), vì ảnh giao diện là bản tối. Không có thanh bên của app (`Shell` bỏ khung khi đường dẫn là `/`). CSS riêng `apps/web/src/app/landing.css`.
+- Phần: màn đầu hai nửa → dải màn hình thật cuộn ngang (mảnh giữa sáng) → mảnh Cấu hình có chú thích hai lề (rê chú thích thì vùng đó sáng) → thanh trượt 4 bước → nền tảng (tab Web / Windows / Android / iOS) → hàng ô lời mời → chân trang một dòng.
+- Hình: ảnh chụp giao diện thật ở `apps/web/public/landing/*.webp` (chụp lại khi giao diện đổi) + 2 ảnh CC0 (ghi nguồn ở chân trang, `credits.json`).
+- Khác bản mẫu: ô lời mời nền tối thay vì lime (lime chỉ trên dữ liệu); bỏ phần "con số theo thanh trượt" (trùng màn đầu).
+- Máy đo (08/11/2026): 0 FAIL ở 1440/768/390; còn 4 WARN có chủ đích (khoảng nghỉ màn đầu, dải cuộn ngang, hai mảnh mờ ở mép dải, không có video vì không có clip thật phù hợp).
 
 ## Kiểm tra
 

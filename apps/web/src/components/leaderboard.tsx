@@ -88,7 +88,7 @@ export function Leaderboard() {
           <p className="sub">
             {real === null ? "Đang tải…"
               : me ? `Máy của bạn (${n0(me.power)} điểm) đứng thứ ${me.rank} trên ${ranked.length} máy.`
-              : user ? <>Bạn chưa khai báo máy. <Link href="/" className="card-link">Khai báo ở Máy của tôi</Link> để có tên trong bảng.</>
+              : user ? <>Bạn chưa khai báo máy. <Link href="/may" className="card-link">Khai báo ở Máy của tôi</Link> để có tên trong bảng.</>
               : <>{ranked.length} máy, xếp theo điểm sức mạnh. <Link href="/dang-nhap?next=/xep-hang" className="card-link">Đăng nhập</Link> để có tên trong bảng.</>}
           </p>
         </div>
