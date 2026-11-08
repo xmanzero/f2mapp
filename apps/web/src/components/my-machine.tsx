@@ -15,6 +15,7 @@ import { useMachine, type PartView } from "@/lib/use-machine";
 import { MachineDiagram } from "./machine-diagram";
 import { TierEmblem, tierVars } from "./tier";
 import { ConfigEditor } from "./config-editor";
+import CountUp from "./CountUp";
 
 const SEV_ORDER: Record<Severity, number> = { critical: 0, warning: 1, info: 2, ok: 3 };
 const sevClass = (s: Severity) => (s === "critical" ? "neg" : s === "warning" ? "warn" : s === "ok" ? "pos" : "");
@@ -216,7 +217,7 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
           <div className="score-head">
             <TierEmblem code={r.tier.code} label={r.tier.name} />
             <div>
-              <span className="answer num tier-ink">{n0(s.power)}</span>
+              <CountUp to={s.power} separator="." duration={1.1} trigger="load" className="answer num tier-ink" />
               <div className="tier-name">Hạng {r.tier.name}</div>
             </div>
           </div>

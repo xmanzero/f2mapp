@@ -25,6 +25,7 @@ Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.c
 - Sơ đồ máy (`components/machine-diagram.tsx`): bo mạch vẽ theo cấu hình (CPU, đúng số thanh RAM, card, ổ NVMe/SATA, nguồn); linh kiện xác thực đang dùng viền màu dữ liệu.
 - Font thứ hai Chakra Petch (có dấu tiếng Việt) chỉ cho tiêu đề trang và số lớn (điểm, hạng, top 3); bảng và chữ thường vẫn Inter.
 - Bảng xếp hạng: bục top 3 (điện thoại: dải thẻ cuộn ngang).
+- Thẻ điểm ở chế độ Ngày: nền trắng, khung 2px + dải trên 6px màu hạng, bóng rất nhẹ (bóng màu đậm bị máy đo đánh FAIL "heavy-shadow"). Số điểm chạy từ 0 lên bằng `CountUp` của React Bits (chế độ `count`; chế độ `roll` làm máy đo đọc nhầm thành tiêu đề dài 4 dòng), huy hiệu hiện lên; cả hai tắt khi người dùng giảm chuyển động.
 
 ## Bản sắc riêng
 

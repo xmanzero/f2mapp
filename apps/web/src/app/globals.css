@@ -435,24 +435,22 @@ table.data tr.life-ending td:first-child { border-left: 3px solid var(--warning)
 /* ---------- thẻ điểm: nền theo màu hạng ---------- */
 .score-card { background: var(--tier-field); }
 .score-card .well { background: var(--surface); }
-/* Ngày: nền trang và nền hạng gần nhau nên thẻ bị chìm → thẻ trắng, khung + dải trên màu hạng, bóng nhuốm màu hạng */
+/* Ngày: nền trang và nền hạng gần nhau nên thẻ bị chìm → thẻ trắng, khung + dải trên màu hạng, bóng nhẹ */
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .score-card {
   position: relative; overflow: hidden; background: var(--surface); padding-top: 26px;
-  box-shadow: 0 0 0 2px var(--tier), 0 18px 40px -18px color-mix(in srgb, var(--tier) 55%, transparent);
+  outline: 2px solid var(--tier); outline-offset: -2px; box-shadow: 0 6px 16px rgb(0 0 0 / 0.06);
 } }
 :root[data-theme="light"] .score-card {
   position: relative; overflow: hidden; background: var(--surface); padding-top: 26px;
-  box-shadow: 0 0 0 2px var(--tier), 0 18px 40px -18px color-mix(in srgb, var(--tier) 55%, transparent);
+  outline: 2px solid var(--tier); outline-offset: -2px; box-shadow: 0 6px 16px rgb(0 0 0 / 0.06);
 }
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .score-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 6px; background: var(--tier); } }
 :root[data-theme="light"] .score-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 6px; background: var(--tier); }
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .score-card .well { background: var(--tier-field); } }
 :root[data-theme="light"] .score-card .well { background: var(--tier-field); }
-/* hiệu ứng: số điểm và huy hiệu hiện lên khi mở trang (tắt nếu người dùng giảm chuyển động) */
-@keyframes score-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* hiệu ứng: số điểm cuộn lên (CountUp của React Bits), huy hiệu hiện lên khi mở trang (tắt nếu người dùng giảm chuyển động) */
 @keyframes emblem-pop { from { opacity: 0; transform: scale(0.82) rotate(-8deg); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: no-preference) {
-  .score-card .answer { display: inline-block; animation: score-rise 420ms cubic-bezier(.2,.8,.2,1) both; }
   .score-card .score-head > svg, .score-card .score-head > :first-child { animation: emblem-pop 480ms cubic-bezier(.2,.8,.2,1) both; }
 }
 .score-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 18px; align-items: start; }
