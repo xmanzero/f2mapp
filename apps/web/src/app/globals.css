@@ -323,7 +323,7 @@ textarea.input { height: auto; min-height: 112px; padding: 12px 14px; resize: ve
 .owner-price { display: grid; grid-template-columns: auto minmax(0, 220px) auto; gap: 10px; align-items: center; }
 @media (max-width: 480px) { .owner-price { grid-template-columns: minmax(0, 1fr) auto; } .owner-price label { grid-column: 1 / -1; } }
 .label-like { font-weight: 500; }
-.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
 @media (max-width: 480px) { .row2 { grid-template-columns: minmax(0, 1fr); } }
 .segmented.wrap { flex-wrap: wrap; border-radius: 18px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -563,3 +563,11 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .preview-photo { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-inner); margin-bottom: 12px; background: var(--raised); }
 .link-btn { all: unset; cursor: pointer; color: var(--text); text-decoration: underline; text-underline-offset: 3px; font-weight: 500; }
 .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* ô bắt buộc */
+.req { color: var(--negative); font-weight: 600; }
+.field-error { display: block; margin: 4px 0 0; color: var(--negative); font-size: 13px; font-weight: 500; }
+.input[aria-invalid="true"] { border-color: var(--negative); box-shadow: 0 0 0 1px var(--negative); }
+.pick[aria-invalid="true"] { outline: 2px solid var(--negative); outline-offset: 4px; border-radius: 12px; }
+.pick:focus { outline: none; }
+.pick[aria-invalid="true"]:focus { outline: 2px solid var(--negative); }

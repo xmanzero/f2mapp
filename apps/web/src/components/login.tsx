@@ -130,18 +130,18 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
           <form className="form" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
             {mode === "register" && (
               <div className="field">
-                <label htmlFor="displayName">Tên hiển thị</label>
+                <label htmlFor="displayName">Tên hiển thị <span className="req" aria-hidden="true">*</span></label>
                 <input id="displayName" className="input" autoComplete="nickname" required minLength={2} maxLength={40}
                   value={form.displayName} onChange={(e) => set("displayName")(e.target.value)} placeholder="Tên mọi người sẽ thấy" />
               </div>
             )}
             <div className="field">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email <span className="req" aria-hidden="true">*</span></label>
               <input id="email" className="input" type="email" inputMode="email" autoComplete="email" required
                 autoCapitalize="none" spellCheck={false} value={form.email} onChange={(e) => set("email")(e.target.value)} placeholder="ten@gmail.com" />
             </div>
             <div className="field">
-              <label htmlFor="password">Mật khẩu</label>
+              <label htmlFor="password">Mật khẩu <span className="req" aria-hidden="true">*</span></label>
               <PasswordInput id="password" value={form.password} onChange={set("password")}
                 autoComplete={mode === "login" ? "current-password" : "new-password"}
                 minLength={mode === "register" ? minLen : undefined} describedBy={mode === "register" ? "pw-hint" : undefined} />

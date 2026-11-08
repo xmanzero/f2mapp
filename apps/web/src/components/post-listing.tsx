@@ -30,6 +30,8 @@ export function PostListing() {
   const [pics, setPics] = useState<{ key: string; src: string; blob: Blob }[]>([]);
   const [picError, setPicError] = useState<string | null>(null);
   const [step, setStep] = useState<string | null>(null);
+  /** đã bấm Đăng tin: từ đó hiện lỗi dưới từng ô bắt buộc */
+  const [tried, setTried] = useState(false);
   useEffect(() => () => pics.forEach((p) => URL.revokeObjectURL(p.src)), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -82,15 +84,22 @@ export function PostListing() {
   const removePic = (key: string) => setPics((x) => { const p = x.find((y) => y.key === key); if (p) URL.revokeObjectURL(p.src); return x.filter((y) => y.key !== key); });
   const coverPic = (key: string) => setPics((x) => [...x.filter((y) => y.key === key), ...x.filter((y) => y.key !== key)]);
 
-  // lý do chưa đăng được, hiện ngay dưới nút
-  const missing = [
-    !part && "chọn linh kiện",
-    price < 10_000 && (price ? "giá bán từ 10.000 ₫" : "giá bán"),
-    f.contact.trim().length < 6 && "Zalo / số điện thoại",
-  ].filter((x): x is string => !!x);
+  // ô bắt buộc: lỗi của từng ô (null = hợp lệ)
+  const errs = {
+    part: part ? null : "Chọn một linh kiện để bán",
+    price: price >= 10_000 ? null : price ? "Giá bán tối thiểu 10.000 ₫" : "Nhập giá bán",
+    contact: f.contact.trim().length >= 6 ? null : f.contact.trim() ? "Số liên hệ cần ít nhất 6 ký tự" : "Nhập Zalo hoặc số điện thoại để người mua liên hệ",
+  };
+  const firstBad = (Object.keys(errs) as (keyof typeof errs)[]).find((k) => errs[k]);
+  const show = (k: keyof typeof errs) => (tried ? errs[k] : null);
 
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((x) => ({ ...x, [k]: v }));
   const submit = async () => {
+    if (firstBad) {
+      setTried(true);
+      document.getElementById(firstBad === "part" ? "pick-part" : firstBad)?.focus();
+      return;
+    }
     setBusy(true); setError(null);
     try {
       const r = await api<{ item: Listing }>("/v1/listings", {
@@ -131,9 +140,10 @@ export function PostListing() {
           ) : parts.length === 0 ? (
             <p className="empty">Bạn chưa khai báo máy. Chỉ bán được linh kiện có trong máy của mình. <Link href="/" className="card-link">Khai báo ở Máy của tôi</Link></p>
           ) : (
-            <form className="form" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
-              <fieldset className="pick">
-                <legend className="sr-only">Chọn linh kiện</legend>
+            <form className="form" noValidate onSubmit={(e) => { e.preventDefault(); void submit(); }}>
+              <p className="hint" style={{ margin: 0 }}>Ô có dấu <span className="req">*</span> là bắt buộc.</p>
+              <fieldset className="pick" id="pick-part" tabIndex={-1} aria-invalid={!!show("part")} aria-describedby={show("part") ? "part-err" : undefined}>
+                <legend className="sr-only">Chọn linh kiện (bắt buộc)</legend>
                 {groups.map((g) => (
                   <div key={g.name} className="pick-group">
                     <p className="pick-machine">{g.name}{g.primary && groups.length > 1 ? " (máy chính)" : ""}</p>
@@ -150,14 +160,16 @@ export function PostListing() {
                   </div>
                 ))}
               </fieldset>
+              {show("part") && <p id="part-err" className="field-error" role="alert">{show("part")}</p>}
               {part?.inUse && <p className="notice" style={{ margin: 0 }}>Linh kiện này đang lắp trong máy. Bán xong, f2m sẽ nhắc bạn khai linh kiện thay thế.</p>}
 
               <div className="row2">
                 <div className="field">
-                  <label htmlFor="price">Giá bán (₫)</label>
-                  <input id="price" className="input num" inputMode="numeric" required value={price ? price.toLocaleString("vi-VN") : ""}
+                  <label htmlFor="price">Giá bán (₫) <span className="req" aria-hidden="true">*</span></label>
+                  <input id="price" className="input num" inputMode="numeric" required aria-required="true" aria-invalid={!!show("price")} value={price ? price.toLocaleString("vi-VN") : ""}
                     onChange={(e) => set("price", e.target.value.replace(/\D/g, "").slice(0, 9))} placeholder="Nhập giá bán"
-                    aria-describedby="price-hint" />
+                    aria-describedby={show("price") ? "price-err price-hint" : "price-hint"} />
+                  {show("price") && <span id="price-err" className="field-error" role="alert">{show("price")}</span>}
                   <span id="price-hint" className="hint">
                     {ref ? <>Giá giữa của {ref.count} tin cùng linh kiện: {vnd(ref.median)}{!price && <> · <button type="button" className="link-btn" onClick={() => set("price", String(ref.median))}>Dùng giá này</button></>}</> : "Từ 10.000 ₫"}
                   </span>
@@ -192,9 +204,10 @@ export function PostListing() {
                 </span>
               </div>
               <div className="field">
-                <label htmlFor="contact">Zalo / số điện thoại liên hệ</label>
-                <input id="contact" className="input" type="tel" inputMode="tel" autoComplete="tel" required minLength={6} maxLength={60}
-                  value={f.contact} onChange={(e) => set("contact", e.target.value)} aria-describedby="contact-hint" />
+                <label htmlFor="contact">Zalo / số điện thoại liên hệ <span className="req" aria-hidden="true">*</span></label>
+                <input id="contact" className="input" type="tel" inputMode="tel" autoComplete="tel" required aria-required="true" aria-invalid={!!show("contact")} minLength={6} maxLength={60}
+                  value={f.contact} onChange={(e) => set("contact", e.target.value)} aria-describedby={show("contact") ? "contact-err contact-hint" : "contact-hint"} />
+                {show("contact") && <span id="contact-err" className="field-error" role="alert">{show("contact")}</span>}
                 <span id="contact-hint" className="hint">Chỉ người đã đăng nhập mới thấy số này.</span>
               </div>
               <div className="field">
@@ -204,8 +217,8 @@ export function PostListing() {
               </div>
               <PhotoPicker items={pics} onAdd={(fs) => void addPics(fs)} onRemove={removePic} onCover={coverPic} disabled={busy} error={picError} />
               {error && <p className="form-error" role="alert" style={{ marginTop: 0 }}>{error}</p>}
-              <button className="btn primary block" disabled={busy || missing.length > 0}>{busy ? (step ?? "Đang đăng…") : "Đăng tin"}</button>
-              {missing.length > 0 && !busy && <p className="hint" role="status" style={{ margin: 0, textAlign: "center" }}>Còn thiếu: {missing.join(", ")}</p>}
+              <button className="btn primary block" disabled={busy}>{busy ? (step ?? "Đang đăng…") : "Đăng tin"}</button>
+              {tried && firstBad && <p className="field-error" style={{ margin: 0, textAlign: "center" }}>Điền đủ các ô bắt buộc được đánh dấu đỏ ở trên.</p>}
             </form>
           )}
         </section>

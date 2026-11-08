@@ -37,12 +37,12 @@ function PasswordForm({ hasPassword, onDone }: { hasPassword: boolean; onDone: (
     <form className="form" style={{ marginTop: 16 }} onSubmit={(e) => { e.preventDefault(); void submit(); }}>
       {hasPassword && (
         <div className="field">
-          <label htmlFor="cur-pw">Mật khẩu hiện tại</label>
+          <label htmlFor="cur-pw">Mật khẩu hiện tại <span className="req" aria-hidden="true">*</span></label>
           <PasswordInput id="cur-pw" value={cur} onChange={setCur} autoComplete="current-password" />
         </div>
       )}
       <div className="field">
-        <label htmlFor="new-pw">Mật khẩu mới</label>
+        <label htmlFor="new-pw">Mật khẩu mới <span className="req" aria-hidden="true">*</span></label>
         <PasswordInput id="new-pw" value={next} onChange={setNext} autoComplete="new-password" minLength={8} describedBy="new-pw-hint" />
         <span id="new-pw-hint" className="hint">Từ 8 ký tự. Lưu xong, các thiết bị khác sẽ bị đăng xuất.</span>
       </div>
@@ -104,11 +104,11 @@ export function Account() {
           <header><h2 id="h-profile">Hồ sơ</h2><span className="meta">Hiện trên bảng xếp hạng và tin rao</span></header>
           <form className="form" onSubmit={(e) => { e.preventDefault(); void save(); }}>
             <div className="field">
-              <label htmlFor="displayName">Tên hiển thị</label>
+              <label htmlFor="displayName">Tên hiển thị <span className="req" aria-hidden="true">*</span></label>
               <input id="displayName" className="input" value={form.displayName} onChange={set("displayName")} maxLength={40} required minLength={2} />
             </div>
             <div className="field">
-              <label htmlFor="handle">Tên tài khoản</label>
+              <label htmlFor="handle">Tên tài khoản <span className="req" aria-hidden="true">*</span></label>
               <input id="handle" className="input" value={form.handle} onChange={set("handle")} maxLength={20} aria-describedby="handle-hint"
                 autoCapitalize="none" autoCorrect="off" spellCheck={false} />
               <span id="handle-hint" className="hint">3–20 ký tự: chữ thường không dấu, số, dấu chấm, gạch dưới.</span>
