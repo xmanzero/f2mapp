@@ -235,7 +235,7 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
           <p className="muted" style={{ marginTop: 10 }}>Gấp <span className="num">{ratio(s.power / 10000)}</span> lần máy mốc (i5-12400F + RTX 3060)</p>
           {isAccount && (
             <p style={{ marginTop: 8 }}>
-              <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm benchmark đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa chạy phần mềm benchmark"}>
+              <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm f2m-scan đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa quét bằng phần mềm f2m-scan"}>
                 {verified ? "Xác thực đang dùng" : "Chưa xác thực"}
               </span>
             </p>

@@ -139,6 +139,9 @@ export async function myListings(db: DB, userId: string) {
 }
 
 /** Linh kiện bán được: đang lắp hoặc đã thay ra, trong các máy của người dùng, kèm tin đang bán (nếu có) */
+/** Mẫu gần đúng chọn khi quét thấy CPU / card chưa có trong danh mục (không phải linh kiện thật) */
+export const isSubstitute = (details: unknown) => !!(details as { substituteFor?: string } | null)?.substituteFor;
+
 export async function sellableParts(db: DB, userId: string) {
   const rows = await db.selectFrom("machine_parts as mp")
     .innerJoin("machines as m", "m.id", "mp.machine_id")
@@ -147,7 +150,7 @@ export async function sellableParts(db: DB, userId: string) {
       "m.id as machine_id", "m.name as machine_name", "m.is_primary", "l.id as listing_id"])
     .where("m.owner_id", "=", userId).where("mp.status", "in", ["in_use", "replaced", "for_sale"])
     .orderBy("m.is_primary", "desc").orderBy("mp.added_at").execute();
-  return rows.map((r) => ({
+  return rows.filter((r) => !isSubstitute(r.details)).map((r) => ({
     id: r.id, kind: r.kind, label: r.label, details: r.details, inUse: r.status === "in_use",
     // "xác thực đang dùng": phần mềm quét đã thấy và linh kiện vẫn còn trong máy
     verified: !!r.verified_at && r.status === "in_use",
@@ -165,9 +168,11 @@ export async function createListing(db: DB, userId: string, input: CreateListing
   return db.transaction().execute(async (tx) => {
     const t = tx as unknown as DB;
     const mp = await t.selectFrom("machine_parts as mp").innerJoin("machines as m", "m.id", "mp.machine_id")
-      .select(["mp.id", "mp.kind", "mp.label", "mp.part_id", "mp.status"])
+      .select(["mp.id", "mp.kind", "mp.label", "mp.part_id", "mp.status", "mp.details"])
       .where("mp.id", "=", input.machinePartId).where("m.owner_id", "=", userId).executeTakeFirst();
     if (!mp) throw new ListingError(400, "Chỉ đăng bán được linh kiện có trong máy của bạn. Khai báo linh kiện ở Máy của tôi trước.");
+    if (isSubstitute(mp.details))
+      throw new ListingError(400, "Đây là mẫu gần đúng thay cho linh kiện chưa có trong danh mục, không phải linh kiện bạn sở hữu nên không đăng bán được.");
     if (mp.status === "sold") throw new ListingError(409, "Linh kiện này đã bán");
     const active = await t.selectFrom("listings").select("id").where("machine_part_id", "=", mp.id)
       .where("status", "in", ["active", "reserved"]).executeTakeFirst();

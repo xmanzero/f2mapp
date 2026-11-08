@@ -45,9 +45,18 @@ function TextField({ label, value, onCommit, placeholder, disabled, numeric, wid
 function PartStatus({ part, canSell }: { part?: PartView; canSell: boolean }) {
   // máy chưa lưu vào tài khoản (khách): chưa có gì để xác thực hay bán
   if (!part || !part.id) return null;
+  const real = (part.details as { substituteFor?: string } | null | undefined)?.substituteFor;
+  if (real)
+    return (
+      <span className="part-status">
+        <span className="pill warn" title={`Máy quét thấy ${real}, chưa có trong danh mục điểm nên tạm tính theo mẫu gần nhất. Khi danh mục có mẫu này, quét lại để xác thực.`}>
+          Mẫu gần đúng
+        </span>
+      </span>
+    );
   return (
     <span className="part-status">
-      <span className={`pill ${part.verified ? "pos" : ""}`} title={part.verified ? "Phần mềm benchmark đã quét thấy linh kiện này đang dùng trong máy" : "Tự khai, chưa chạy phần mềm benchmark để xác nhận"}>
+      <span className={`pill ${part.verified ? "pos" : ""}`} title={part.verified ? "Phần mềm f2m-scan đã quét thấy linh kiện này đang dùng trong máy" : "Tự khai, chưa quét bằng phần mềm f2m-scan để xác nhận"}>
         {part.verified ? "Xác thực đang dùng" : "Chưa xác thực"}
       </span>
       {canSell && part.id && (part.listingId
@@ -101,7 +110,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         </Select>
       </Section>
 
-      <Section title="Mainboard" sub="Phần mềm benchmark đọc được hãng, model, chipset" part={inUse("mainboard")[0]} canSell={canSell}>
+      <Section title="Mainboard" sub="f2m-scan đọc được hãng, model, chipset" part={inUse("mainboard")[0]} canSell={canSell}>
         <TextField label="Model mainboard" value={spec.mainboard.model ?? ""} placeholder="VD: MSI PRO B660M-A" disabled={locked}
           onCommit={(v) => set({ mainboard: { ...spec.mainboard, model: v || null } })} />
         <TextField label="Chipset" value={spec.mainboard.chipset ?? ""} placeholder="B660" disabled={locked} width={88}
@@ -165,7 +174,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         </button>
       )}
 
-      <Section title="Nguồn" sub={`Cần từ ${psuNeeded(cfg)} W · phần mềm benchmark không đọc được nguồn`} part={inUse("psu")[0]} canSell={canSell}>
+      <Section title="Nguồn" sub={`Cần từ ${psuNeeded(cfg)} W · f2m-scan không đọc được nguồn`} part={inUse("psu")[0]} canSell={canSell}>
         <Select label="Công suất nguồn" value={spec.psu.wattage} disabled={locked} onChange={(v) => set({ psu: { ...spec.psu, wattage: Number(v) } })}>
           {[...new Set([...PSU_OPTIONS, spec.psu.wattage])].sort((a, b) => a - b).map((w) => <option key={w} value={w}>{w} W</option>)}
         </Select>

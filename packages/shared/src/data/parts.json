@@ -212,6 +212,34 @@
    }
   },
   {
+   "name": "Core i7-14700",
+   "socket": "LGA1700",
+   "powerW": 219,
+   "releaseYear": 2024,
+   "gaming": 13500,
+   "single": 12500,
+   "render": 19277,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-14700F",
+   "socket": "LGA1700",
+   "powerW": 219,
+   "releaseYear": 2024,
+   "gaming": 13500,
+   "single": 12500,
+   "render": 18942,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
    "name": "Core i9-13900K",
    "socket": "LGA1700",
    "powerW": 253,
@@ -1444,6 +1472,42 @@
    "vramGb": 6,
    "pcieLanes": 16,
    "boardPowerW": 125,
+   "psuRecommendedW": 450,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1660 Ti",
+   "fps": {
+    "1080": 43.7,
+    "1440": 25.3,
+    "2160": 9.5
+   },
+   "raster": 7100,
+   "rayTracing": null,
+   "render": 3491,
+   "vramGb": 6,
+   "pcieLanes": 16,
+   "boardPowerW": 120,
+   "psuRecommendedW": 450,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1660",
+   "fps": {
+    "1080": 38.7,
+    "1440": 22.4,
+    "2160": 8.4
+   },
+   "raster": 6300,
+   "rayTracing": null,
+   "render": 3178,
+   "vramGb": 6,
+   "pcieLanes": 16,
+   "boardPowerW": 120,
    "psuRecommendedW": 450,
    "releaseYear": 2019,
    "integrated": false,

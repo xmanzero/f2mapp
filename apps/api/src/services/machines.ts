@@ -190,7 +190,9 @@ export async function saveSpec(db: DB, userId: string, machineId: string | null,
     for (const w of wants) {
       const match = matched.get(w);
       if (match) {
-        await t.updateTable("machine_parts").set({ details: JSON.stringify(w.details), label: w.label }).where("id", "=", match.id).execute();
+        // CPU / card là mẫu gần đúng (từ lần quét) thì giữ dấu đó khi người dùng sửa phần khác
+        const keep = (match.kind === "cpu" || match.kind === "gpu") && match.label === w.label ? (match.details as { substituteFor?: string } | null)?.substituteFor : undefined;
+        await t.updateTable("machine_parts").set({ details: JSON.stringify(keep ? { ...w.details, substituteFor: keep } : w.details), label: w.label }).where("id", "=", match.id).execute();
       } else {
         await t.insertInto("machine_parts").values({
           machine_id: id, kind: w.kind, label: w.label, details: JSON.stringify(w.details), verified_at: null, replaced_at: null,
@@ -203,7 +205,9 @@ export async function saveSpec(db: DB, userId: string, machineId: string | null,
     const gone = existing.filter((p) => !used.has(p.id));
     if (gone.length) {
       const listed = new Set((await t.selectFrom("listings").select("machine_part_id").where("machine_part_id", "in", gone.map((p) => p.id)).execute()).map((l) => l.machine_part_id));
-      const typo = gone.filter((p) => !p.verified_at && !listed.has(p.id) && Date.now() - new Date(p.added_at).getTime() < CORRECTION_MS).map((p) => p.id);
+      // Mẫu thay thế (chọn khi quét thấy CPU / card chưa có trong danh mục) không phải linh kiện thật → cũng xóa hẳn
+      const substitute = (p: (typeof gone)[number]) => !!(p.details as { substituteFor?: string } | null)?.substituteFor;
+      const typo = gone.filter((p) => !p.verified_at && !listed.has(p.id) && (substitute(p) || Date.now() - new Date(p.added_at).getTime() < CORRECTION_MS)).map((p) => p.id);
       const replaced = gone.filter((p) => !typo.includes(p.id)).map((p) => p.id);
       if (typo.length) await t.deleteFrom("machine_parts").where("id", "in", typo).execute();
       if (replaced.length) await t.updateTable("machine_parts").set({ status: "replaced", replaced_at: new Date() }).where("id", "in", replaced).execute();

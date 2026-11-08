@@ -105,10 +105,14 @@ export async function claimScan(db: DB, userId: string, rawCode: string, input: 
     const now = new Date();
     if (seen.size) await db.updateTable("machine_parts").set({ verified_at: now })
       .where("machine_id", "=", machineId).where("status", "=", "in_use").where("kind", "in", [...seen]).execute();
-    // CPU / card người dùng tự chọn thay cho mẫu chưa có trong danh mục: không tính là đã xác thực
+    // CPU / card người dùng tự chọn thay cho mẫu chưa có trong danh mục: không tính là đã xác thực,
+    // ghi lại tên thật để lần sau (danh mục đã có mẫu đúng) mẫu thay thế bị xóa hẳn chứ không thành "đã thay ra"
     const unseen = VERIFIABLE_KINDS.filter((k) => !seen.has(k));
     if (unseen.length) await db.updateTable("machine_parts").set({ verified_at: null })
       .where("machine_id", "=", machineId).where("status", "=", "in_use").where("kind", "in", unseen).execute();
+    for (const [kind, m] of [["cpu", result.cpu], ["gpu", result.gpu]] as const)
+      if (!m.name) await db.updateTable("machine_parts").set({ details: JSON.stringify({ substituteFor: m.raw }) })
+        .where("machine_id", "=", machineId).where("status", "=", "in_use").where("kind", "=", kind).execute();
     await db.updateTable("machines").set({ last_scan_at: now, updated_at: sql`now()` }).where("id", "=", machineId).execute();
     await db.updateTable("scans").set({ claimed_machine: machineId }).where("code", "=", code).execute();
     return machineId;

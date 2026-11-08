@@ -22,6 +22,8 @@ export interface PartView {
   /** null = máy chưa lưu lên tài khoản */
   id: string | null; kind: PartKind; label: string; status: "in_use" | "replaced" | "for_sale" | "sold";
   verified: boolean; listingId: string | null; addedAt: string | null;
+  /** có substituteFor = mẫu gần đúng thay cho CPU / card quét thấy nhưng chưa có trong danh mục */
+  details?: unknown;
 }
 export interface MachineView {
   /** null = máy trên trình duyệt (khách) hoặc máy mẫu */

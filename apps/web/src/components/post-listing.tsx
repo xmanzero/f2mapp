@@ -254,7 +254,7 @@ export function PostListing() {
             </li>
             <li className="row">
               <div className="grow"><div style={{ fontWeight: 500 }}>Muốn có nhãn “Xác thực đang dùng”?</div>
-                <div className="line2">Chạy phần mềm benchmark của f2m trên máy: linh kiện nào phần mềm quét thấy đang dùng sẽ có nhãn này (sắp có).</div></div>
+                <div className="line2">Chạy phần mềm <a href="/tai/f2m-scan.exe" download className="card-link">f2m-scan</a> trên máy: linh kiện nào phần mềm quét thấy đang dùng sẽ có nhãn này.</div></div>
             </li>
           </ul>
         </section>

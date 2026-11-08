@@ -83,13 +83,21 @@ describe("quét máy → gắn vào tài khoản", () => {
 
   it("CPU / card chưa có trong danh mục: phải chọn mẫu gần nhất, mẫu tự chọn không được xác thực", async () => {
     const tk = await register("quet3@test.vn");
-    const r = (await req("POST", "/v1/scans", report({ cpu: { name: "Intel(R) Core(TM) i7-14700", cores: 20, threads: 28 }, gpus: [{ name: "NVIDIA GeForce GTX 1660 Ti", vramBytes: 6 * GB, pcieGen: 3 }] }))).json();
-    expect(r.result.cpu).toMatchObject({ name: null, suggestion: "Core i7-14700K" });
-    expect(r.result.gpu).toMatchObject({ name: null, suggestion: "GTX 1660 Super" });
+    const r = (await req("POST", "/v1/scans", report({ cpu: { name: "Intel(R) Core(TM) i7-13700", cores: 16, threads: 24 }, gpus: [{ name: "NVIDIA GeForce GTX 1650 SUPER", vramBytes: 4 * GB, pcieGen: 3 }] }))).json();
+    expect(r.result.cpu).toMatchObject({ name: null, suggestion: "Core i7-13700K" });
+    expect(r.result.gpu).toMatchObject({ name: null, suggestion: "GTX 1650" });
     expect((await req("POST", `/v1/scans/${r.code}/claim`, { machineId: null }, tk)).statusCode).toBe(400);
-    expect((await req("POST", `/v1/scans/${r.code}/claim`, { machineId: null, cpu: "Core i7-14700K", gpu: "GTX 1660 Super" }, tk)).statusCode).toBe(200);
+    expect((await req("POST", `/v1/scans/${r.code}/claim`, { machineId: null, cpu: "Core i7-13700K", gpu: "GTX 1650" }, tk)).statusCode).toBe(200);
     const v = Object.fromEntries((await machines(tk))[0]!.parts.map((p) => [p.kind, p.verified]));
     expect(v).toMatchObject({ cpu: false, gpu: false, mainboard: true, ram: true });
+    // Lần sau danh mục đã có mẫu đúng: mẫu thay thế bị xóa hẳn, không thành linh kiện "đã thay ra" để bán
+    await ageParts(t.db);
+    const again = (await req("POST", "/v1/scans", report())).json();
+    const mid = (await machines(tk))[0]!.id;
+    expect((await req("POST", `/v1/scans/${again.code}/claim`, { machineId: mid }, tk)).statusCode).toBe(200);
+    const parts = (await machines(tk))[0]!.parts;
+    expect(parts.filter((p) => p.kind === "cpu" || p.kind === "gpu").map((p) => [p.label, p.status, p.verified]))
+      .toEqual([["Core i5-12400F", "in_use", true], ["RTX 3060 12GB", "in_use", true]]);
   });
 
   it("đã có 2 máy thì không tạo được máy thứ ba", async () => {

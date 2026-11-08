@@ -19,7 +19,8 @@ describe("nhận diện CPU", () => {
     expect(m).toMatchObject({ name: "Core i5-14600K", equivalent: true });
   });
   it("chưa có trong danh mục → gợi ý mẫu gần nhất", () => {
-    expect(matchCpu("Intel(R) Core(TM) i7-14700")).toMatchObject({ name: null, suggestion: "Core i7-14700K" });
+    expect(matchCpu("Intel(R) Core(TM) i7-13700")).toMatchObject({ name: null, suggestion: "Core i7-13700K" });
+    expect(matchCpu("Intel(R) Core(TM) i7-14700").name).toBe("Core i7-14700");
   });
 });
 
@@ -36,7 +37,9 @@ describe("nhận diện card", () => {
     expect(matchGpu("AMD Radeon(TM) Graphics", null).name).toBe("Đồ họa tích hợp (iGPU)");
   });
   it("chưa có trong danh mục → gợi ý", () => {
-    expect(matchGpu("NVIDIA GeForce GTX 1660 Ti", 6)).toMatchObject({ name: null, suggestion: "GTX 1660 Super" });
+    expect(matchGpu("NVIDIA GeForce GTX 1650 SUPER", 4)).toMatchObject({ name: null, suggestion: "GTX 1650" });
+    expect(matchGpu("NVIDIA GeForce GTX 1660 Ti", 6).name).toBe("GTX 1660 Ti");
+    expect(matchGpu("NVIDIA GeForce GTX 1660", 6).name).toBe("GTX 1660");
   });
   it("card chính: card rời có VRAM lớn nhất", () => {
     const g = primaryGpu([

@@ -85,7 +85,7 @@ export function ListingDetail() {
                 </div>
               </div>
               <span className={`pill ${item.source.verified ? "pos" : ""}`}
-                title={item.source.verified ? "Phần mềm benchmark đã quét thấy linh kiện này đang dùng trong máy người bán" : "Người bán tự khai, chưa chạy phần mềm benchmark để xác nhận"}>
+                title={item.source.verified ? "Phần mềm f2m-scan đã quét thấy linh kiện này đang dùng trong máy người bán" : "Người bán tự khai, chưa quét bằng phần mềm f2m-scan để xác nhận"}>
                 {item.source.verified ? "Xác thực đang dùng" : "Chưa xác thực"}
               </span>
             </div>
