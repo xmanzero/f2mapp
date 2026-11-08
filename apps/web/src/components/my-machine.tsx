@@ -15,6 +15,7 @@ import { MachineDiagram } from "./machine-diagram";
 import { TierEmblem, tierVars } from "./tier";
 import { ConfigEditor } from "./config-editor";
 import { NewMachine } from "./new-machine";
+import { ExportMachine } from "./export-machine";
 import CountUp from "./CountUp";
 import { useI18n } from "@/i18n/client";
 import { machineName } from "@/lib/use-machine";
@@ -75,7 +76,11 @@ export function MyMachine() {
         </span>
       </div>
 
-      {user && machines[0]?.id && <MachineTabs m={m} />}
+      <div className="machine-actions">
+        {user && machines[0]?.id && <MachineTabs m={m} />}
+        <ExportMachine name={machines.length > 1 || active.id ? machineName(active.name, locale) : T.defaultName} spec={shownSpec} r={r}
+          parts={active.parts} handle={user?.handle ?? null} account={!!active.id} />
+      </div>
       {m.justScanned && (
         <div className="scan-done" role="status">
           <p>{T.scanned(machineName(active.name, locale))}</p>

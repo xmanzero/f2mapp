@@ -8,7 +8,7 @@ namespace PcdexScan
 {
     static class Program
     {
-        public const string Version = "0.2.0";
+        public const string Version = "0.3.0";
         /// <summary>Địa chỉ web pcdex mặc định. Đổi bằng tham số --server hoặc biến môi trường PCDEX_SERVER.</summary>
         const string DefaultServer = "https://pcdex.app";
 
@@ -24,6 +24,17 @@ namespace PcdexScan
                 var text = Api.ToJson(Scanner.Scan("pcdex-scan/" + Version));
                 if (!string.IsNullOrEmpty(json)) File.WriteAllText(json, text, new UTF8Encoding(false));
                 else Console.WriteLine(text);
+                return 0;
+            }
+
+            // --export <tệp.png|tệp.pdf>: quét rồi xuất phiếu cấu hình, không mở cửa sổ
+            var export = Arg(args, "--export");
+            if (export != null)
+            {
+                var r = Scanner.Scan("pcdex-scan/" + Version);
+                System.Drawing.Image logo = null;
+                try { logo = new System.Drawing.Icon(System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath), new System.Drawing.Size(256, 256)).ToBitmap(); } catch { }
+                using (var bmp = SheetExport.Render(MainForm.SpecRows(r), r.Os, DateTime.Now, logo)) SheetExport.Save(bmp, Path.GetFullPath(export));
                 return 0;
             }
 

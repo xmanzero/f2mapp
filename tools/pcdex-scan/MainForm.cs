@@ -34,7 +34,9 @@ namespace PcdexScan
 
         readonly TableLayoutPanel specTable = new TableLayoutPanel();
         readonly Label status = new Label();
-        readonly Button sendBtn, rescanBtn, openBtn;
+        readonly Button sendBtn, rescanBtn, openBtn, exportBtn;
+        /// <summary>Các dòng cấu hình đang hiện (dùng lại khi xuất ảnh / PDF)</summary>
+        List<KeyValuePair<string, List<string>>> rows = new List<KeyValuePair<string, List<string>>>();
         readonly Panel side = new Panel();
         readonly Label sideTitle = new Label(), sideText = new Label(), codeLabel = new Label(), expiryLabel = new Label(), claimedLabel = new Label();
         readonly QrBox qr = new QrBox();
@@ -90,6 +92,8 @@ namespace PcdexScan
             var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 124, FlowDirection = FlowDirection.LeftToRight, BackColor = Ground, Padding = new Padding(0, 12, 0, 0) };
             sendBtn = MakeButton("Gắn vào tài khoản pcdex", true); sendBtn.Width = 220; sendBtn.Enabled = false;
             rescanBtn = MakeButton("Quét lại", false); rescanBtn.Width = 110; rescanBtn.Enabled = false;
+            exportBtn = MakeButton("Xuất ảnh / PDF", false); exportBtn.Width = 150; exportBtn.Enabled = false;
+            exportBtn.Click += (s, e) => ExportSheet();
             sendBtn.Click += async (s, e) => await Send();
             rescanBtn.Click += async (s, e) => await RunScan();
             var privacy = new Label
@@ -97,8 +101,8 @@ namespace PcdexScan
                 Text = "Chỉ gửi thông tin phần cứng ở trên. Không gửi tên máy, tên người dùng, số serial hay tệp nào.",
                 ForeColor = Faint, AutoSize = true, MaximumSize = new Size(520, 0), Margin = new Padding(0, 10, 0, 0),
             };
-            actions.Controls.AddRange(new Control[] { sendBtn, rescanBtn });
-            actions.SetFlowBreak(rescanBtn, true);
+            actions.Controls.AddRange(new Control[] { sendBtn, rescanBtn, exportBtn });
+            actions.SetFlowBreak(exportBtn, true);
             actions.Controls.Add(privacy);
 
             main.Controls.Add(specTable);
@@ -118,14 +122,14 @@ namespace PcdexScan
         // ---------- quét ----------
         async Task RunScan()
         {
-            sendBtn.Enabled = rescanBtn.Enabled = false;
+            sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = false;
             ResetSide();
             status.ForeColor = Muted;
             status.Text = "Đang đọc cấu hình…";
             report = await Task.Run(() => Scanner.Scan("pcdex-scan/" + Program.Version));
             ShowSpec(report);
             status.Text = $"Đọc lúc {DateTime.Now:HH:mm}. Nguồn (PSU) không đọc được bằng phần mềm — khai trên web.";
-            sendBtn.Enabled = rescanBtn.Enabled = true;
+            sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = true;
         }
 
         void ShowSpec(ScanReport r)
@@ -134,9 +138,12 @@ namespace PcdexScan
             specTable.Controls.Clear();
             specTable.RowStyles.Clear();
             specTable.RowCount = 0;
-            void Row(string k, IEnumerable<string> values, Color? color = null)
+            rows = SpecRows(r);
+            foreach (var row in rows) Row(row.Key, row.Value, row.Key == "Nguồn" ? Faint : (Color?)null);
+            specTable.ResumeLayout();
+
+            void Row(string k, List<string> vs, Color? color = null)
             {
-                var vs = values.Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
                 var key = new Label { Text = k, ForeColor = Muted, AutoSize = true, Margin = new Padding(0, 8, 8, 8) };
                 var val = new Label
                 {
@@ -148,14 +155,22 @@ namespace PcdexScan
                 specTable.Controls.Add(key, 0, specTable.RowCount - 1);
                 specTable.Controls.Add(val, 1, specTable.RowCount - 1);
             }
+        }
+
+        /// <summary>Các dòng cấu hình từ kết quả quét (dùng cho bảng trong cửa sổ và phiếu xuất ảnh / PDF)</summary>
+        public static List<KeyValuePair<string, List<string>>> SpecRows(ScanReport r)
+        {
+            var list = new List<KeyValuePair<string, List<string>>>();
+            void Row(string k, IEnumerable<string> values) =>
+                list.Add(new KeyValuePair<string, List<string>>(k, values.Where(v => !string.IsNullOrWhiteSpace(v)).ToList()));
             Row("CPU", new[] { r.Cpu?.Name + (r.Cpu?.Cores > 0 ? $"  ·  {r.Cpu.Cores} nhân / {r.Cpu.Threads} luồng" : "") });
             Row("Card đồ họa", r.Gpus.OrderByDescending(g => g.VramBytes ?? 0).Select(g => g.Name + (g.VramBytes > 0 ? $"  ·  {Gb(g.VramBytes.Value, 1024)} GB" : "") + (g.PcieGen > 0 ? $"  ·  PCIe {g.PcieGen}.0" : "")));
             Row("Mainboard", new[] { $"{Brand(r.Board?.Manufacturer)} {r.Board?.Product}".Trim() });
             Row("RAM", RamLines(r.Ram));
             Row("Ổ cứng", r.Disks.Where(d => d.BusType != 7 && d.SizeBytes > 16e9).Select(DiskLine));
             Row("Màn hình", new[] { r.Display != null ? $"{r.Display.Width} × {r.Display.Height}" : null });
-            Row("Nguồn", new[] { "Không đọc được — khai trên web" }, Faint);
-            specTable.ResumeLayout();
+            Row("Nguồn", new[] { "Không đọc được — khai trên web" });
+            return list;
         }
 
         /// <summary>Tên hãng gọn như trên web (ASUSTeK COMPUTER INC. → ASUS)</summary>
@@ -196,6 +211,34 @@ namespace PcdexScan
             return $"{d.Model}  ·  {size}  ·  {kind}" + (d.IsBoot ? "  ·  ổ Windows" : "") + (d.HealthPct != null ? $"  ·  sức khỏe {d.HealthPct}%" : "");
         }
         static long Gb(double bytes, int unit) => (long)Math.Round(bytes / unit / unit / unit);
+
+        // ---------- xuất ảnh / PDF ----------
+        void ExportSheet()
+        {
+            if (report == null) return;
+            using (var dlg = new SaveFileDialog
+            {
+                Title = "Xuất cấu hình",
+                Filter = "Ảnh PNG (*.png)|*.png|PDF khổ A4 (*.pdf)|*.pdf",
+                FileName = $"pcdex-scan-{DateTime.Now:yyyy-MM-dd}",
+                AddExtension = true,
+            })
+            {
+                if (dlg.ShowDialog(this) != DialogResult.OK) return;
+                try
+                {
+                    Image logo = null;
+                    try { if (Icon != null) logo = new Icon(Icon, new Size(256, 256)).ToBitmap(); } catch { }
+                    using (var bmp = SheetExport.Render(rows, report.Os, DateTime.Now, logo)) SheetExport.Save(bmp, dlg.FileName);
+                    status.ForeColor = Muted;
+                    status.Text = "Đã lưu " + System.IO.Path.GetFileName(dlg.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, ex.Message, "Chưa xuất được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
 
         // ---------- gửi & theo dõi ----------
         async Task Send()

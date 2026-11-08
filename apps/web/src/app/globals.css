@@ -792,3 +792,9 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .brand-fav { display: flex; align-items: flex-end; gap: 18px; }
 .brand-tab { display: flex; align-items: center; gap: 8px; max-width: 280px; padding: 8px 12px; border-radius: 10px 10px 0 0; background: var(--raised); font-size: 13px; }
 .brand-tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Máy của tôi: hàng thao tác (chuyển máy, đổi tên…) + nút xuất ảnh / PDF ở bên phải */
+.machine-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: var(--gap); }
+.machine-actions .machine-tabs { margin-bottom: 0; }
+.export-btns { display: inline-flex; gap: 8px; margin-left: auto; }
+.export-btns .btn { gap: 6px; }
