@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
-/* pcdex — phong cách True-black flat (taste-skill, seed 1715617894), xem .taste-skill/app/direction.json
-   Bản sắc: nền đen lạnh của phần mềm theo dõi phần cứng; màu lime của chữ OSD trong game là màu dữ liệu duy nhất.
+/* pcdex — phong cách phẳng (taste-skill, seed 1715617894), màu theo PCDEX Brand Kit 1.0 (08/11/2026), xem docs/design.md
+   Nền Deep Navy; Tech Blue là màu dữ liệu; gradient Electric Blue → Neon Purple chỉ ở logo và nút chính (--cta); không glow.
    Lưới: sidebar 220 + canvas (lề 28). Nội dung 12 cột, một khe 14px cả ngang lẫn dọc.
    Ở 1440: 1440 − 220 − 1 − 2×28 = 1163 = 12 cột × 84.08 + 11 × 14. */
 /* Hai chế độ: Đêm (gốc) và Ngày. Mặc định theo hệ điều hành; nút ở thanh trên ghi data-theme lên <html>. */
 :root {
   color-scheme: dark;
-  --ground: #0c0d0f;  --surface: #15171a;  --raised: #24272b;  --active: #24272b;
-  --border: #1d2024;  --rule: #1f2226;     --control: #464a50;  --control-hover: #5c6168;
-  --text: #ffffff;    --muted: #b4b4b4;    --faint: #949494;    --nav: #bbbbbb;
-  --accent: #c6f24e;  --accent-ink: #0c0d0f;
-  --primary: #ffffff; --primary-ink: #000000; --primary-hover: #e6e6e6;
-  --positive: #c6f24e; --negative: #ef6b70; --warning: #e5a93b;
-  --pill-positive-bg: #222a10; --pill-positive-ink: #c6f24e; --pill-positive-line: #4a5a1c;
-  --pill-negative-bg: #2c1a1c; --pill-negative-ink: #f08a8e;
-  --pill-warning-bg: #2b2414;  --pill-warning-ink: #e5a93b;
-  --pill-neutral-bg: #24272b;  --pill-neutral-ink: #ffffff;
-  --track: #24272b; --track-fill: #6b6b6b;
+  --ground: #080f24;  --surface: #0f1830;  --raised: #18233f;  --active: #1d2a4b;
+  --border: #16203a;  --rule: #1a2442;     --control: #3a4766;  --control-hover: #52618a;
+  --text: #f8faff;    --muted: #b3bcd3;    --faint: #8f99b3;    --nav: #bac3d8;
+  --accent: #00a6ff;  --accent-ink: #080f24;  --accent-soft: #0b2a52;
+  --primary: #f8faff; --primary-ink: #080f24; --primary-hover: #dfe6f5;
+  --cta: linear-gradient(120deg, #1769ff 0%, #8a2bff 100%); --cta-hover: linear-gradient(120deg, #2b78ff 0%, #9640ff 100%); --cta-ink: #ffffff;
+  --positive: #3ddc97; --negative: #ff6b7a; --warning: #f2b544;
+  --pill-positive-bg: #0d2a2a; --pill-positive-ink: #4fe3a8; --pill-positive-line: #1d5a4a;
+  --pill-negative-bg: #2e1528; --pill-negative-ink: #ff8a97;
+  --pill-warning-bg: #2b2418;  --pill-warning-ink: #f2b544;
+  --pill-neutral-bg: #18233f;  --pill-neutral-ink: #f8faff;
+  --track: #18233f; --track-fill: #5a6788;
   /* màu hạng: --tier là chữ/viền, --tier-field là nền thẻ */
-  --t-bronze: #d69a6a; --t-silver: #c3ccd6; --t-gold: #f0c24b; --t-plat: #63d4cb; --t-diamond: #7fb8ff; --t-legend: #ff7a7a;
-  --t-bronze-f: #241a13; --t-silver-f: #1c2025; --t-gold-f: #262010; --t-plat-f: #112321; --t-diamond-f: #131e2b; --t-legend-f: #2a1516;
+  --t-bronze: #d69a6a; --t-silver: #c3ccd6; --t-gold: #f0c24b; --t-plat: #63d4cb; --t-diamond: #8fc4ff; --t-legend: #ff7a7a;
+  --t-bronze-f: #22192a; --t-silver-f: #172238; --t-gold-f: #241f24; --t-plat-f: #0e2433; --t-diamond-f: #12224a; --t-legend-f: #2a1530;
 
   --font: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
   --display: var(--font-chakra), var(--font);
@@ -36,35 +37,37 @@
 }
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
   color-scheme: light;
-  --ground: #eef0f3;  --surface: #ffffff;  --raised: #f1f3f5;  --active: #e6e9ed;
-  --border: #e1e4e8;  --rule: #eceef1;     --control: #c9ced5;  --control-hover: #a9b0b9;
-  --text: #111418;    --muted: #4b535c;    --faint: #636b74;    --nav: #4b535c;
-  --accent: #4f7f0e;  --accent-ink: #ffffff;
-  --primary: #111418; --primary-ink: #ffffff; --primary-hover: #2b3036;
-  --positive: #3f7a0c; --negative: #c4242a; --warning: #9a5600;
-  --pill-positive-bg: #e8f5d3; --pill-positive-ink: #2f5e07; --pill-positive-line: #a8cf6e;
+  --ground: #eef2fa;  --surface: #ffffff;  --raised: #f1f4fa;  --active: #e3e9f5;
+  --border: #dfe5f0;  --rule: #e8edf5;     --control: #c3ccdc;  --control-hover: #a1adc3;
+  --text: #0b1530;    --muted: #46506a;    --faint: #5c6681;    --nav: #46506a;
+  --accent: #1460e6;  --accent-ink: #ffffff;  --accent-soft: #e2ecff;
+  --primary: #0b1530; --primary-ink: #ffffff; --primary-hover: #1c2a4f;
+  --cta: linear-gradient(120deg, #1769ff 0%, #8a2bff 100%); --cta-hover: linear-gradient(120deg, #135de6 0%, #7a1ff0 100%); --cta-ink: #ffffff;
+  --positive: #0b8457; --negative: #c4242a; --warning: #9a5600;
+  --pill-positive-bg: #dcf4ea; --pill-positive-ink: #0a6a46; --pill-positive-line: #93d7bb;
   --pill-negative-bg: #fde8e7; --pill-negative-ink: #8a1c1c;
   --pill-warning-bg: #fdf0d9;  --pill-warning-ink: #7a4405;
-  --pill-neutral-bg: #eceef1;  --pill-neutral-ink: #111418;
-  --track: #e3e6ea; --track-fill: #8a929b;
+  --pill-neutral-bg: #e8edf5;  --pill-neutral-ink: #0b1530;
+  --track: #e1e7f1; --track-fill: #8792a8;
   --t-bronze: #8a4f22; --t-silver: #4f5b66; --t-gold: #8a6400; --t-plat: #0f6e66; --t-diamond: #1f5fb8; --t-legend: #b3262f;
-  --t-bronze-f: #f3ecea; --t-silver-f: #eef1f4; --t-gold-f: #eef1f5; --t-plat-f: #ddf4f1; --t-diamond-f: #e3eefd; --t-legend-f: #fde6e6;
+  --t-bronze-f: #f3ecea; --t-silver-f: #eef1f6; --t-gold-f: #f3f0e6; --t-plat-f: #ddf4f1; --t-diamond-f: #e3eefd; --t-legend-f: #fde6e6;
 } }
 :root[data-theme="light"] {
   color-scheme: light;
-  --ground: #eef0f3;  --surface: #ffffff;  --raised: #f1f3f5;  --active: #e6e9ed;
-  --border: #e1e4e8;  --rule: #eceef1;     --control: #c9ced5;  --control-hover: #a9b0b9;
-  --text: #111418;    --muted: #4b535c;    --faint: #636b74;    --nav: #4b535c;
-  --accent: #4f7f0e;  --accent-ink: #ffffff;
-  --primary: #111418; --primary-ink: #ffffff; --primary-hover: #2b3036;
-  --positive: #3f7a0c; --negative: #c4242a; --warning: #9a5600;
-  --pill-positive-bg: #e8f5d3; --pill-positive-ink: #2f5e07; --pill-positive-line: #a8cf6e;
+  --ground: #eef2fa;  --surface: #ffffff;  --raised: #f1f4fa;  --active: #e3e9f5;
+  --border: #dfe5f0;  --rule: #e8edf5;     --control: #c3ccdc;  --control-hover: #a1adc3;
+  --text: #0b1530;    --muted: #46506a;    --faint: #5c6681;    --nav: #46506a;
+  --accent: #1460e6;  --accent-ink: #ffffff;  --accent-soft: #e2ecff;
+  --primary: #0b1530; --primary-ink: #ffffff; --primary-hover: #1c2a4f;
+  --cta: linear-gradient(120deg, #1769ff 0%, #8a2bff 100%); --cta-hover: linear-gradient(120deg, #135de6 0%, #7a1ff0 100%); --cta-ink: #ffffff;
+  --positive: #0b8457; --negative: #c4242a; --warning: #9a5600;
+  --pill-positive-bg: #dcf4ea; --pill-positive-ink: #0a6a46; --pill-positive-line: #93d7bb;
   --pill-negative-bg: #fde8e7; --pill-negative-ink: #8a1c1c;
   --pill-warning-bg: #fdf0d9;  --pill-warning-ink: #7a4405;
-  --pill-neutral-bg: #eceef1;  --pill-neutral-ink: #111418;
-  --track: #e3e6ea; --track-fill: #8a929b;
+  --pill-neutral-bg: #e8edf5;  --pill-neutral-ink: #0b1530;
+  --track: #e1e7f1; --track-fill: #8792a8;
   --t-bronze: #8a4f22; --t-silver: #4f5b66; --t-gold: #8a6400; --t-plat: #0f6e66; --t-diamond: #1f5fb8; --t-legend: #b3262f;
-  --t-bronze-f: #f3ecea; --t-silver-f: #eef1f4; --t-gold-f: #eef1f5; --t-plat-f: #ddf4f1; --t-diamond-f: #e3eefd; --t-legend-f: #fde6e6;
+  --t-bronze-f: #f3ecea; --t-silver-f: #eef1f6; --t-gold-f: #f3f0e6; --t-plat-f: #ddf4f1; --t-diamond-f: #e3eefd; --t-legend-f: #fde6e6;
 }
 :root[data-theme="dark"] { color-scheme: dark; }
 
@@ -83,7 +86,11 @@ button, input, select { font: inherit; color: inherit; }
 /* ---------- khung: sidebar + top bar cùng nền, chia bằng đường 1px ---------- */
 .app { display: grid; grid-template-columns: var(--sidebar-width) minmax(0, 1fr); min-height: 100svh; }
 .sidebar { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; border-right: 1px solid var(--border); padding: 0 12px 16px; }
-.brand { display: flex; align-items: center; gap: 8px; height: var(--topbar); padding: 0 8px; font-weight: 600; font-size: 16px; }
+.brand { display: flex; align-items: center; gap: 8px; height: var(--topbar); padding: 0 8px; }
+/* Logo ngang (PCDEX Brand Kit): chữ đậm nghiêng; "EX" gradient Tech Blue → Neon Purple — gradient chỉ dùng trong logo và nút chính */
+.wordmark { display: inline-flex; align-items: center; gap: 0.32em; line-height: 1; color: var(--text); }
+.wordmark-text { font-weight: 800; font-style: italic; letter-spacing: -0.045em; padding-right: 0.08em; }
+.wordmark-ex { background: linear-gradient(90deg, #00a6ff, #8a2bff); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .brand small { font-weight: 400; color: var(--faint); font-size: var(--fs-small); white-space: nowrap; }
 .nav { display: grid; gap: 2px; margin-top: 8px; }
 .nav a { display: flex; align-items: center; gap: 10px; height: var(--nav-row); padding: 0 8px; border-radius: 8px; color: var(--nav); transition: color var(--t-hover) ease, background-color var(--t-hover) ease; }
@@ -145,8 +152,8 @@ button, input, select { font: inherit; color: inherit; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: var(--control-height); padding: 0 16px; border-radius: var(--radius-control); border: 1px solid var(--control); background: transparent; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background-color var(--t-hover) ease, transform var(--t-press) var(--ease-out); }
 .btn:hover { background: var(--raised); }
 .btn:active { transform: translateY(1px); }
-.btn.primary { background: var(--primary); color: var(--primary-ink); border-color: transparent; }
-.btn.primary:hover { background: var(--primary-hover); }
+.btn.primary { background: var(--cta); color: var(--cta-ink); border-color: transparent; }
+.btn.primary:hover { background: var(--cta-hover); }
 .btn.small { height: 30px; padding: 0 12px; font-size: 13px; }
 .btn[disabled] { cursor: not-allowed; color: var(--faint); border-color: var(--border); background: transparent; }
 
@@ -170,7 +177,7 @@ button, input, select { font: inherit; color: inherit; }
 .count:hover { background: var(--raised); }
 .count .label { color: var(--muted); font-size: 13px; line-height: 16px; }
 .count .value { font-size: 16px; font-weight: 600; line-height: 20px; }
-.count[aria-pressed="true"] { border-color: var(--accent); background: var(--pill-positive-bg); }
+.count[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
 
 /* bảng: đường kẻ và căn lề, số căn phải */
 .table-wrap { overflow-x: auto; }
@@ -180,7 +187,7 @@ table.data td { padding: 12px; border-top: 1px solid var(--rule); vertical-align
 table.data .r { text-align: right; }
 table.data tr.me td { background: var(--raised); }
 table.data tr.me td:first-child { border-radius: 12px 0 0 12px; } table.data tr.me td:last-child { border-radius: 0 12px 12px 0; }
-.avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; font-weight: 600; font-size: 13px; color: #0c0d0f; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; font-weight: 600; font-size: 13px; color: #080f24; }
 
 /* ---------- thước khung hình (bản sắc: kiểu OSD trong game) ---------- */
 .osd { display: grid; gap: 18px; }
@@ -246,7 +253,7 @@ table.data tr.me td:first-child { border-radius: 12px 0 0 12px; } table.data tr.
   .counts { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; scrollbar-width: none; }
   .count { height: 56px; min-width: 112px; }
 }
-.brand-mobile { display: none; align-items: center; gap: 8px; font-weight: 600; }
+.brand-mobile { display: none; align-items: center; gap: 8px; font-weight: 600; flex: none; }
 .show-sm { display: none; }
 @media (max-width: 640px) {
   .hide-sm { display: none; }
@@ -329,7 +336,7 @@ textarea.input { height: auto; min-height: 112px; padding: 12px 14px; resize: ve
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { min-height: 36px; padding: 0 14px; border: 1px solid var(--control); border-radius: 999px; background: transparent; cursor: pointer; transition: background-color var(--t-hover) ease; }
 .chip:hover { background: var(--raised); }
-.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--pill-positive-bg); }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .preview { padding: 16px; border-radius: var(--radius-inner); background: var(--raised); }
 .sell-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: var(--gap); padding: 12px 12px 12px 18px; border-radius: 16px; background: var(--surface); }
 .sell-bar p { flex: 1; min-width: 220px; color: var(--muted); }
@@ -380,7 +387,7 @@ textarea.input { height: auto; min-height: 112px; padding: 12px 14px; resize: ve
 .pick-group { display: grid; gap: 6px; }
 .pick-machine { color: var(--faint); font-size: 13px; }
 .pick-item { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 12px; border: 1.5px solid transparent; border-radius: 12px; background: var(--raised); cursor: pointer; }
-.pick-item:has(input:checked) { border-color: var(--accent); background: var(--pill-positive-bg); }
+.pick-item:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
 .pick-item:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 .pick-item.taken { cursor: not-allowed; opacity: 0.7; }
 .pick-item input { accent-color: var(--accent); width: 18px; height: 18px; flex: none; }
@@ -719,7 +726,7 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .mail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .mail-subject { margin: 0 0 10px; font-weight: 500; display: grid; gap: 2px; }
 .mail-subject .faint { font-size: 12px; font-weight: 400; }
-.mail-frame { display: block; width: 100%; height: 560px; border: 0; border-radius: 12px; background: #f2f2ef; }
+.mail-frame { display: block; width: 100%; height: 560px; border: 0; border-radius: 12px; background: #eef2fa; }
 .mail-test { display: flex; gap: 8px; margin-top: 12px; }
 .mail-test .input { flex: 1; min-width: 0; }
 .mail-log-subject { min-width: 220px; }
@@ -736,3 +743,14 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .recover-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .verify-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 14px; }
 .verify-box { display: grid; gap: 10px; justify-items: start; margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--raised); font-size: 14px; }
+
+/* Mascot (brand kit): trạng thái trống, onboarding, hướng dẫn quét, trang lỗi */
+.mascot { display: block; flex: none; height: auto; }
+.empty-state { display: flex; align-items: center; gap: 24px; max-width: 720px; }
+.empty-state h1 { font-size: var(--fs-title); margin-bottom: 6px; }
+.empty-state.inline { gap: 16px; padding: 14px 16px; border: 1px dashed var(--control); border-radius: 12px; color: var(--muted); max-width: none; }
+.empty-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.nm-hello { display: flex; align-items: center; gap: 14px; }
+.nm-hello h2 { margin: 0; }
+.scan-get .mascot { margin-bottom: 4px; }
+@media (max-width: 520px) { .empty-state { flex-direction: column; align-items: flex-start; } }

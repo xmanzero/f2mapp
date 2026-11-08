@@ -165,13 +165,13 @@ export function renderHtml(tpl: string, vars: Vars) {
     .replace(/\*\*([^*\n]+)\*\*/g, "<b>$1</b>")
     .replace(LINK, (m, label: string, url: string) => {
       const h = href(url.replace(/&amp;/g, "&"));
-      return h ? `<a href="${h}" style="color:#111;text-decoration:underline">${label}</a>` : label;
+      return h ? `<a href="${h}" style="color:#1460E6;text-decoration:underline">${label}</a>` : label;
     }))
     .replace(/\n/g, "<br>");
   const button = (line: string) => {
     const b = /^\[([^\]\n]+)\]\(([^)\s]+)\)$/.exec(line.trim());
     const h = b ? href(b[2]!) : null;
-    return h ? `<p style="margin:24px 0"><a href="${h}" style="display:inline-block;background:#111111;color:#ffffff;padding:13px 22px;border-radius:999px;text-decoration:none;font-weight:600;font-size:15px">${fill(esc(b![1]!))}</a></p>` : null;
+    return h ? `<p style="margin:24px 0"><a href="${h}" style="display:inline-block;background:#1769FF;color:#ffffff;padding:13px 22px;border-radius:999px;text-decoration:none;font-weight:600;font-size:15px">${fill(esc(b![1]!))}</a></p>` : null;
   };
   const para = (lines: string[]) => `<p style="margin:0 0 16px;font-size:15px;line-height:1.6">${inline(lines.join("\n"))}</p>`;
   // dòng chỉ có một liên kết thành nút; các dòng còn lại gom thành đoạn
@@ -187,10 +187,10 @@ export function renderHtml(tpl: string, vars: Vars) {
   }).join("\n");
   const home = vars.link_app && safeUrl(vars.link_app) ? esc(vars.link_app) : "https://pcdex.app";
   return `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head>
-<body style="margin:0;padding:0;background:#f2f2ef;color:#111111;font-family:Inter,'Segoe UI',Roboto,Arial,sans-serif">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f2ef"><tr><td align="center" style="padding:32px 16px">
+<body style="margin:0;padding:0;background:#EEF2FA;color:#0B1530;font-family:Inter,'Segoe UI',Roboto,Arial,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EEF2FA"><tr><td align="center" style="padding:32px 16px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px"><tr><td style="padding:32px 32px 16px">
-<div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;margin-bottom:28px"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#c4f135;margin-right:8px;vertical-align:1px"></span>pcdex</div>
+<div style="font-size:22px;font-weight:800;font-style:italic;letter-spacing:-0.03em;margin-bottom:28px;color:#080F24"><img src="${home}/brand/icon-96.png" width="32" height="32" alt="" style="vertical-align:-9px;margin-right:8px;border:0">PCD<span style="color:#1769FF">EX</span></div>
 ${paras}
 </td></tr></table>
 <p style="max-width:560px;margin:16px auto 0;font-size:12px;line-height:1.5;color:#6b6b66">Thư tự động từ <a href="${home}" style="color:#6b6b66">pcdex</a>, mạng xã hội PC độc lập. Vui lòng không trả lời thư này.</p>

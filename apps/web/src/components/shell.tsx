@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { SessionProvider, useSession } from "@/lib/session";
-import { Mark } from "./mark";
+import { Mark, Wordmark } from "./mark";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV = [
@@ -56,8 +56,8 @@ function Frame({ children }: { children: ReactNode }) {
   return (
     <div className="app">
       <aside className="sidebar" aria-label="Điều hướng">
-        <Link href="/" className="brand">
-          <Mark /> pcdex <small>mạng xã hội PC</small>
+        <Link href="/" className="brand" aria-label="pcdex, mạng xã hội PC — trang chủ">
+          <Wordmark size={30} />
         </Link>
         <nav className="nav">
           {NAV.map(({ href, label, icon: Icon }) => (
@@ -80,7 +80,7 @@ function Frame({ children }: { children: ReactNode }) {
       <div className="main">
         <header className="topbar">
           <Link href="/" className="brand-mobile" aria-label="pcdex, trang chủ">
-            <Mark size={22} /> pcdex
+            <Mark size={30} />
           </Link>
           <form
             className="search"

@@ -1,30 +1,34 @@
 /* =====================================================================
    Landing page (/) — taste-skill "The product performs", seed 1221121649.
    Giữ màu và chữ của app (token trong globals.css); mảnh giao diện thật (data-ui) là hình ảnh chính.
-   Khác bản mẫu: khối lời mời dùng nền tối chứ không phải lime (lime chỉ đặt trên dữ liệu, docs/design.md).
+   Màu theo PCDEX Brand Kit: nền navy, dữ liệu Tech Blue, nút chính gradient xanh → tím (--cta).
    ===================================================================== */
-/* Landing luôn ở chế độ tối (bản sắc "nền đen phẳng"; ảnh giao diện là bản tối) — các trang trong app vẫn theo Ngày / Đêm */
-html:has(.lp) { color-scheme: dark; background: #0c0d0f; }
+/* Landing luôn ở chế độ tối (nền Deep Navy; ảnh giao diện là bản tối) — các trang trong app vẫn theo Ngày / Đêm */
+html:has(.lp) { color-scheme: dark; background: #080f24; }
 .lp {
   color-scheme: dark;
-  --ground: #0c0d0f; --surface: #15171a; --raised: #24272b; --active: #24272b;
-  --border: #1d2024; --rule: #1f2226; --control: #464a50; --control-hover: #5c6168;
-  --text: #ffffff; --muted: #b4b4b4; --faint: #949494; --nav: #bbbbbb;
-  --accent: #c6f24e; --accent-ink: #0c0d0f;
-  --primary: #ffffff; --primary-ink: #000000; --primary-hover: #e6e6e6;
-  --positive: #c6f24e; --negative: #ef6b70; --warning: #e5a93b;
-  --pill-positive-bg: #222a10; --pill-positive-ink: #c6f24e; --pill-negative-bg: #2c1a1c; --pill-negative-ink: #f08a8e;
-  --pill-warning-bg: #2b2414; --pill-warning-ink: #e5a93b; --pill-neutral-bg: #24272b; --pill-neutral-ink: #ffffff;
-  --t-bronze: #d69a6a; --t-silver: #c3ccd6; --t-gold: #f0c24b; --t-plat: #63d4cb; --t-diamond: #7fb8ff; --t-legend: #ff7a7a;
-  --t-bronze-f: #241a13; --t-silver-f: #1c2025; --t-gold-f: #262010; --t-plat-f: #112321; --t-diamond-f: #131e2b; --t-legend-f: #2a1516;
+  --ground: #080f24;  --surface: #0f1830;  --raised: #18233f;  --active: #1d2a4b;
+  --border: #16203a;  --rule: #1a2442;     --control: #3a4766;  --control-hover: #52618a;
+  --text: #f8faff;    --muted: #b3bcd3;    --faint: #8f99b3;    --nav: #bac3d8;
+  --accent: #00a6ff;  --accent-ink: #080f24;  --accent-soft: #0b2a52;
+  --primary: #f8faff; --primary-ink: #080f24; --primary-hover: #dfe6f5;
+  --cta: linear-gradient(120deg, #1769ff 0%, #8a2bff 100%); --cta-hover: linear-gradient(120deg, #2b78ff 0%, #9640ff 100%); --cta-ink: #ffffff;
+  --positive: #3ddc97; --negative: #ff6b7a; --warning: #f2b544;
+  --pill-positive-bg: #0d2a2a; --pill-positive-ink: #4fe3a8; --pill-positive-line: #1d5a4a;
+  --pill-negative-bg: #2e1528; --pill-negative-ink: #ff8a97;
+  --pill-warning-bg: #2b2418;  --pill-warning-ink: #f2b544;
+  --pill-neutral-bg: #18233f;  --pill-neutral-ink: #f8faff;
+  --track: #18233f; --track-fill: #5a6788;
+  --t-bronze: #d69a6a; --t-silver: #c3ccd6; --t-gold: #f0c24b; --t-plat: #63d4cb; --t-diamond: #8fc4ff; --t-legend: #ff7a7a;
+  --t-bronze-f: #22192a; --t-silver-f: #172238; --t-gold-f: #241f24; --t-plat-f: #0e2433; --t-diamond-f: #12224a; --t-legend-f: #2a1530;
   --m: 40px; background: var(--ground); color: var(--text); font-size: 16px; overflow-x: clip;
 }
 .lp-h2 { font-family: var(--display); font-weight: 700; font-size: clamp(36px, 3.9vw, 56px); line-height: 1.08; letter-spacing: -0.01em; }
 .lp-center { text-align: center; }
 .lp h1, .lp h2, .lp h3 { text-wrap: balance; }
 .lp-sec { padding: 160px var(--m) 0; }
-.lp-btn { display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 999px; background: var(--primary); color: var(--primary-ink); font-weight: 600; white-space: nowrap; transition: background-color var(--t-hover) ease, transform var(--t-press) var(--ease-out); }
-.lp-btn:hover { background: var(--primary-hover); }
+.lp-btn { display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 999px; background: var(--cta); color: var(--cta-ink); font-weight: 600; white-space: nowrap; transition: background-color var(--t-hover) ease, transform var(--t-press) var(--ease-out); }
+.lp-btn:hover { background: var(--cta-hover); }
 .lp-btn:active { transform: scale(0.97); }
 .lp-btn.dark { background: var(--text); color: var(--ground); }
 .lp-link { color: var(--text); text-decoration: underline; text-underline-offset: 4px; font-weight: 500; }

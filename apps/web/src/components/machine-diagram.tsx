@@ -3,7 +3,7 @@ import type { PartView } from "@/lib/use-machine";
 
 /**
  * Sơ đồ máy: bo mạch với CPU, các khe RAM (đúng số thanh), card đồ họa, ổ cứng, nguồn.
- * Linh kiện "xác thực đang dùng" có viền màu dữ liệu (lime); còn lại viền xám.
+ * Linh kiện "xác thực đang dùng" có viền màu dữ liệu (Tech Blue); còn lại viền xám.
  */
 export function MachineDiagram({ spec, parts }: { spec: MachineSpec; parts: PartView[] }) {
   const ok = (kind: PartView["kind"], i = 0) => parts.filter((p) => p.kind === kind && p.status === "in_use")[i]?.verified ?? false;

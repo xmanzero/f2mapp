@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LiveScore, PanelNotes, Platforms, Reveal, Showcase, Stages, TopLink, type Note, type Panel, type Platform, type Stage } from "@/components/landing";
-import { Mark } from "@/components/mark";
+import { Mascot } from "@/components/mascot";
+import { Wordmark } from "@/components/mark";
 import "./landing.css";
 
 export const metadata: Metadata = {
@@ -20,8 +21,8 @@ const PANELS: Panel[] = [
     text: "Máy của bạn đứng thứ mấy trong cộng đồng. Máy đã quét bằng pcdex-scan có nhãn xác thực." },
   { src: `${L}/market.webp`, w: 1164, h: 620, name: "Chợ linh kiện", alt: "Danh sách tin rao linh kiện cũ kèm giá, điểm trên triệu và mức tăng điểm khi lắp vào máy",
     text: "Mỗi tin rao cho biết lắp vào máy bạn tăng bao nhiêu điểm và được bao nhiêu điểm trên mỗi triệu đồng." },
-  { src: `${L}/scanner.webp`, w: 481, h: 356, name: "pcdex-scan cho Windows", alt: "Cửa sổ phần mềm pcdex-scan liệt kê CPU, card, mainboard, RAM, ổ cứng và màn hình của máy",
-    text: "Phần mềm 48 KB, không cần cài, đọc cấu hình thật trong vài giây rồi gắn vào tài khoản bằng mã QR." },
+  { src: `${L}/scanner.webp`, w: 471, h: 331, name: "pcdex-scan cho Windows", alt: "Cửa sổ phần mềm pcdex-scan liệt kê CPU, card, mainboard, RAM, ổ cứng và màn hình của máy",
+    text: "Phần mềm 75 KB, không cần cài, đọc cấu hình thật trong vài giây rồi gắn vào tài khoản bằng mã QR." },
 ];
 
 const NOTES: Note[] = [
@@ -35,7 +36,7 @@ const NOTES: Note[] = [
 
 const STAGES: Stage[] = [
   { name: "Khai báo", clause: ["Đầu tiên,", "khai cấu hình"], src: `${L}/score.webp`, w: 673, h: 420, alt: "Thẻ điểm sức mạnh sau khi khai cấu hình" },
-  { name: "Quét", clause: ["Sau đó,", "quét để xác thực"], src: `${L}/scanner.webp`, w: 481, h: 356, alt: "Phần mềm pcdex-scan đọc cấu hình máy" },
+  { name: "Quét", clause: ["Sau đó,", "quét để xác thực"], src: `${L}/scanner.webp`, w: 471, h: 331, alt: "Phần mềm pcdex-scan đọc cấu hình máy" },
   { name: "Gắn tài khoản", clause: ["Rồi quét mã QR", "gắn vào tài khoản"], src: `${L}/scanned.webp`, w: 673, h: 354, alt: "Trang gắn kết quả quét: cấu hình máy vừa quét" },
   { name: "Xếp hạng & bán", clause: ["Cuối cùng,", "lên hạng và bán đồ cũ"], src: `${L}/podium.webp`, w: 1164, h: 215, alt: "Bục top 3 của bảng xếp hạng" },
 ];
@@ -50,7 +51,7 @@ const PLATFORMS: Platform[] = [
   { id: "windows", name: "Windows", status: "pcdex-scan", live: true, rows: [
     ["Quét", "Đọc CPU, card, mainboard, RAM, ổ cứng, màn hình", "VRAM thật, thế hệ PCIe của card và ổ NVMe"],
     ["Gắn", "Gắn vào tài khoản bằng mã QR", "Cập nhật máy đang có hoặc tạo máy mới"],
-    ["Nhẹ", "Một file 48 KB, không cần cài", "Windows 10 và 11, không cần quyền quản trị"],
+    ["Nhẹ", "Một file 75 KB, không cần cài", "Windows 10 và 11, không cần quyền quản trị"],
   ] },
   { id: "android", name: "Android", status: "Sắp có", live: false, rows: [
     ["Máy", "Cùng tài khoản, cùng máy và điểm", "Dữ liệu đồng bộ với web"],
@@ -71,7 +72,7 @@ export default function Landing() {
       {/* ---------- màn đầu ---------- */}
       <header className="lp-hero">
         <div className="lp-hero-l">
-          <Link href="/" className="lp-brand" aria-label="pcdex"><Mark size={26} /> pcdex</Link>
+          <Link href="/" className="lp-brand" aria-label="pcdex"><Wordmark size={34} /></Link>
           <div className="lp-hero-copy">
             <h1 className="lp-h1"><span className="lp-mask"><span>Máy bạn mạnh cỡ nào?</span></span></h1>
             <p className="lp-lede">pcdex chấm điểm PC từ cấu hình thật: sức mạnh, FPS theo màn hình, chỗ nghẽn và nên nâng gì trước. Miễn phí, không gắn với cửa hàng nào.</p>
@@ -119,6 +120,7 @@ export default function Landing() {
           <img src={`${L}/pc-build.webp`} width={1200} height={900} alt="CPU Intel Core i7 đặt trong socket mainboard, giữa các khe RAM" loading="lazy" />
         </div>
         <div className="lp-tile lp-tile-main" data-reveal data-d="1">
+          <Mascot size={112} className="lp-mascot" />
           <h2 id="lp-h-cta">Chấm điểm máy bạn</h2>
           <p>Miễn phí, không cần tài khoản để bắt đầu. pcdex độc lập: giá, xếp hạng và gợi ý không ưu tiên cửa hàng hay hãng nào, công thức điểm công khai.</p>
           <Link href="/may" className="lp-btn dark">Bắt đầu</Link>

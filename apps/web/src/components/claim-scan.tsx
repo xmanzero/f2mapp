@@ -13,6 +13,7 @@ import { useSession } from "@/lib/session";
 import type { MachineView } from "@/lib/use-machine";
 import { OPEN_MACHINE_KEY } from "@/lib/use-machine";
 import { Combo } from "./combo";
+import { Mascot } from "./mascot";
 
 interface ScanView {
   code: string; pretty: string; result: ScanResult; createdAt: string; expiresAt: string; expired: boolean;
@@ -119,6 +120,7 @@ export function ClaimScan() {
           <p className="sub">Chạy phần mềm pcdex-scan trên máy tính cần quét, bấm “Gắn vào tài khoản”, rồi quét mã QR bằng điện thoại hoặc nhập mã ở đây.</p></div></div>
         <div className="scan-start">
         <section className="panel scan-entry scan-get">
+          <Mascot size={96} />
           <div>
             <h2>Phần mềm pcdex-scan</h2>
             <p className="muted">Windows 10 / 11, không cần cài đặt, không cần quyền quản trị. Đọc CPU, card, mainboard, RAM, ổ cứng, màn hình trong vài giây. Chỉ gửi thông tin phần cứng khi bạn bấm gắn vào tài khoản.</p>

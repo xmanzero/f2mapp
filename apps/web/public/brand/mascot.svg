@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 650">
+<defs>
+ <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFFFFF"/><stop offset=".55" stop-color="#C8D8F5"/><stop offset="1" stop-color="#7896C7"/></linearGradient>
+ <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#20C8FF"/><stop offset="1" stop-color="#762EFF"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<ellipse cx="300" cy="610" rx="175" ry="22" fill="#1769FF" opacity=".25"/>
+<!-- antenna -->
+<path d="M300 65 V32" stroke="#9BB8E8" stroke-width="16" stroke-linecap="round"/><circle cx="300" cy="24" r="16" fill="#20C8FF" filter="url(#glow)"/>
+<!-- ears -->
+<rect x="83" y="190" width="70" height="130" rx="30" fill="url(#shell)" stroke="#6686C0" stroke-width="8"/>
+<rect x="447" y="190" width="70" height="130" rx="30" fill="url(#shell)" stroke="#6686C0" stroke-width="8"/>
+<circle cx="118" cy="255" r="22" fill="url(#blue)"/><circle cx="482" cy="255" r="22" fill="url(#blue)"/>
+<!-- head -->
+<rect x="115" y="85" width="370" height="300" rx="112" fill="url(#shell)" stroke="#8CA8D7" stroke-width="10"/>
+<rect x="150" y="135" width="300" height="205" rx="75" fill="#07152F" stroke="#1C4A8C" stroke-width="8"/>
+<path d="M210 232 Q230 190 260 232" fill="none" stroke="#20C8FF" stroke-width="19" stroke-linecap="round" filter="url(#glow)"/>
+<path d="M340 232 Q370 190 390 232" fill="none" stroke="#20C8FF" stroke-width="19" stroke-linecap="round" filter="url(#glow)"/>
+<path d="M250 280 Q300 315 350 280" fill="none" stroke="#8A2BFF" stroke-width="9" stroke-linecap="round"/>
+<!-- body -->
+<path d="M165 390 Q300 345 435 390 L470 555 Q300 610 130 555 Z" fill="url(#shell)" stroke="#7896C7" stroke-width="10"/>
+<path d="M205 420 Q300 390 395 420 L410 525 Q300 565 190 525 Z" fill="#0B1C3D" stroke="#20A9FF" stroke-width="7"/>
+<circle cx="300" cy="474" r="48" fill="none" stroke="url(#blue)" stroke-width="13"/>
+<path d="M274 503 V456 Q274 446 285 446 H318 Q333 446 333 462 Q333 477 318 477 H296 V503" fill="none" stroke="#FFFFFF" stroke-width="13" stroke-linejoin="round"/>
+<!-- arms -->
+<path d="M154 420 Q90 430 82 500" fill="none" stroke="url(#shell)" stroke-width="42" stroke-linecap="round"/>
+<path d="M446 420 Q510 430 520 500" fill="none" stroke="url(#shell)" stroke-width="42" stroke-linecap="round"/>
+<circle cx="80" cy="510" r="42" fill="url(#shell)" stroke="#7896C7" stroke-width="8"/>
+<path d="M62 511 L78 526 L102 490" fill="none" stroke="#1769FF" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="520" cy="510" r="38" fill="url(#shell)" stroke="#7896C7" stroke-width="8"/>
+<!-- feet -->
+<path d="M180 555 L170 602 Q170 620 190 620 H260 Q275 620 275 602 L270 565" fill="url(#shell)" stroke="#7896C7" stroke-width="8"/>
+<path d="M330 565 L325 602 Q325 620 345 620 H415 Q430 620 430 602 L420 555" fill="url(#shell)" stroke="#7896C7" stroke-width="8"/>
+<path d="M190 588 H250 M350 588 H410" stroke="#20C8FF" stroke-width="8" stroke-linecap="round"/>
+</svg>

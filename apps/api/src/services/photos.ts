@@ -21,16 +21,27 @@ export function sniff(b: Uint8Array): Mime | null {
 export const WATERMARK = "pcdex";
 const MAX_SIDE = 1600;
 
-/** Dấu "pcdex": chữ trắng trên viên nền tối mờ (đọc được trên mọi nền), góc dưới phải; cao ~4% cạnh ngắn của ảnh */
+/** Symbol P của brand kit (bản trắng) — dùng làm dấu trên ảnh */
+const SYMBOL = `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20C8FF"/><stop offset=".52" stop-color="#1769FF"/><stop offset="1" stop-color="#8A2BFF"/></linearGradient></defs>
+  <path d="M26 112 A86 86 0 0 1 188 78" fill="none" stroke="url(#g)" stroke-width="15" stroke-linecap="round" stroke-dasharray="16 5"/>
+  <path d="M184 69 L211 45 L199 88 Z" fill="#8A2BFF"/>
+  <path d="M54 178 L54 102 Q54 88 69 88 L139 88 Q164 88 164 113 Q164 138 139 138 L92 138 L92 178 Z" fill="#ffffff"/>
+  <path d="M92 138 L139 138 Q164 138 164 113 Q164 88 139 88" fill="none" stroke="#00A6FF" stroke-width="8"/>
+  <path d="M25 164 L42 164 L42 181 L25 181 Z M10 184 L27 184 L27 201 L10 201 Z" fill="#00A6FF"/>`;
+
+/** Dấu: symbol P + chữ "pcdex" trắng trên viên nền navy mờ (đọc được trên mọi nền), góc dưới phải; cao ~4% cạnh ngắn của ảnh */
 function watermarkSvg(w: number, h: number) {
   const size = Math.max(16, Math.round(Math.min(w, h) * 0.04));
   const padX = Math.round(size * 0.5), padY = Math.round(size * 0.28), margin = Math.round(size * 0.6);
-  const pillW = Math.round(size * 0.69 * WATERMARK.length) + padX * 2, pillH = size + padY * 2;
+  const iconH = Math.round(size * 1.15), iconW = Math.round(iconH * 214 / 192), gap = Math.round(size * 0.3);
+  const textW = Math.round(size * 0.69 * WATERMARK.length);
+  const pillW = padX + iconW + gap + textW + padX, pillH = size + padY * 2;
   const boxW = pillW + margin, boxH = pillH + margin;
   return {
     svg: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${boxW}" height="${boxH}">
-      <rect x="0" y="0" width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#000000" fill-opacity="0.42"/>
-      <text x="${pillW / 2}" y="${padY + size * 0.84}" text-anchor="middle" font-family="DejaVu Sans, Arial, Helvetica, sans-serif"
+      <rect x="0" y="0" width="${pillW}" height="${pillH}" rx="${pillH / 2}" fill="#080F24" fill-opacity="0.5"/>
+      <svg x="${padX}" y="${(pillH - iconH) / 2}" width="${iconW}" height="${iconH}" viewBox="4 18 214 192">${SYMBOL}</svg>
+      <text x="${padX + iconW + gap + textW / 2}" y="${padY + size * 0.84}" text-anchor="middle" font-family="DejaVu Sans, Arial, Helvetica, sans-serif"
         font-weight="700" font-size="${size}" fill="#ffffff" fill-opacity="0.92">${WATERMARK}</text></svg>`),
     boxW, boxH,
   };

@@ -2,21 +2,25 @@
 
 Áp dụng cho website và app (Expo). Làm theo skill `ui-ux-pro-max` và `taste-skill` (phần màn hình ứng dụng).
 
-## Phong cách: True-black flat (taste-skill, seed 1715617894)
+## Thương hiệu: PCDEX Brand Kit 1.0 (08/11/2026)
 
-- **Nền tối, phân lớp bằng độ sáng**: nền `#0c0d0f` (đen lạnh của phần mềm theo dõi phần cứng), thẻ `#15171a`, khối lồng `#24272b`. Thẻ không viền, không đổ bóng.
-- **Màu chỉ đặt trên dữ liệu**: một màu duy nhất là lime `#c6f24e` (màu chữ OSD trong game), dùng cho FPS ở màn hình của người dùng, mức tăng điểm, ô lọc đang chọn. Không tô nút, tab, menu. Lime cũng là màu "tốt".
-- **Nút chính**: viên thuốc trắng chữ đen (đảo màu), mỗi màn hình tối đa một nút.
-- **Chữ**: Inter (có đủ dấu tiếng Việt), 400/500/600. Cỡ 12/13/14/16/20/24/36. Số dùng `tabular-nums`, căn phải trong bảng.
-- **Bo góc**: thẻ 20px, khối trong 12px, nút và pill tròn hẳn.
-- **Không dùng**: gradient, glow, kính mờ, tím/indigo, icon trong ô màu, emoji, sparkline, nhãn chữ in hoa giãn cách.
+Bộ gốc ở `PCDEX_Brand_Kit/` (logo, app icon, mascot, guideline PDF). Chủ dự án chốt cách áp dụng "kết hợp": màu theo brand kit, bố cục phẳng giữ nguyên, chữ giữ Inter.
 
-Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.css). Thông số gốc: `.taste-skill/app/direction.json`.
+- **Màu**: nền Deep Navy `#080F24` (thẻ `#0f1830`, khối lồng `#18233f`); **Tech Blue `#00A6FF` là màu dữ liệu** (thay lime): FPS ở màn hình của người dùng, mức tăng điểm, ô lọc đang chọn (nền `--accent-soft`). Màu "tốt" là xanh ngọc `#3ddc97` (khác màu dữ liệu để tăng / giảm vẫn rõ). Neon Purple chỉ xuất hiện trong logo và nút chính.
+- **Gradient chỉ ở hai chỗ**: logo, và **nút chính** (`--cta`: Electric Blue `#1769FF` → Neon Purple `#8A2BFF`, chữ trắng, mỗi màn hình một nút). Nút / tab đang chọn khác vẫn phẳng. Không glow, không kính mờ.
+- **Logo** (`components/mark.tsx`): `Mark` = symbol P (cung đo hiệu năng + mũi tên + 2 ô pixel), thân chữ P theo màu chữ (trắng trên navy, navy trên nền sáng — bản gốc trắng mất trên nền sáng). `Wordmark` = symbol + "PCDEX" Inter 800 nghiêng, "EX" gradient. Thanh bên và landing dùng logo ngang; thanh trên điện thoại chỉ dùng symbol. Trong câu văn tên vẫn viết thường "pcdex". Không kéo méo, không đổi gradient.
+- **Icon**: `app/favicon.ico`, `app/icon.svg` (symbol trên nền navy bo góc), `app/apple-icon.png` (nền navy kín). Phần mềm quét dùng cùng icon (`tools/pcdex-scan/pcdex.ico`) và màu navy / Tech Blue. Dấu trên ảnh tin rao: symbol + "pcdex" trên viên navy mờ.
+- **Mascot** (`components/mascot.tsx`, `public/brand/mascot.svg`, bản vector "Mascot Master"): chỉ ở onboarding (màn hình thêm máy), trạng thái trống (chợ không có tin), hướng dẫn quét (`/quet`), trang 404, ô lời mời ở landing. Không rải vào thành phần thường. Ảnh 3D 8 tư thế trong brand kit chưa dùng (khác thiết kế mascot vector, chưa rõ nguồn).
+- **Chữ**: Inter (biến thiên, đủ dấu tiếng Việt) cho mọi thứ; Chakra Petch cho tiêu đề trang và số lớn. Không dùng Orbitron (thiếu dấu tiếng Việt). Cỡ 12/13/14/16/20/24/36. Số dùng `tabular-nums`, căn phải trong bảng.
+- **Bo góc**: thẻ 20px, khối trong 12px, nút và pill tròn hẳn. Thẻ không viền, không đổ bóng; phân lớp bằng độ sáng nền.
+- **Không dùng**: glow, kính mờ, icon trong ô màu, emoji, sparkline, nhãn chữ in hoa giãn cách; gradient ngoài logo và nút chính.
+
+Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.css). Bố cục gốc (taste-skill, seed 1715617894): `.taste-skill/app/direction.json`.
 
 ## Ngày / Đêm (08/11/2026)
 
 - Đêm là gốc; Ngày bật theo hệ điều hành hoặc nút mặt trời/mặt trăng ở thanh trên (lưu `localStorage` `f2m.theme`). Script nội tuyến trong `<head>` đặt `data-theme` trước khi vẽ trang (không nháy, theo hướng dẫn "Preventing flash" của Next 16). `?theme=dark|light` trên địa chỉ để xem thử / kiểm tra.
-- Mọi màu là token trong `:root` (Đêm), `@media (prefers-color-scheme: light) :root:not([data-theme="dark"])` và `:root[data-theme="light"]` (Ngày). Ngày: nền #eef0f3, thẻ trắng, màu dữ liệu xanh ô liu #4f7f0e (lime #c6f24e không đọc được trên nền trắng).
+- Mọi màu là token trong `:root` (Đêm), `@media (prefers-color-scheme: light) :root:not([data-theme="dark"])` và `:root[data-theme="light"]` (Ngày). Ngày: nền `#eef2fa`, thẻ trắng, chữ navy `#0b1530`, màu dữ liệu `#1460e6` (Tech Blue gốc không đủ tương phản trên nền trắng).
 
 ## Màu hạng và điểm nhấn (08/11/2026)
 
@@ -31,7 +35,7 @@ Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.c
 
 - **Thước khung hình kiểu OSD**: mỗi độ phân giải một thanh. Phần tô là FPS thực tế, vạch trắng là mức CPU nuôi được, nên người dùng *nhìn thấy* điểm nghẽn.
 - **Chợ gắn với điểm số**: mỗi tin rao có "Lắp vào máy bạn: +X% điểm" và "Điểm / triệu".
-- **Dấu hiệu**: ba cột điểm tăng dần (thang hạng), cột cao nhất màu lime.
+- **Dấu hiệu**: symbol P của brand kit (xem mục Thương hiệu).
 
 ## Màn hình
 
@@ -47,11 +51,11 @@ Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.c
 
 ## Landing page `/` (08/11/2026)
 
-- taste-skill hướng **"The product performs"** (seed 1221121649, `.taste-skill/direction.json`), giữ màu và chữ của app. Ý tưởng: cấu hình máy của chính người xem thành dụng cụ chấm điểm — màn đầu là **công cụ chấm điểm sống** (chọn CPU + card → điểm, hạng, FPS 1080p/1440p/4K, chỗ nghẽn; dùng đúng công thức `packages/shared`).
+- taste-skill hướng **"The product performs"** (seed 1221121649, `.taste-skill/direction.json`), giữ màu (brand kit) và chữ của app. Ý tưởng: cấu hình máy của chính người xem thành dụng cụ chấm điểm — màn đầu là **công cụ chấm điểm sống** (chọn CPU + card → điểm, hạng, FPS 1080p/1440p/4K, chỗ nghẽn; dùng đúng công thức `packages/shared`).
 - Luôn tối (token đêm đặt lại trong `.lp`), vì ảnh giao diện là bản tối. Không có thanh bên của app (`Shell` bỏ khung khi đường dẫn là `/`). CSS riêng `apps/web/src/app/landing.css`.
 - Phần: màn đầu hai nửa → dải màn hình thật cuộn ngang (mảnh giữa sáng) → mảnh Cấu hình có chú thích hai lề (rê chú thích thì vùng đó sáng) → thanh trượt 4 bước → nền tảng (tab Web / Windows / Android / iOS) → hàng ô lời mời → chân trang một dòng.
 - Hình: ảnh chụp giao diện thật ở `apps/web/public/landing/*.webp` (chụp lại khi giao diện đổi) + 2 ảnh CC0 (ghi nguồn ở chân trang, `credits.json`).
-- Khác bản mẫu: ô lời mời nền tối thay vì lime (lime chỉ trên dữ liệu); bỏ phần "con số theo thanh trượt" (trùng màn đầu).
+- Khác bản mẫu: ô lời mời nền tối, có mascot; bỏ phần "con số theo thanh trượt" (trùng màn đầu). Nút chính gradient `--cta`.
 - Máy đo (08/11/2026): 0 FAIL ở 1440/768/390; còn 4 WARN có chủ đích (khoảng nghỉ màn đầu, dải cuộn ngang, hai mảnh mờ ở mép dải, không có video vì không có clip thật phù hợp).
 
 ## Kiểm tra

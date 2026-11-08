@@ -15,13 +15,15 @@ namespace PcdexScan
     /// </summary>
     public class MainForm : Form
     {
-        static readonly Color Ground = Color.FromArgb(0x0c, 0x0d, 0x0f);
-        static readonly Color Surface = Color.FromArgb(0x15, 0x17, 0x1a);
-        static readonly Color Raised = Color.FromArgb(0x24, 0x27, 0x2b);
+        static readonly Color Ground = Color.FromArgb(0x08, 0x0f, 0x24);
+        static readonly Color Surface = Color.FromArgb(0x0f, 0x18, 0x30);
+        static readonly Color Raised = Color.FromArgb(0x18, 0x23, 0x3f);
         static readonly Color Ink = Color.White;
-        static readonly Color Muted = Color.FromArgb(0xb4, 0xb9, 0xc0);
-        static readonly Color Faint = Color.FromArgb(0x8a, 0x90, 0x98);
-        static readonly Color Lime = Color.FromArgb(0xc6, 0xf2, 0x4e);
+        static readonly Color Muted = Color.FromArgb(0xb3, 0xbc, 0xd3);
+        static readonly Color Faint = Color.FromArgb(0x8f, 0x99, 0xb3);
+        // màu theo PCDEX Brand Kit: Tech Blue là màu dữ liệu, nút chính Electric Blue
+        static readonly Color Lime = Color.FromArgb(0x00, 0xa6, 0xff);
+        static readonly Color Cta = Color.FromArgb(0x17, 0x69, 0xff);
         static readonly Color Warn = Color.FromArgb(0xe5, 0xa9, 0x3b);
         const string FontName = "Segoe UI";
 
@@ -52,10 +54,13 @@ namespace PcdexScan
 
             // ---------- đầu trang ----------
             var head = new Panel { Dock = DockStyle.Top, Height = 64, BackColor = Ground, Padding = new Padding(24, 16, 24, 0) };
-            var brand = new Label { Text = "pcdex", Font = new Font(FontName, 18F, FontStyle.Bold), ForeColor = Ink, AutoSize = true, Location = new Point(24, 14) };
+            // symbol P (brand kit) lấy từ icon của exe
+            var logo = new PictureBox { Size = new Size(32, 32), Location = new Point(24, 16), SizeMode = PictureBoxSizeMode.Zoom, BackColor = Ground };
+            try { if (Icon != null) logo.Image = new Icon(Icon, new Size(64, 64)).ToBitmap(); } catch { }
+            var brand = new Label { Text = "pcdex", Font = new Font(FontName, 18F, FontStyle.Bold), ForeColor = Ink, AutoSize = true, Location = new Point(62, 14) };
             var sub = new Label { Text = "Quét cấu hình máy", Font = new Font(FontName, 11F), ForeColor = Muted, AutoSize = true, Location = new Point(80, 23) };
             var ver = new Label { Text = "phiên bản " + Program.Version, ForeColor = Faint, AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
-            head.Controls.AddRange(new Control[] { brand, sub, ver });
+            head.Controls.AddRange(new Control[] { logo, brand, sub, ver });
             head.Resize += (s, e) => ver.Location = new Point(head.ClientSize.Width - ver.Width - 24, 26);
             head.Layout += (s, e) => sub.Location = new Point(brand.Right + 8, sub.Top);
 
@@ -261,13 +266,13 @@ namespace PcdexScan
             var b = new Button
             {
                 Text = text, Height = 44, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand, UseVisualStyleBackColor = false,
-                BackColor = primary ? Lime : Raised, ForeColor = primary ? Color.Black : Ink,
+                BackColor = primary ? Cta : Raised, ForeColor = primary ? Color.White : Ink,
                 Font = new Font(FontName, 10.5F, FontStyle.Bold), Margin = new Padding(0, 0, 10, 0),
             };
             b.FlatAppearance.BorderSize = 0;
-            b.FlatAppearance.MouseOverBackColor = primary ? Color.FromArgb(0xd6, 0xfa, 0x6e) : Color.FromArgb(0x33, 0x37, 0x3c);
-            b.FlatAppearance.MouseDownBackColor = primary ? Color.FromArgb(0xa8, 0xd4, 0x2e) : Color.FromArgb(0x1b, 0x1d, 0x21);
-            b.EnabledChanged += (s, e) => { b.BackColor = b.Enabled ? (primary ? Lime : Raised) : Raised; b.ForeColor = b.Enabled ? (primary ? Color.Black : Ink) : Faint; };
+            b.FlatAppearance.MouseOverBackColor = primary ? Color.FromArgb(0x2b, 0x78, 0xff) : Color.FromArgb(0x24, 0x31, 0x55);
+            b.FlatAppearance.MouseDownBackColor = primary ? Color.FromArgb(0x13, 0x5d, 0xe6) : Color.FromArgb(0x12, 0x1b, 0x33);
+            b.EnabledChanged += (s, e) => { b.BackColor = b.Enabled ? (primary ? Cta : Raised) : Raised; b.ForeColor = b.Enabled ? (primary ? Color.White : Ink) : Faint; };
             return b;
         }
         static Control Gap(int h) => new Panel { Height = h, Width = 1, Margin = Padding.Empty };

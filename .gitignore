@@ -25,3 +25,6 @@ data/toms-gpu-hierarchy-2026.json
 apps/web/public/tai/
 tools/pcdex-scan/bin/
 tools/pcdex-scan/obj/
+
+# Brand kit: ảnh mascot 3D chưa rõ nguồn, không đăng lên repo công khai
+PCDEX_Brand_Kit/03_Mascot/027-use-case-stylized-concept.png

@@ -3,6 +3,7 @@
 import { resolveMachine } from "@f2m/shared";
 import { X } from "lucide-react";
 import Link from "next/link";
+import { Mascot } from "./mascot";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
@@ -138,10 +139,13 @@ export function Market() {
         {real === null ? (
           <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" style={{ height: 52, marginTop: 8 }} />)}</div>
         ) : shown.length === 0 ? (
-          <p className="empty">
-            {q ? `Không có tin nào khớp “${q}”${kind !== "all" ? " trong mục này" : ""}` : "Chưa có tin nào trong mục này"}{region && region !== ALL ? ` ở ${region}` : ""}.{" "}
-            {region && region !== ALL ? <button type="button" className="link-btn" onClick={() => setRegion(ALL)}>Xem toàn quốc</button> : <Link href={postHref} className="card-link">Đăng tin bán</Link>}
-          </p>
+          <div className="empty-state inline">
+            <Mascot size={88} />
+            <p>
+              {q ? `Không có tin nào khớp “${q}”${kind !== "all" ? " trong mục này" : ""}` : "Chưa có tin nào trong mục này"}{region && region !== ALL ? ` ở ${region}` : ""}.{" "}
+              {region && region !== ALL ? <button type="button" className="link-btn" onClick={() => setRegion(ALL)}>Xem toàn quốc</button> : <Link href={postHref} className="card-link">Đăng tin bán</Link>}
+            </p>
+          </div>
         ) : (
           <>
           {/* điện thoại: danh sách dòng hai tầng thay cho bảng */}

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import { RES_LABEL, STORAGE_LABEL } from "@/lib/format";
 import { Combo } from "./combo";
+import { Mascot } from "./mascot";
 
 const RAM_TOTAL = [4, 8, 12, 16, 24, 32, 48, 64, 96, 128];
 const PSU = [300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 850, 1000, 1200, 1300, 1600];
@@ -54,8 +55,11 @@ export function NewMachine({ name, first, browserSpec, onCreated, onCancel }: {
 
       <div className="new-machine">
         <section className="panel nm-scan" aria-labelledby="h-nm-scan">
-          <h2 id="h-nm-scan">Quét bằng pcdex-scan</h2>
-          <p className="muted">Phần mềm 48 KB cho Windows, không cần cài. Đọc CPU, card, mainboard, RAM, ổ cứng trong vài giây; linh kiện quét được có nhãn “Xác thực đang dùng”.</p>
+          <div className="nm-hello">
+            <Mascot size={92} />
+            <h2 id="h-nm-scan">Quét bằng pcdex-scan</h2>
+          </div>
+          <p className="muted">Phần mềm 75 KB cho Windows, không cần cài. Đọc CPU, card, mainboard, RAM, ổ cứng trong vài giây; linh kiện quét được có nhãn “Xác thực đang dùng”.</p>
           <ol className="nm-steps">
             <li>Tải và chạy pcdex-scan trên máy cần khai.</li>
             <li>Bấm “Gắn vào tài khoản”, phần mềm hiện mã và mã QR.</li>
