@@ -14,7 +14,7 @@ export function TierEmblem({ code, size = 56, label }: { code: string; size?: nu
   const n = LEVEL[code] ?? 1;
   const top = 26 - (n - 1) * 3.2;
   return (
-    <svg width={size} height={size} viewBox="0 0 56 56" role="img" aria-label={`Huy hiệu hạng ${label}`} style={tierVars(code)}>
+    <svg width={size} height={size} viewBox="0 0 56 56" role="img" aria-label={label} style={tierVars(code)}>
       <path d="M28 3 L50 15.5 L50 40.5 L28 53 L6 40.5 L6 15.5 Z" fill="var(--tier-field)" stroke="var(--tier)" strokeWidth="2.5" strokeLinejoin="round" />
       {Array.from({ length: n }, (_, i) => {
         const y = top + i * 6.4;

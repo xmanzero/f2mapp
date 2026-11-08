@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/i18n/client";
+
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,6 +14,8 @@ import { PasswordInput } from "./login";
 /** Đặt mật khẩu (tài khoản Google) hoặc đổi mật khẩu */
 function PasswordForm({ hasPassword, onDone }: { hasPassword: boolean; onDone: (u: Profile) => void }) {
   const [open, setOpen] = useState(false);
+  const { t } = useI18n();
+  const T = t.account;
   const [cur, setCur] = useState("");
   const [next, setNext] = useState("");
   const [state, setState] = useState<{ busy: boolean; error: string | null; ok: boolean }>({ busy: false, error: null, ok: false });
@@ -19,8 +23,8 @@ function PasswordForm({ hasPassword, onDone }: { hasPassword: boolean; onDone: (
   if (!open)
     return (
       <div style={{ marginTop: 12 }}>
-        {state.ok && <p className="stamp" role="status" style={{ marginBottom: 8 }}>Đã lưu mật khẩu. Các thiết bị khác đã bị đăng xuất.</p>}
-        <button className="link" onClick={() => setOpen(true)}>{hasPassword ? "Đổi mật khẩu" : "Đặt mật khẩu để đăng nhập bằng email"}</button>
+        {state.ok && <p className="stamp" role="status" style={{ marginBottom: 8 }}>{T.pwSaved}</p>}
+        <button className="link" onClick={() => setOpen(true)}>{hasPassword ? T.changePw : T.setPw}</button>
       </div>
     );
   const submit = async () => {
@@ -38,19 +42,19 @@ function PasswordForm({ hasPassword, onDone }: { hasPassword: boolean; onDone: (
     <form className="form" style={{ marginTop: 16 }} onSubmit={(e) => { e.preventDefault(); void submit(); }}>
       {hasPassword && (
         <div className="field">
-          <label htmlFor="cur-pw">Mật khẩu hiện tại <span className="req" aria-hidden="true">*</span></label>
+          <label htmlFor="cur-pw">{T.curPw} <span className="req" aria-hidden="true">*</span></label>
           <PasswordInput id="cur-pw" value={cur} onChange={setCur} autoComplete="current-password" />
         </div>
       )}
       <div className="field">
-        <label htmlFor="new-pw">Mật khẩu mới <span className="req" aria-hidden="true">*</span></label>
+        <label htmlFor="new-pw">{T.newPw} <span className="req" aria-hidden="true">*</span></label>
         <PasswordInput id="new-pw" value={next} onChange={setNext} autoComplete="new-password" minLength={8} describedBy="new-pw-hint" />
-        <span id="new-pw-hint" className="hint">Từ 8 ký tự. Lưu xong, các thiết bị khác sẽ bị đăng xuất.</span>
+        <span id="new-pw-hint" className="hint">{T.newPwHint}</span>
       </div>
       {state.error && <p className="form-error" role="alert" style={{ marginTop: 0 }}>{state.error}</p>}
       <div style={{ display: "flex", gap: 10 }}>
-        <button className="btn primary" disabled={state.busy}>{state.busy ? "Đang lưu…" : "Lưu mật khẩu"}</button>
-        <button type="button" className="btn" onClick={() => setOpen(false)}>Hủy</button>
+        <button className="btn primary" disabled={state.busy}>{state.busy ? t.common.saving : T.savePw}</button>
+        <button type="button" className="btn" onClick={() => setOpen(false)}>{t.common.cancel}</button>
       </div>
     </form>
   );
@@ -60,6 +64,8 @@ export function Account() {
   const router = useRouter();
   const isNew = useSearchParams().get("moi") === "1";
   const { user, setUser, logout } = useSession();
+  const { t, p } = useI18n();
+  const T = t.account;
   const [form, setForm] = useState({ displayName: "", handle: "", province: "" });
   const [state, setState] = useState<{ busy: boolean; error: string | null; saved: boolean }>({ busy: false, error: null, saved: false });
 
@@ -67,12 +73,12 @@ export function Account() {
     if (user) setForm({ displayName: user.displayName, handle: user.handle, province: user.province ?? "" });
   }, [user]);
 
-  if (user === undefined) return <div className="title-row"><div><h1>Tài khoản</h1><p className="sub">Đang tải…</p></div></div>;
+  if (user === undefined) return <div className="title-row"><div><h1>{t.pages.account}</h1><p className="sub">{t.common.loading}</p></div></div>;
   if (user === null)
     return (
       <>
-        <div className="title-row"><div><h1>Tài khoản</h1><p className="sub">Bạn chưa đăng nhập.</p></div></div>
-        <p className="empty">Đăng nhập để lưu máy vào tài khoản và có tên trên bảng xếp hạng. <Link href="/dang-nhap?next=/tai-khoan" className="card-link">Đăng nhập</Link></p>
+        <div className="title-row"><div><h1>{t.pages.account}</h1><p className="sub">{T.notLoggedIn}</p></div></div>
+        <p className="empty">{T.loginWhy} <Link href={`${p("/dang-nhap")}?next=/tai-khoan`} className="card-link">{t.common.login}</Link></p>
       </>
     );
 
@@ -95,53 +101,53 @@ export function Account() {
     <>
       <div className="title-row">
         <div>
-          <h1>Tài khoản</h1>
-          <p className="sub">{isNew ? "Tài khoản đã được tạo. Đặt tên hiển thị và tỉnh/thành để mọi người nhận ra bạn trên bảng xếp hạng." : `@${user.handle}`}</p>
+          <h1>{t.pages.account}</h1>
+          <p className="sub">{isNew ? T.created : `@${user.handle}`}</p>
         </div>
       </div>
 
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-profile">
-          <header><h2 id="h-profile">Hồ sơ</h2><span className="meta">Hiện trên bảng xếp hạng và tin rao</span></header>
+          <header><h2 id="h-profile">{T.profile}</h2><span className="meta">{T.profileMeta}</span></header>
           <form className="form" onSubmit={(e) => { e.preventDefault(); void save(); }}>
             <div className="field">
-              <label htmlFor="displayName">Tên hiển thị <span className="req" aria-hidden="true">*</span></label>
+              <label htmlFor="displayName">{T.displayName} <span className="req" aria-hidden="true">*</span></label>
               <input id="displayName" className="input" value={form.displayName} onChange={set("displayName")} maxLength={40} required minLength={2} />
             </div>
             <div className="field">
-              <label htmlFor="handle">Tên tài khoản <span className="req" aria-hidden="true">*</span></label>
+              <label htmlFor="handle">{T.handle} <span className="req" aria-hidden="true">*</span></label>
               <input id="handle" className="input" value={form.handle} onChange={set("handle")} maxLength={20} aria-describedby="handle-hint"
                 autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-              <span id="handle-hint" className="hint">3–20 ký tự: chữ thường không dấu, số, dấu chấm, gạch dưới.</span>
+              <span id="handle-hint" className="hint">{T.handleHint}</span>
             </div>
             <div className="field">
-              <label htmlFor="province">Tỉnh / thành</label>
-              <Combo id="province" value={form.province} onChange={(v) => setForm((x) => ({ ...x, province: v }))} placeholder="Gõ tỉnh, VD: ha noi"
-                options={[{ value: "", label: "Chưa chọn" }, ...PROVINCES.map((p) => ({ value: p, label: p }))]} />
+              <label htmlFor="province">{T.province}</label>
+              <Combo id="province" value={form.province} onChange={(v) => setForm((x) => ({ ...x, province: v }))} placeholder={t.post.areaPh}
+                options={[{ value: "", label: t.post.notChosen }, ...PROVINCES.map((p) => ({ value: p, label: p }))]} />
             </div>
             {state.error && <p className="form-error" role="alert">{state.error}</p>}
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <button className="btn primary" disabled={state.busy}>{state.busy ? "Đang lưu…" : "Lưu"}</button>
-              {state.saved && <span className="stamp" role="status">Đã lưu</span>}
+              <button className="btn primary" disabled={state.busy}>{state.busy ? t.common.saving : t.common.save}</button>
+              {state.saved && <span className="stamp" role="status">{t.common.saved}</span>}
             </div>
           </form>
         </section>
 
         <section className="panel s5" aria-labelledby="h-signin">
-          <header><h2 id="h-signin">Cách đăng nhập</h2></header>
+          <header><h2 id="h-signin">{T.signin}</h2></header>
           <ul className="rows">
             <li className="row">
-              <div className="grow"><div style={{ fontWeight: 500 }}>Email và mật khẩu</div><div className="line2">{user.hasPassword ? user.email : "Chưa đặt mật khẩu"}</div></div>
-              {user.hasPassword && <span className="pill pos">Đang dùng</span>}
+              <div className="grow"><div style={{ fontWeight: 500 }}>{T.emailPw}</div><div className="line2">{user.hasPassword ? user.email : T.noPw}</div></div>
+              {user.hasPassword && <span className="pill pos">{T.inUse}</span>}
             </li>
             <li className="row">
-              <div className="grow"><div style={{ fontWeight: 500 }}>Google</div><div className="line2">{user.providers.includes("google") ? user.email : "Chưa gắn"}</div></div>
-              {user.providers.includes("google") && <span className="pill pos">Đang dùng</span>}
+              <div className="grow"><div style={{ fontWeight: 500 }}>Google</div><div className="line2">{user.providers.includes("google") ? user.email : T.notLinked}</div></div>
+              {user.providers.includes("google") && <span className="pill pos">{T.inUse}</span>}
             </li>
           </ul>
           {user.email && <VerifyEmail email={user.email} verified={user.emailVerified} />}
           {user.email && <PasswordForm hasPassword={user.hasPassword} onDone={setUser} />}
-          <button className="btn" style={{ marginTop: 16 }} onClick={async () => { await logout(); router.push("/"); }}>Đăng xuất</button>
+          <button className="btn" style={{ marginTop: 16 }} onClick={async () => { await logout(); router.push(p("/")); }}>{t.common.logout}</button>
         </section>
 
         <DeleteAccount handle={user.handle} />
@@ -154,6 +160,8 @@ export function Account() {
 function DeleteAccount({ handle }: { handle: string }) {
   const router = useRouter();
   const { refresh } = useSession();
+  const { t, p } = useI18n();
+  const T = t.account;
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState("");
   const [busy, setBusy] = useState(false);
@@ -165,23 +173,23 @@ function DeleteAccount({ handle }: { handle: string }) {
       await api("/v1/me", { method: "DELETE", body: { confirm: typed } });
       try { localStorage.removeItem("f2m.spec.v1"); localStorage.removeItem("f2m.contact"); } catch { /* bỏ qua */ }
       await refresh();
-      router.push("/");
+      router.push(p("/"));
     } catch (e) { setError((e as ApiError).message); setBusy(false); }
   };
   return (
     <section className="panel s12 danger-zone" aria-labelledby="h-delete">
-      <header><h2 id="h-delete">Xóa tài khoản</h2></header>
-      <p className="muted">Xóa vĩnh viễn tài khoản <b>@{handle}</b> cùng mọi máy đã khai, linh kiện trong kho, tin rao và ảnh, kết quả quét đã gắn và liên kết Google. Không hoàn tác được.</p>
+      <header><h2 id="h-delete">{T.deleteTitle}</h2></header>
+      <p className="muted">{T.deleteText(handle)}</p>
       {!open ? (
-        <button type="button" className="btn danger-outline" onClick={() => setOpen(true)}>Xóa tài khoản…</button>
+        <button type="button" className="btn danger-outline" onClick={() => setOpen(true)}>{T.deleteOpen}</button>
       ) : (
         <div className="field" style={{ maxWidth: 420, marginTop: 12 }}>
-          <label htmlFor="del-confirm">Gõ <b>{handle}</b> để xác nhận</label>
+          <label htmlFor="del-confirm">{T.typeToConfirm(handle)}</label>
           <input id="del-confirm" className="input" value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off" spellCheck={false} autoFocus />
           {error && <p className="field-error" role="alert">{error}</p>}
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-            <button type="button" className="btn danger" disabled={!ok || busy} onClick={run}>{busy ? "Đang xóa…" : "Xóa vĩnh viễn"}</button>
-            <button type="button" className="btn" onClick={() => { setOpen(false); setTyped(""); setError(null); }}>Thôi</button>
+            <button type="button" className="btn danger" disabled={!ok || busy} onClick={run}>{busy ? T.deleting : T.deleteForever}</button>
+            <button type="button" className="btn" onClick={() => { setOpen(false); setTyped(""); setError(null); }}>{T.never}</button>
           </div>
         </div>
       )}
@@ -192,18 +200,20 @@ function DeleteAccount({ handle }: { handle: string }) {
 /** Trạng thái xác minh email + gửi lại thư xác minh */
 function VerifyEmail({ email, verified }: { email: string; verified: boolean }) {
   const [state, setState] = useState<{ busy: boolean; msg: string | null; ok: boolean }>({ busy: false, msg: null, ok: true });
-  if (verified) return <p className="verify-row"><span className="pill pos">Email đã xác minh</span><span className="muted">{email}</span></p>;
+  const { t } = useI18n();
+  const T = t.account;
+  if (verified) return <p className="verify-row"><span className="pill pos">{T.verified}</span><span className="muted">{email}</span></p>;
   const send = async () => {
     setState({ busy: true, msg: null, ok: true });
     try {
       await api("/v1/me/verify-email", { body: {} });
-      setState({ busy: false, ok: true, msg: `Đã gửi thư tới ${email}. Bấm link trong thư (hiệu lực 48 giờ); không thấy thì xem mục Spam.` });
+      setState({ busy: false, ok: true, msg: T.verifySent(email) });
     } catch (e) { setState({ busy: false, ok: false, msg: (e as ApiError).message }); }
   };
   return (
     <div className="verify-box">
-      <p><span className="pill warn">Email chưa xác minh</span> Xác minh để lấy lại được mật khẩu và giữ tài khoản an toàn.</p>
-      <button type="button" className="btn small" disabled={state.busy} onClick={send}>{state.busy ? "Đang gửi…" : "Gửi thư xác minh"}</button>
+      <p><span className="pill warn">{T.unverified}</span> {T.verifyWhy}</p>
+      <button type="button" className="btn small" disabled={state.busy} onClick={send}>{state.busy ? T.sending : T.sendVerify}</button>
       {state.msg && <p className={state.ok ? "ok-text" : "form-error"} role="status">{state.msg}</p>}
     </div>
   );

@@ -7,6 +7,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError } from "./api";
 import { useSession } from "./session";
+import { makeI18n, type Locale } from "@/i18n";
 
 const KEY = "f2m.spec.v1";
 const OLD_KEY = "f2m.machine.v1";
@@ -162,4 +163,13 @@ export function useMachine() {
     canAdd: !!user && (server?.length ?? 0) > 0 && (server?.length ?? 0) < MAX_MACHINES,
     empty, browserSpec: local, adding, startAdding: () => setAdding(true), cancelAdding: () => setAdding(false), created, rename, setPrimary, removeMachine, reload, justScanned, dismissScanned: () => setJustScanned(false),
   };
+}
+
+/** Tên máy mặc định lưu bằng tiếng Việt ("Máy của tôi", "Máy 2") → hiển thị theo ngôn ngữ trang; tên người dùng tự đặt giữ nguyên */
+export function machineName(name: string, locale: Locale) {
+  if (locale === "vi") return name;
+  const T = makeI18n(locale).t.machine;
+  if (name === "Máy của tôi") return T.defaultName;
+  const m = /^Máy (\d+)$/.exec(name);
+  return m ? T.nthName(Number(m[1])) : name;
 }

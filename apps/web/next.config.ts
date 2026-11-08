@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
     return [{ source: "/api/:path*", destination: `${API_URL}/:path*` }];
   },
   cacheComponents: true,
+  // layout gốc nằm trong [lang]: địa chỉ không khớp trang nào dùng app/global-not-found.tsx (hai ngôn ngữ)
+  experimental: { globalNotFound: true },
   partialPrefetching: true,
   turbopack: {
     rules: {

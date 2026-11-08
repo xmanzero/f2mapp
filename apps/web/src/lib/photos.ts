@@ -1,3 +1,4 @@
+import { makeI18n, pageLocale } from "@/i18n";
 import { ApiError } from "./api";
 import type { Listing } from "./listings";
 
@@ -10,8 +11,8 @@ export const photoUrl = (id: string) => `/api/v1/photos/${id}`;
  */
 export async function shrinkImage(file: File, maxSide = 1600): Promise<Blob> {
   if (!/^image\/(jpeg|png|webp|heic|heif|avif|gif|bmp)$/i.test(file.type) && file.type !== "")
-    throw new Error("Chỉ nhận tệp ảnh");
-  const bmp = await createImageBitmap(file).catch(() => { throw new Error("Không đọc được ảnh này. Thử ảnh JPEG hoặc PNG."); });
+    throw new Error(makeI18n(pageLocale()).t.upload.notImage);
+  const bmp = await createImageBitmap(file).catch(() => { throw new Error(makeI18n(pageLocale()).t.upload.unreadable); });
   const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
   const w = Math.round(bmp.width * scale), h = Math.round(bmp.height * scale);
   const canvas = document.createElement("canvas");
@@ -22,7 +23,7 @@ export async function shrinkImage(file: File, maxSide = 1600): Promise<Blob> {
   ctx.drawImage(bmp, 0, 0, w, h);
   bmp.close();
   const blob = await new Promise<Blob | null>((ok) => canvas.toBlob(ok, "image/jpeg", 0.85));
-  if (!blob) throw new Error("Không nén được ảnh");
+  if (!blob) throw new Error(makeI18n(pageLocale()).t.upload.compressFail);
   return blob;
 }
 
@@ -31,12 +32,12 @@ export async function uploadPhoto(listingId: string, blob: Blob): Promise<Listin
   let res: Response;
   try {
     res = await fetch(`/api/v1/listings/${listingId}/photos`, {
-      method: "POST", headers: { "content-type": blob.type || "image/jpeg" }, body: blob, credentials: "same-origin",
+      method: "POST", headers: { "content-type": blob.type || "image/jpeg", "x-lang": pageLocale() }, body: blob, credentials: "same-origin",
     });
   } catch {
-    throw new ApiError(0, "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.");
+    throw new ApiError(0, makeI18n(pageLocale()).t.common.networkError);
   }
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new ApiError(res.status, data.message ?? `Lỗi máy chủ (${res.status})`, data.error);
+  if (!res.ok) throw new ApiError(res.status, data.message ?? makeI18n(pageLocale()).t.common.serverError(res.status), data.error);
   return data.item as Listing;
 }

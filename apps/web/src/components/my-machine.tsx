@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  computeScores, estimateFps, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS,
+  computeScores, estimateFps, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS, tierName, localizePartLabel,
   type Finding, type MachineConfig, type MachineSpec, type Resolution, type Severity, type UpgradeSuggestion,
 } from "@f2m/shared";
 import { Star } from "lucide-react";
@@ -10,17 +10,17 @@ import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_MACHINES } from "@/data/sample";
 import { api } from "@/lib/api";
 import type { SellablePart } from "@/lib/listings";
-import { n0, ratio, signedPct } from "@/lib/format";
 import { useMachine, type PartView } from "@/lib/use-machine";
 import { MachineDiagram } from "./machine-diagram";
 import { TierEmblem, tierVars } from "./tier";
 import { ConfigEditor } from "./config-editor";
 import { NewMachine } from "./new-machine";
 import CountUp from "./CountUp";
+import { useI18n } from "@/i18n/client";
+import { machineName } from "@/lib/use-machine";
 
 const SEV_ORDER: Record<Severity, number> = { critical: 0, warning: 1, info: 2, ok: 3 };
 const sevClass = (s: Severity) => (s === "critical" ? "neg" : s === "warning" ? "warn" : s === "ok" ? "pos" : "");
-const KIND_VI: Record<string, string> = { cpu: "CPU", gpu: "card đồ họa", mainboard: "mainboard", ram: "RAM", storage: "ổ cứng", psu: "nguồn" };
 
 /** Áp gợi ý nâng cấp (dạng tóm tắt) vào cấu hình chi tiết */
 function applySuggestion(spec: MachineSpec, next: MachineConfig): MachineSpec {
@@ -35,6 +35,8 @@ function applySuggestion(spec: MachineSpec, next: MachineConfig): MachineSpec {
 }
 
 export function MyMachine() {
+  const { t, p, n0, signedPct, locale } = useI18n();
+  const T = t.machine;
   const m = useMachine();
   const { spec, save, isSample, ready, savedTo, saveState, user, machines, active } = m;
   const [preview, setPreview] = useState<UpgradeSuggestion | null>(null);
@@ -44,8 +46,8 @@ export function MyMachine() {
     if (!ready) return null;
     const cfg = resolveMachine(specToInput(shownSpec));
     const base = resolveMachine(specToInput(spec));
-    return { cfg, r: evaluate(cfg, new Date().getFullYear()), base: evaluate(base).scores.power, upgrades: suggestUpgrades(base) };
-  }, [ready, shownSpec, spec]);
+    return { cfg, r: evaluate(cfg, new Date().getFullYear(), locale), base: evaluate(base).scores.power, upgrades: suggestUpgrades(base, locale) };
+  }, [ready, shownSpec, spec, locale]);
 
   useEffect(() => { setPreview(null); }, [active.id]);
   if (!view) return <Loading />;
@@ -54,42 +56,39 @@ export function MyMachine() {
       onCreated={m.created} onCancel={m.adding && !m.empty ? m.cancelAdding : undefined} />
   );
   const { cfg, r, upgrades } = view;
-  const findings = [...specFindings(shownSpec), ...r.findings].sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity]);
+  const findings = [...specFindings(shownSpec, locale), ...r.findings].sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity]);
   const lead = findings[0]!;
 
   return (
     <>
       <div className="title-row">
         <div>
-          <h1>{machines.length > 1 ? active.name : "Máy của tôi"}</h1>
+          <h1>{machines.length > 1 ? machineName(active.name, locale) : T.defaultName}</h1>
           <p className="sub">{active.missing.length > 0
-            ? `Bạn đã bán ${active.missing.map((k) => KIND_VI[k]).join(", ")} của máy này. Chọn linh kiện thay thế ở phần cấu hình.`
+            ? T.soldParts(active.missing.map((k) => T.kind[k]).join(", "))
             : lead.message}</p>
         </div>
         <span className="stamp" role="status">
-          {isSample ? "Đang là máy mẫu: sửa cấu hình để thành máy của bạn"
-            : savedTo === "account" ? (saveState === "saving" ? "Đang lưu…" : saveState === "error" ? (m.error ?? "Chưa lưu được. Kiểm tra mạng rồi sửa lại.") : "Đã lưu vào tài khoản")
-            : <>Lưu trên trình duyệt này · <Link href="/dang-nhap" className="card-link">Đăng nhập để lưu vào tài khoản</Link></>}
+          {isSample ? T.sampleStamp
+            : savedTo === "account" ? (saveState === "saving" ? t.common.saving : saveState === "error" ? (m.error ?? T.saveError) : T.savedAccount)
+            : <>{T.savedBrowser} · <Link href={p("/dang-nhap")} className="card-link">{T.loginToSave}</Link></>}
         </span>
       </div>
 
       {user && machines[0]?.id && <MachineTabs m={m} />}
       {m.justScanned && (
         <div className="scan-done" role="status">
-          <p>Đã cập nhật <b>{active.name}</b> theo kết quả quét. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng”.</p>
-          <button type="button" className="btn small" onClick={m.dismissScanned}>Đã hiểu</button>
+          <p>{T.scanned(machineName(active.name, locale))}</p>
+          <button type="button" className="btn small" onClick={m.dismissScanned}>{T.gotIt}</button>
         </div>
       )}
       <ReplacedNotice saveState={saveState} />
 
       {preview && (
         <div className="preview-bar" role="status">
-          <p>
-            Đang xem thử <b>{preview.title.replace(/^Lên /, "")}</b>: điểm {n0(view.base)} → {n0(r.scores.power)} ({signedPct(preview.powerGain)}),
-            game {RESOLUTION_LABEL[cfg.resolution]} ~{preview.fpsBefore} → ~{preview.fpsAfter} FPS.
-          </p>
-          <button className="btn small primary" onClick={() => { save(applySuggestion(spec, preview.next)); setPreview(null); }}>Lắp vào máy tôi</button>
-          <button className="btn small" onClick={() => setPreview(null)}>Bỏ xem thử</button>
+          <p>{T.previewing(T.previewTarget(preview.title), n0(view.base), n0(r.scores.power), signedPct(preview.powerGain), RESOLUTION_LABEL[cfg.resolution], preview.fpsBefore, preview.fpsAfter)}</p>
+          <button className="btn small primary" onClick={() => { save(applySuggestion(spec, preview.next)); setPreview(null); }}>{T.applyPreview}</button>
+          <button className="btn small" onClick={() => setPreview(null)}>{T.cancelPreview}</button>
         </div>
       )}
 
@@ -103,17 +102,17 @@ export function MyMachine() {
         <div className="col col-r">
           <section className="panel" aria-labelledby="h-config">
             <header>
-              <h2 id="h-config">Cấu hình</h2>
-              <span className="meta">{preview ? "Bỏ xem thử để sửa" : "Bấm vào giá trị để đổi"}</span>
+              <h2 id="h-config">{T.config}</h2>
+              <span className="meta">{preview ? T.configLocked : T.configHint}</span>
             </header>
             {!active.lastScanAt && (
               <p className="scan-cta">
-                Máy chạy Windows? <a href="/tai/pcdex-scan.exe" download className="card-link">Tải pcdex-scan</a> để tự đọc cấu hình và có nhãn “Xác thực đang dùng”. <Link href="/quet" className="card-link">Đã có mã quét</Link>
+                {T.scanCta(<a href="/tai/pcdex-scan.exe" download className="card-link">{T.downloadScan}</a>, <Link href={p("/quet")} className="card-link">{T.haveCode}</Link>)}
               </p>
             )}
             <ConfigEditor spec={shownSpec} parts={active.parts} locked={!!preview} canSell={!!user && !!active.id} onChange={save} />
           </section>
-          <FindingsCard findings={[...specFindings(shownSpec), ...hardwareFindings(cfg)]} cfg={cfg} />
+          <FindingsCard findings={[...specFindings(shownSpec, locale), ...hardwareFindings(cfg, locale)]} cfg={cfg} />
         </div>
       </div>
     </>
@@ -122,38 +121,40 @@ export function MyMachine() {
 
 /** Chuyển giữa 2 máy, thêm máy, đặt máy chính, đổi tên, xóa máy phụ */
 function MachineTabs({ m }: { m: ReturnType<typeof useMachine> }) {
+  const { t, locale } = useI18n();
+  const T = t.machine;
   const [naming, setNaming] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const canManage = m.machines.length > 1 && !m.active.isPrimary && !!m.active.id;
   return (
     <div className="machine-tabs">
       {m.machines.length > 1 && (
-        <div className="segmented" role="group" aria-label="Chọn máy">
+        <div className="segmented" role="group" aria-label={T.chooseMachine}>
           {m.machines.map((x) => (
             <button key={x.id} aria-pressed={x.id === m.active.id} onClick={() => m.setActiveId(x.id)}>
-              {x.isPrimary && <Star size={13} aria-label="Máy chính" style={{ marginRight: 6, verticalAlign: -1 }} />}{x.name}
+              {x.isPrimary && <Star size={13} aria-label={T.primary} style={{ marginRight: 6, verticalAlign: -1 }} />}{machineName(x.name, locale)}
             </button>
           ))}
         </div>
       )}
       {naming !== null ? (
         <form style={{ display: "flex", gap: 8 }} onSubmit={(e) => { e.preventDefault(); if (naming.trim()) void m.rename(naming.trim()); setNaming(null); }}>
-          <input className="mini-input" style={{ border: "1px solid var(--control)" }} aria-label="Tên máy" value={naming} maxLength={40} autoFocus onChange={(e) => setNaming(e.target.value)} />
-          <button className="btn small primary">Lưu tên</button>
-          <button type="button" className="btn small" onClick={() => setNaming(null)}>Hủy</button>
+          <input className="mini-input" style={{ border: "1px solid var(--control)" }} aria-label={T.machineName} value={naming} maxLength={40} autoFocus onChange={(e) => setNaming(e.target.value)} />
+          <button className="btn small primary">{T.saveName}</button>
+          <button type="button" className="btn small" onClick={() => setNaming(null)}>{t.common.cancel}</button>
         </form>
       ) : (
-        <button className="btn small" onClick={() => setNaming(m.active.name)}>Đổi tên máy</button>
+        <button className="btn small" onClick={() => setNaming(machineName(m.active.name, locale))}>{T.rename}</button>
       )}
-      {canManage && <button className="btn small" onClick={() => void m.setPrimary(m.active.id!)}>Đặt làm máy chính</button>}
+      {canManage && <button className="btn small" onClick={() => void m.setPrimary(m.active.id!)}>{T.makePrimary}</button>}
       {canManage && (confirmDelete ? (
         <>
-          <span className="stamp">Xóa “{m.active.name}”? Tin đang bán từ máy này sẽ bị ẩn.</span>
-          <button className="btn small" style={{ color: "var(--negative)" }} onClick={() => { void m.removeMachine(m.active.id!); setConfirmDelete(false); }}>Xóa máy</button>
-          <button className="btn small" onClick={() => setConfirmDelete(false)}>Giữ lại</button>
+          <span className="stamp">{T.confirmDelete(machineName(m.active.name, locale))}</span>
+          <button className="btn small" style={{ color: "var(--negative)" }} onClick={() => { void m.removeMachine(m.active.id!); setConfirmDelete(false); }}>{T.deleteMachine}</button>
+          <button className="btn small" onClick={() => setConfirmDelete(false)}>{T.keep}</button>
         </>
-      ) : <button className="btn small" onClick={() => setConfirmDelete(true)}>Xóa máy này</button>)}
-      {m.canAdd && <button className="btn small" onClick={m.startAdding}>Thêm máy thứ hai</button>}
+      ) : <button className="btn small" onClick={() => setConfirmDelete(true)}>{T.deleteThis}</button>)}
+      {m.canAdd && <button className="btn small" onClick={m.startAdding}>{T.addSecond}</button>}
       {m.error && <span className="stamp" role="alert" style={{ color: "var(--negative)" }}>{m.error}</span>}
     </div>
   );
@@ -162,6 +163,7 @@ function MachineTabs({ m }: { m: ReturnType<typeof useMachine> }) {
 /** Linh kiện đã thay ra, chưa đăng bán → nhắc đăng bán */
 function ReplacedNotice({ saveState }: { saveState: string }) {
   const { user } = useMachine();
+  const { t, p, locale } = useI18n();
   const [parts, setParts] = useState<SellablePart[]>([]);
   useEffect(() => {
     if (!user || saveState === "saving") return;
@@ -171,17 +173,18 @@ function ReplacedNotice({ saveState }: { saveState: string }) {
   const first = parts[0]!;
   return (
     <div className="sell-bar" role="status">
-      <p>Bạn đã thay ra <b>{first.label}</b>{parts.length > 1 ? ` và ${parts.length - 1} linh kiện khác` : ""}. Đăng bán để có thêm tiền nâng cấp.</p>
-      <Link href={`/cho/dang-tin?mp=${first.id}`} className="btn small primary">Đăng bán</Link>
-      {parts.length > 1 && <Link href="/cho/cua-toi" className="btn small">Xem tất cả</Link>}
+      <p>{t.machine.replaced(localizePartLabel(first.label, locale), parts.length - 1)}</p>
+      <Link href={`${p("/cho/dang-tin")}?mp=${first.id}`} className="btn small primary">{t.machine.sell}</Link>
+      {parts.length > 1 && <Link href={p("/cho/cua-toi")} className="btn small">{t.machine.seeAll}</Link>}
     </div>
   );
 }
 
 function Loading() {
+  const { t } = useI18n();
   return (
     <>
-      <div className="title-row"><div><h1>Máy của tôi</h1><p className="sub">Đang tải cấu hình…</p></div></div>
+      <div className="title-row"><div><h1>{t.machine.defaultName}</h1><p className="sub">{t.machine.loadingConfig}</p></div></div>
       <div className="grid">
         <section className="panel s5" aria-busy="true"><div className="skeleton" style={{ width: 140, height: 38 }} /><div className="skeleton" style={{ marginTop: 92, height: 70 }} /></section>
         <section className="panel s7" aria-busy="true"><div className="skeleton" style={{ height: 230 }} /></section>
@@ -193,55 +196,61 @@ function Loading() {
 type Result = ReturnType<typeof evaluate>;
 
 function TierProgress({ power }: { power: number }) {
-  const i = TIERS.findIndex((t) => t.min > power);
-  if (i === -1) return <p className="muted" style={{ marginTop: 16 }}>Đang ở hạng cao nhất.</p>;
+  const { t, n0, locale } = useI18n();
+  const i = TIERS.findIndex((x) => x.min > power);
+  if (i === -1) return <p className="muted" style={{ marginTop: 16 }}>{t.machine.topTier}</p>;
   const from = TIERS[i - 1]!, to = TIERS[i]!;
+  const fromName = tierName(from, locale), toName = tierName(to, locale);
   const pct = ((power - from.min) / (to.min - from.min)) * 100;
   return (
     <div style={{ marginTop: 16 }}>
-      <p>Còn <b className="num">{n0(to.min - power)}</b> điểm lên {to.name}</p>
-      <div className="tier-track tier-fill" role="img" aria-label={`Đã đi được ${Math.round(pct)}% từ ${from.name} lên ${to.name}`}>
+      <p>{t.machine.toNextTier(n0(to.min - power), toName)}</p>
+      <div className="tier-track tier-fill" role="img" aria-label={t.machine.tierProgress(Math.round(pct), fromName, toName)}>
         <div style={{ width: `${pct}%` }} />
       </div>
-      <div className="tier-ends faint num"><span>{from.name} {n0(from.min)}</span><span>{to.name} {n0(to.min)}</span></div>
+      <div className="tier-ends faint num"><span>{fromName} {n0(from.min)}</span><span>{toName} {n0(to.min)}</span></div>
     </div>
   );
 }
 
 /** Vị trí của máy này trên bảng xếp hạng (hiện là dữ liệu mẫu) */
 function RankLine({ power }: { power: number }) {
+  const { t, p } = useI18n();
   const others = SAMPLE_MACHINES.map((m) => computeScores(resolveMachine(m.machine)).power);
   const rank = others.filter((p) => p > power).length + 1;
   return (
     <p className="rank-line">
-      <span>Đứng thứ <b className="num">{rank}</b> trên <span className="num">{others.length + 1}</span> máy</span>
-      <Link href="/xep-hang" className="card-link">Bảng xếp hạng</Link>
+      <span>{t.machine.rank(rank, others.length + 1)}</span>
+      <Link href={p("/xep-hang")} className="card-link">{t.nav.board}</Link>
     </p>
   );
 }
 
 function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verified: boolean; isAccount: boolean; spec: MachineSpec; parts: PartView[] }) {
   const s = r.scores;
+  const { t, n0, ratio, locale } = useI18n();
+  const T = t.machine;
+  const tier = tierName(r.tier, locale);
   return (
     <section className="panel score-card" style={tierVars(r.tier.code)} aria-labelledby="h-score">
       <header>
-        <h2 id="h-score">Điểm sức mạnh</h2>
-        <span className="meta">Gaming 50% · Đồ họa 30% · AI 20%</span>
+        <h2 id="h-score">{T.power}</h2>
+        <span className="meta">{T.weights}</span>
       </header>
       <div className="score-body">
         <div className="score-main">
           <div className="score-head">
-            <TierEmblem code={r.tier.code} label={r.tier.name} />
+            <TierEmblem code={r.tier.code} label={tier} />
             <div>
-              <CountUp to={Math.round(s.power)} decimals={0} separator="." duration={1.1} trigger="load" className="answer num tier-ink" />
-              <div className="tier-name">Hạng {r.tier.name}</div>
+              <CountUp to={Math.round(s.power)} decimals={0} separator={locale === "vi" ? "." : ","} duration={1.1} trigger="load" className="answer num tier-ink" />
+              <div className="tier-name">{T.tier(tier)}</div>
             </div>
           </div>
-          <p className="muted" style={{ marginTop: 10 }}>Gấp <span className="num">{ratio(s.power / 10000)}</span> lần máy mốc (i5-12400F + RTX 3060)</p>
+          <p className="muted" style={{ marginTop: 10 }}>{T.timesAnchor(ratio(s.power / 10000))}</p>
           {isAccount && (
             <p style={{ marginTop: 8 }}>
-              <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm pcdex-scan đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa quét bằng phần mềm pcdex-scan"}>
-                {verified ? "Xác thực đang dùng" : "Chưa xác thực"}
+              <span className={`pill ${verified ? "pos" : ""}`} title={verified ? T.verifiedTip : T.unverifiedTip}>
+                {verified ? T.verified : T.unverified}
               </span>
             </p>
           )}
@@ -250,12 +259,12 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
         </div>
         <figure className="score-figure">
           <MachineDiagram spec={spec} parts={parts} />
-          <figcaption className="faint">Sơ đồ máy{isAccount ? " · viền xanh = xác thực đang dùng" : ""}</figcaption>
+          <figcaption className="faint">{T.diagram}{isAccount ? T.diagramVerified : ""}</figcaption>
         </figure>
       </div>
 
       {r.badges.length > 0 && (
-        <ul className="badges" aria-label="Huy hiệu">
+        <ul className="badges" aria-label={T.badges}>
           {r.badges.map((b) => (
             <li key={b.code} title={b.description}><span className="pill pos">{b.name}</span><span className="faint">{b.description}</span></li>
           ))}
@@ -263,7 +272,7 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
       )}
 
       <div className="strip well">
-        {([["gaming", "Gaming"], ["render", "Đồ họa"], ["ai", "AI"]] as const).map(([k, l]) => (
+        {([["gaming", T.gaming], ["render", T.render], ["ai", T.ai]] as const).map(([k, l]) => (
           <div key={k}>
             <div className="label">{l}</div>
             <div className="value num">{n0(s[k])}</div>
@@ -275,25 +284,27 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
 }
 
 function OsdCard({ cfg, bottlenecks }: { cfg: MachineConfig; bottlenecks: Result["bottlenecks"] }) {
+  const { t } = useI18n();
+  const T = t.machine;
   const max = Math.max(...bottlenecks.flatMap((b) => [b.gpuFps, b.cpuFps])) * 1.08;
   return (
     <section className="panel s7" aria-labelledby="h-osd">
       <header>
-        <h2 id="h-osd">Khung hình theo màn hình</h2>
-        <span className="meta">Game AAA mới, thiết lập Ultra</span>
+        <h2 id="h-osd">{T.osd}</h2>
+        <span className="meta">{T.osdMeta}</span>
       </header>
       <div className="osd">
         {bottlenecks.map((b) => {
           const cur = b.resolution === cfg.resolution;
-          const [sideText, sideCls] = b.loss <= 0.1 ? ["Cân bằng", "pos"]
-            : b.side === "cpu" ? [`CPU nghẽn ${Math.round(b.loss * 100)}%`, "warn"]
-            : ["Card chạy hết", ""];
+          const [sideText, sideCls] = b.loss <= 0.1 ? [T.balanced, "pos"]
+            : b.side === "cpu" ? [T.cpuBound(Math.round(b.loss * 100)), "warn"]
+            : [T.gpuFull, ""];
           const side = <span className={`pill ${sideCls}`}>{sideText}</span>;
           return (
             <div key={b.resolution} className={`osd-row${cur ? " current" : ""}`}>
-              <div className="res">{RESOLUTION_LABEL[b.resolution]}<small>{cur ? "màn hình của bạn" : sideText}</small></div>
+              <div className="res">{RESOLUTION_LABEL[b.resolution]}<small>{cur ? T.yourScreen : sideText}</small></div>
               <div className="osd-track" role="img"
-                aria-label={`${RESOLUTION_LABEL[b.resolution]}: card làm được ${Math.round(b.gpuFps)} FPS, CPU nuôi được ${Math.round(b.cpuFps)} FPS`}>
+                aria-label={T.osdAria(RESOLUTION_LABEL[b.resolution], Math.round(b.gpuFps), Math.round(b.cpuFps))}>
                 <div className="osd-gpu" style={{ width: `${(Math.min(b.gpuFps, b.cpuFps) / max) * 100}%` }} />
                 <div className="osd-cpu" style={{ left: `${(b.cpuFps / max) * 100}%` }} />
               </div>
@@ -306,8 +317,8 @@ function OsdCard({ cfg, bottlenecks }: { cfg: MachineConfig; bottlenecks: Result
         })}
       </div>
       <div className="osd-legend">
-        <span><i aria-hidden="true" /> FPS thực tế (card hoặc CPU, bên nào thấp hơn)</span>
-        <span><i className="cpu" aria-hidden="true" /> Mức CPU nuôi được: {Math.round(bottlenecks[0]!.cpuFps)} FPS</span>
+        <span><i aria-hidden="true" /> {T.legendFps}</span>
+        <span><i className="cpu" aria-hidden="true" /> {T.legendCpu(Math.round(bottlenecks[0]!.cpuFps))}</span>
       </div>
       <TargetLine cfg={cfg} />
     </section>
@@ -316,6 +327,7 @@ function OsdCard({ cfg, bottlenecks }: { cfg: MachineConfig; bottlenecks: Result
 
 /** Mục tiêu tiếp theo: độ phân giải cao hơn (hoặc hiện tại nếu chưa tới 60 FPS) cần card nào để đạt 60 FPS */
 function TargetLine({ cfg }: { cfg: MachineConfig }) {
+  const { t } = useI18n();
   const order: Resolution[] = [1080, 1440, 2160];
   const res = estimateFps(cfg) < 60 ? cfg.resolution : order[order.indexOf(cfg.resolution) + 1];
   if (!res) return null;
@@ -324,17 +336,17 @@ function TargetLine({ cfg }: { cfg: MachineConfig }) {
     .filter((x) => x.fps >= 60).sort((a, b) => a.gpu.raster - b.gpu.raster)[0];
   return (
     <p className="target">
-      {pick ? <>Muốn chơi <b>{RESOLUTION_LABEL[res]}</b> trên 60 FPS với CPU hiện tại: card yếu nhất đạt là <b>{pick.gpu.name}</b> (~{Math.round(pick.fps)} FPS).</>
-        : <>Với CPU hiện tại, chưa card nào đạt 60 FPS ở {RESOLUTION_LABEL[res]}: cần nâng CPU trước.</>}
+      {pick ? t.machine.target(RESOLUTION_LABEL[res], pick.gpu.name, Math.round(pick.fps)) : t.machine.targetNone(RESOLUTION_LABEL[res])}
     </p>
   );
 }
 
 function NeedsCard({ needs }: { needs: Result["needs"] }) {
+  const { t } = useI18n();
   const cls = (l: number) => (l >= 4 ? "pos" : l === 1 ? "neg" : l === 2 ? "warn" : "");
   return (
     <section className="panel s5" aria-labelledby="h-needs">
-      <header><h2 id="h-needs">Đáp ứng nhu cầu</h2></header>
+      <header><h2 id="h-needs">{t.machine.needs}</h2></header>
       <ul className="rows">
         {needs.map((n) => (
           <li key={n.need} className="row" style={{ alignItems: "flex-start" }}>
@@ -351,14 +363,16 @@ function NeedsCard({ needs }: { needs: Result["needs"] }) {
 }
 
 function UpgradesCard({ items, active, onPreview }: { items: UpgradeSuggestion[]; active: UpgradeSuggestion | null; onPreview: (s: UpgradeSuggestion | null) => void }) {
+  const { t, signedPct } = useI18n();
+  const T = t.machine;
   return (
     <section className="panel s7" aria-labelledby="h-up">
       <header>
-        <h2 id="h-up">Gợi ý nâng cấp</h2>
-        <span className="meta">Chưa tính giá · xếp theo việc nên làm trước</span>
+        <h2 id="h-up">{T.upgrades}</h2>
+        <span className="meta">{T.upgradesMeta}</span>
       </header>
       {items.length === 0 ? (
-        <p className="empty">Máy đã ở mức đầu bảng cho màn hình này. Không có linh kiện nào tăng FPS từ 40% trở lên.</p>
+        <p className="empty">{T.noUpgrades}</p>
       ) : (
         <ul className="rows">
           {items.map((s) => {
@@ -371,11 +385,11 @@ function UpgradesCard({ items, active, onPreview }: { items: UpgradeSuggestion[]
                 </div>
                 <div className="end gain">
                   <div className={`num ${s.powerGain > 0.005 ? "" : "faint"}`} style={{ fontWeight: 600, color: s.powerGain > 0.005 ? "var(--positive)" : undefined }}>
-                    {signedPct(s.powerGain)} điểm
+                    {signedPct(s.powerGain)} {T.points}
                   </div>
                   <div className="line2 num">{s.fpsBefore} → {s.fpsAfter} FPS</div>
                 </div>
-                <button className="btn small" aria-pressed={on} onClick={() => onPreview(on ? null : s)}>{on ? "Đang xem" : "Xem thử"}</button>
+                <button className="btn small" aria-pressed={on} onClick={() => onPreview(on ? null : s)}>{on ? T.viewing : T.tryIt}</button>
               </li>
             );
           })}
@@ -386,11 +400,12 @@ function UpgradesCard({ items, active, onPreview }: { items: UpgradeSuggestion[]
 }
 
 function FindingsCard({ findings, cfg }: { findings: Finding[]; cfg: MachineConfig }) {
+  const { t } = useI18n();
   return (
     <section className="panel s5" aria-labelledby="h-find">
-      <header><h2 id="h-find">Kiểm tra phần cứng</h2></header>
+      <header><h2 id="h-find">{t.machine.checks}</h2></header>
       {findings.length === 0 ? (
-        <p className="empty">Không có cảnh báo. Nguồn đủ {cfg.psuW} W, RAM kênh {cfg.ramChannels === 2 ? "đôi" : "đơn"}, khe PCIe {cfg.pcieGen}.0 không làm card chậm.</p>
+        <p className="empty">{t.machine.noFindings(cfg.psuW, cfg.ramChannels === 2, cfg.pcieGen)}</p>
       ) : (
         <ul className="rows">
           {findings.map((f) => (

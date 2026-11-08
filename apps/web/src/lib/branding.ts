@@ -1,8 +1,8 @@
 import { cacheLife, cacheTag } from "next/cache";
 
-import { DEFAULT_BRANDING, type BrandAsset, type Branding } from "./branding-shared";
+import { brandFor, DEFAULT_BRANDING, type BrandAsset, type Branding } from "./branding-shared";
 
-export { DEFAULT_BRANDING, type BrandAsset, type Branding };
+export { brandFor, DEFAULT_BRANDING, type BrandAsset, type Branding };
 
 /**
  * Thương hiệu hiện tại (sửa ở /quan-tri?tab=thuong-hieu). Lưu đệm theo nhãn "branding":
@@ -21,6 +21,8 @@ export async function getBranding(): Promise<Branding> {
       siteName: (b.siteName as string) || DEFAULT_BRANDING.siteName,
       slogan: typeof b.slogan === "string" ? b.slogan : DEFAULT_BRANDING.slogan,
       description: (b.description as string) || DEFAULT_BRANDING.description,
+      sloganEn: typeof b.sloganEn === "string" ? b.sloganEn : null,
+      descriptionEn: (b.descriptionEn as string) || null,
       logo: (b.logo as BrandAsset) ?? null, logoLight: (b.logoLight as BrandAsset) ?? null, favicon: (b.favicon as BrandAsset) ?? null,
     };
   } catch {

@@ -2,6 +2,7 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 type Theme = "light" | "dark";
 const KEY = "f2m.theme";
@@ -15,6 +16,7 @@ function current(): Theme {
 
 /** Nút Ngày / Đêm. Lần đầu theo hệ điều hành; bấm thì ghi nhớ trên trình duyệt. */
 export function ThemeToggle() {
+  const { t } = useI18n();
   const [theme, setTheme] = useState<Theme | null>(null);
   useEffect(() => {
     setTheme(current());
@@ -34,8 +36,8 @@ export function ThemeToggle() {
 
   return (
     <button type="button" className="theme-toggle" onClick={toggle} disabled={!theme}
-      aria-label={theme === "light" ? "Chuyển sang chế độ Đêm" : "Chuyển sang chế độ Ngày"}
-      title={theme === "light" ? "Chế độ Đêm" : "Chế độ Ngày"}>
+      aria-label={theme === "light" ? t.theme.toDark : t.theme.toLight}
+      title={theme === "light" ? t.theme.dark : t.theme.light}>
       {theme === "light" ? <Moon aria-hidden="true" /> : <Sun aria-hidden="true" />}
     </button>
   );

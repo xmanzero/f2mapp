@@ -6,7 +6,7 @@ import {
   AdminError, deleteListing, deleteUser, isAdmin, listAllListings, listUsers, logAction, moderateListing, recentLog, setBanned, setRole, stats,
 } from "../services/admin.js";
 import {
-  checkTemplate, emailLog, isTemplateKey, later, logEmail, mailCtx, nowVn, render, resetTemplate, sampleVars, saveTemplate, sendToUser, listTemplates, templateInput,
+  checkTemplate, emailLog, isMailLang, isTemplateKey, type MailLang, later, logEmail, mailCtx, render, resetTemplate, sampleVars, saveTemplate, sendToUser, listTemplates, templateInput,
 } from "../services/email.js";
 import { BrandingError, brandingInput, deleteAsset, getBranding, isBrandKind, MAX_BRAND_BYTES, prepareAsset, saveAsset, saveBrandingText } from "../services/branding.js";
 import { getSmtpPublic, mailer, saveSmtp, SettingsError, smtpInput } from "../services/settings.js";
@@ -53,7 +53,7 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     try {
       if (body.data.banned !== undefined) {
         await setBanned(db, me, id.data, body.data.banned, body.data.reason);
-        if (body.data.banned) later(sendToUser(mailCtx(deps, req), "account_banned", id.data, { thoi_gian: nowVn(), ly_do: body.data.reason?.trim() ?? "" }));
+        if (body.data.banned) later(sendToUser(mailCtx(deps, req), "account_banned", id.data, { ly_do: body.data.reason?.trim() ?? "" }));
       }
       if (body.data.role) await setRole(db, me, id.data, body.data.role);
       return { ok: true };
@@ -86,7 +86,7 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
       await moderateListing(db, me, id.data, body.data.removed, body.data.reason);
       if (body.data.removed) {
         const l = await db.selectFrom("listings").select(["seller_id", "title", "removed_reason"]).where("id", "=", id.data).executeTakeFirst();
-        if (l) later(sendToUser(mailCtx(deps, req), "listing_removed", l.seller_id, { thoi_gian: nowVn(), tin: l.title, ly_do: body.data.reason?.trim() ?? "" }));
+        if (l) later(sendToUser(mailCtx(deps, req), "listing_removed", l.seller_id, { tin: l.title, ly_do: body.data.reason?.trim() ?? "" }));
       }
       return { ok: true };
     } catch (e) { return fail(reply, e); }
@@ -148,10 +148,13 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
   });
 
   // ---------- mẫu thư ----------
+  /** ngôn ngữ của mẫu đang sửa: ?lang=vi|en (mặc định vi) */
+  const langOf = (req: FastifyRequest): MailLang => { const l = (req.query as { lang?: string }).lang; return isMailLang(l) ? l : "vi"; };
+
   app.get("/admin/email/templates", async (req, reply) => {
     if (!(await admin(req, reply))) return;
     const smtp = await getSmtpPublic(db);
-    return { templates: await listTemplates(db), smtpReady: !!smtp?.enabled };
+    return { templates: await listTemplates(db, langOf(req)), smtpReady: !!smtp?.enabled, lang: langOf(req) };
   });
 
   const keyOf = (req: FastifyRequest) => { const k = (req.params as { key: string }).key; return isTemplateKey(k) ? k : null; };
@@ -165,9 +168,9 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     if (!body.success) return bad(reply, body.error.issues[0]?.message);
     const err = checkTemplate(key, body.data);
     if (err) return bad(reply, err);
-    await saveTemplate(db, key, body.data, me.id);
-    await logAction(db, me, "email.template", key, { enabled: body.data.enabled });
-    return { templates: await listTemplates(db) };
+    await saveTemplate(db, key, body.data, me.id, langOf(req));
+    await logAction(db, me, "email.template", key, { enabled: body.data.enabled, lang: langOf(req) });
+    return { templates: await listTemplates(db, langOf(req)) };
   });
 
   app.delete("/admin/email/templates/:key", async (req, reply) => {
@@ -175,9 +178,9 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     if (!me) return;
     const key = keyOf(req);
     if (!key) return reply.code(404).send({ error: "not_found", message: "Không có mẫu này" });
-    await resetTemplate(db, key);
-    await logAction(db, me, "email.template.reset", key);
-    return { templates: await listTemplates(db) };
+    await resetTemplate(db, key, langOf(req));
+    await logAction(db, me, "email.template.reset", key, { lang: langOf(req) });
+    return { templates: await listTemplates(db, langOf(req)) };
   });
 
   /** Xem trước bản đang soạn (chưa lưu) với dữ liệu mẫu */
@@ -187,7 +190,7 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     if (!key) return reply.code(404).send({ error: "not_found", message: "Không có mẫu này" });
     const body = templateInput.pick({ subject: true, body: true }).safeParse(req.body);
     if (!body.success) return bad(reply, body.error.issues[0]?.message);
-    return { ...render(body.data, sampleVars(key, { link_app: mailCtx(deps, req).webUrl })), warning: checkTemplate(key, body.data) };
+    return { ...render(body.data, sampleVars(key, { link_app: `${mailCtx(deps, req).webUrl}${langOf(req) === "en" ? "/en" : ""}` })), warning: checkTemplate(key, body.data) };
   });
 
   /** Gửi thử bản đang soạn tới một địa chỉ, với dữ liệu mẫu */
@@ -198,7 +201,7 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     if (!key) return reply.code(404).send({ error: "not_found", message: "Không có mẫu này" });
     const body = templateInput.pick({ subject: true, body: true }).extend({ to: z.string().trim().email("Email nhận chưa đúng") }).safeParse(req.body);
     if (!body.success) return bad(reply, body.error.issues[0]?.message);
-    const out = render(body.data, sampleVars(key, { link_app: mailCtx(deps, req).webUrl, email: body.data.to }));
+    const out = render(body.data, sampleVars(key, { link_app: `${mailCtx(deps, req).webUrl}${langOf(req) === "en" ? "/en" : ""}`, email: body.data.to }));
     const subject = `[Thử] ${out.subject}`;
     try {
       if (deps.sendMail) await deps.sendMail({ to: body.data.to, ...out, subject });

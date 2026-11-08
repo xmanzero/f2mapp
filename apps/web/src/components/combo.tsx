@@ -2,6 +2,7 @@
 
 import { ChevronDown, Search } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useI18n } from "@/i18n/client";
 
 /** Bỏ dấu tiếng Việt để gõ "hai phong", "hp" vẫn tìm ra "Hải Phòng" */
 export const fold = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().trim();
@@ -20,10 +21,12 @@ export interface ComboOption { value: string; label: string; hint?: string }
  * Ô chọn có gõ tìm (combobox). Bấm hoặc gõ để lọc, ↑ ↓ để di chuyển, Enter để chọn, Esc để đóng.
  * Gõ không dấu cũng được.
  */
-export function Combo({ id, value, options, onChange, placeholder = "Gõ để tìm…", ariaLabel, className, disabled }: {
+export function Combo({ id, value, options, onChange, placeholder: ph, ariaLabel, className, disabled }: {
   id?: string; value: string; options: ComboOption[]; onChange: (v: string) => void;
   placeholder?: string; ariaLabel?: string; className?: string; disabled?: boolean;
 }) {
+  const { t } = useI18n();
+  const placeholder = ph ?? t.common.typeToSearch;
   const auto = useId();
   const inputId = id ?? `combo-${auto}`;
   const listId = `${inputId}-list`;
@@ -69,7 +72,7 @@ export function Combo({ id, value, options, onChange, placeholder = "Gõ để t
       <ChevronDown className="combo-chev" aria-hidden="true" />
       {open && (
         <ul ref={list} id={listId} role="listbox" className="combo-list">
-          {shown.length === 0 ? <li className="combo-empty">Không có “{q}”</li> : shown.map((o, i) => (
+          {shown.length === 0 ? <li className="combo-empty">{t.common.noMatch(q)}</li> : shown.map((o, i) => (
             <li key={o.value} id={`${listId}-${i}`} data-i={i} role="option" aria-selected={o.value === value}
               className={i === active ? "active" : undefined}
               onPointerDown={(e) => e.preventDefault()} onClick={() => pick(o)} onPointerMove={() => setActive(i)}>

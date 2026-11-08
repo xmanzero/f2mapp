@@ -1,5 +1,7 @@
 "use client";
 
+import { useI18n } from "@/i18n/client";
+
 import { computeScores, resolveMachine } from "@f2m/shared";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -7,7 +9,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { SAMPLE_MACHINES } from "@/data/sample";
 import { api, ApiError, type Profile } from "@/lib/api";
-import { n0 } from "@/lib/format";
 import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 
@@ -27,11 +28,12 @@ export function PasswordInput({ id, value, onChange, autoComplete, describedBy, 
   id: string; value: string; onChange: (v: string) => void; autoComplete: string; describedBy?: string; minLength?: number;
 }) {
   const [show, setShow] = useState(false);
+  const { t } = useI18n();
   return (
     <div className="pw">
       <input id={id} className="input" type={show ? "text" : "password"} autoComplete={autoComplete} required minLength={minLength}
         value={value} onChange={(e) => onChange(e.target.value)} aria-describedby={describedBy} />
-      <button type="button" className="pw-toggle" onClick={() => setShow((s) => !s)} aria-label={show ? "Ẩn mật khẩu" : "Hiện mật khẩu"} aria-pressed={show}>
+      <button type="button" className="pw-toggle" onClick={() => setShow((s) => !s)} aria-label={show ? t.login.hidePw : t.login.showPw} aria-pressed={show}>
         {show ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
       </button>
     </div>
@@ -41,6 +43,8 @@ export function PasswordInput({ id, value, onChange, autoComplete, describedBy, 
 export function Login({ initialMode = "login" }: { initialMode?: "login" | "register" }) {
   const router = useRouter();
   const params = useSearchParams();
+  const { t, p, n0, locale } = useI18n();
+  const T = t.login;
   const next = params.get("next") ?? "/may";
   const { setUser, refresh } = useSession();
   const { machine, isSample, ready } = useMachine();
@@ -53,13 +57,14 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
 
   useEffect(() => {
     api<AuthConfig>("/v1/auth/config").then(setConfig)
-      .catch(() => setError("Máy chủ tài khoản chưa sẵn sàng. Thử lại sau ít phút."));
+      .catch(() => setError(t.login.serverDown));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const done = async (r: LoginResult) => {
     setUser(r.user);
     await refresh();
-    router.push(r.created ? "/tai-khoan?moi=1" : next);
+    router.push(r.created ? `${p("/tai-khoan")}?moi=1` : p(next));
   };
 
   // Google chỉ cho phép nguồn HTTPS (hoặc localhost): vào bằng IP LAN qua http thì ẩn nút, chỉ đường sang pcdex.app
@@ -80,7 +85,7 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
             .catch((e: ApiError) => setError(e.message)).finally(() => setBusy(false));
         },
       });
-      window.google!.accounts.id.renderButton(googleBox.current!, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", locale: "vi", width: 300 });
+      window.google!.accounts.id.renderButton(googleBox.current!, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", locale, width: 300 });
     };
     if (window.google) return render();
     const s = document.createElement("script");
@@ -117,96 +122,94 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
     <>
       <div className="title-row">
         <div>
-          <h1>{mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}</h1>
-          <p className="sub">Bằng email và mật khẩu, hoặc tài khoản Google.</p>
+          <h1>{mode === "login" ? t.common.login : t.common.signupFree}</h1>
+          <p className="sub">{T.sub}</p>
         </div>
       </div>
 
       <div className="grid">
         <section className="panel s5" aria-labelledby="h-login">
           <header>
-            <h2 id="h-login">{mode === "login" ? "Email và mật khẩu" : "Tài khoản mới"}</h2>
-            <div className="segmented" role="group" aria-label="Chọn">
-              <button type="button" aria-pressed={mode === "login"} onClick={() => switchMode("login")}>Đăng nhập</button>
-              <button type="button" aria-pressed={mode === "register"} onClick={() => switchMode("register")}>Tạo tài khoản</button>
+            <h2 id="h-login">{mode === "login" ? T.emailPw : T.newAccount}</h2>
+            <div className="segmented" role="group" aria-label={T.choose}>
+              <button type="button" aria-pressed={mode === "login"} onClick={() => switchMode("login")}>{t.common.login}</button>
+              <button type="button" aria-pressed={mode === "register"} onClick={() => switchMode("register")}>{t.common.signupFree}</button>
             </div>
           </header>
 
           <form className="form" onSubmit={(e) => { e.preventDefault(); void submit(); }}>
             {mode === "register" && (
               <div className="field">
-                <label htmlFor="displayName">Tên hiển thị <span className="req" aria-hidden="true">*</span></label>
+                <label htmlFor="displayName">{T.displayName} <span className="req" aria-hidden="true">*</span></label>
                 <input id="displayName" className="input" autoComplete="nickname" required minLength={2} maxLength={40}
-                  value={form.displayName} onChange={(e) => set("displayName")(e.target.value)} placeholder="Tên mọi người sẽ thấy" />
+                  value={form.displayName} onChange={(e) => set("displayName")(e.target.value)} placeholder={T.displayNamePh} />
               </div>
             )}
             <div className="field">
               <label htmlFor="email">Email <span className="req" aria-hidden="true">*</span></label>
               <input id="email" className="input" type="email" inputMode="email" autoComplete="email" required
-                autoCapitalize="none" spellCheck={false} value={form.email} onChange={(e) => set("email")(e.target.value)} placeholder="ten@gmail.com" />
+                autoCapitalize="none" spellCheck={false} value={form.email} onChange={(e) => set("email")(e.target.value)} placeholder={t.common.emailPh} />
             </div>
             <div className="field">
-              <label htmlFor="password">Mật khẩu <span className="req" aria-hidden="true">*</span></label>
+              <label htmlFor="password">{T.password} <span className="req" aria-hidden="true">*</span></label>
               <PasswordInput id="password" value={form.password} onChange={set("password")}
                 autoComplete={mode === "login" ? "current-password" : "new-password"}
                 minLength={mode === "register" ? minLen : undefined} describedBy={mode === "register" ? "pw-hint" : undefined} />
-              {mode === "register" && <span id="pw-hint" className="hint">Từ {minLen} ký tự. Nên dùng một câu dễ nhớ, khó đoán.</span>}
+              {mode === "register" && <span id="pw-hint" className="hint">{T.pwHint(minLen)}</span>}
             </div>
             {error && <p className="form-error" role="alert" style={{ marginTop: 0 }}>{error}</p>}
             <button className="btn primary block" disabled={busy || !config}>
-              {busy ? "Đang xử lý…" : mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}
+              {busy ? T.working : mode === "login" ? t.common.login : t.common.signupFree}
             </button>
             {mode === "login" && (
-              <p style={{ fontSize: 14 }}><Link href="/quen-mat-khau" className="card-link">Quên mật khẩu?</Link></p>
+              <p style={{ fontSize: 14 }}><Link href={p("/quen-mat-khau")} className="card-link">{T.forgot}</Link></p>
             )}
           </form>
 
-          <div className="or"><span>hoặc</span></div>
+          <div className="or"><span>{t.common.or}</span></div>
           {config?.google.clientId && secureOrigin ? (
             <div ref={googleBox} className="google-box" />
           ) : config?.google.clientId ? (
-            <p className="muted">Đăng nhập bằng Google dùng ở <a href="https://pcdex.app/dang-nhap" className="card-link">pcdex.app</a> (địa chỉ nội bộ không hỗ trợ).</p>
+            <p className="muted">{T.googleElsewhere(<a href={`https://pcdex.app${p("/dang-nhap")}`} className="card-link">pcdex.app</a>)}</p>
           ) : (
-            <p className="muted">Đăng nhập bằng Google chưa bật.</p>
+            <p className="muted">{T.googleOff}</p>
           )}
         </section>
 
         <section className="panel s7" aria-labelledby="h-why">
-          <header><h2 id="h-why">Khi có tài khoản</h2></header>
+          <header><h2 id="h-why">{T.why}</h2></header>
           <ul className="rows">
             <li className="row">
               <div className="grow">
-                <div style={{ fontWeight: 500 }}>Máy của bạn lên bảng xếp hạng</div>
+                <div style={{ fontWeight: 500 }}>{T.w1}</div>
                 <div className="line2">
-                  {power === null ? "Đang tính…" : isSample
-                    ? "Khai báo cấu hình ở Máy của tôi, rồi đăng nhập để giữ chỗ trên bảng."
-                    : `Với ${n0(power)} điểm, máy của bạn đứng thứ ${rank} trên ${SAMPLE_MACHINES.length + 1} máy hiện có.`}
+                  {power === null ? T.computing : isSample ? T.w1Sample : T.w1Rank(n0(power), rank!, SAMPLE_MACHINES.length + 1)}
                 </div>
               </div>
               {power !== null && !isSample && <span className="num" style={{ fontSize: 24, fontWeight: 600 }}>#{rank}</span>}
             </li>
             <li className="row">
               <div className="grow">
-                <div style={{ fontWeight: 500 }}>Cấu hình theo bạn sang máy khác</div>
-                <div className="line2">Mở pcdex trên điện thoại hay máy tính đều thấy đúng máy của mình. Máy đang khai báo trên trình duyệt này được lưu vào tài khoản.</div>
+                <div style={{ fontWeight: 500 }}>{T.w2}</div>
+                <div className="line2">{T.w2Text}</div>
               </div>
             </li>
             <li className="row">
               <div className="grow">
-                <div style={{ fontWeight: 500 }}>Đăng bán linh kiện cũ</div>
-                <div className="line2">Khi nâng cấp, linh kiện thay ra được giữ lại để đăng bán kèm sẵn thông số và điểm (sắp có).</div>
+                <div style={{ fontWeight: 500 }}>{T.w3}</div>
+                <div className="line2">{T.w3Text}</div>
               </div>
             </li>
             <li className="row">
               <div className="grow">
-                <div style={{ fontWeight: 500 }}>Email không hiện công khai</div>
-                <div className="line2">Trên bảng xếp hạng và tin rao, mọi người chỉ thấy tên hiển thị và tên tài khoản của bạn.</div>
+                <div style={{ fontWeight: 500 }}>{T.w4}</div>
+                <div className="line2">{T.w4Text}</div>
               </div>
             </li>
             <li className="row">
               <div className="grow">
-                <div style={{ fontWeight: 500 }}>Mật khẩu được băm một chiều</div>
-                <div className="line2">pcdex không lưu mật khẩu gốc. Nhập sai 5 lần, tài khoản tạm khóa 15 phút để chặn dò mật khẩu.</div>
+                <div style={{ fontWeight: 500 }}>{T.w5}</div>
+                <div className="line2">{T.w5Text}</div>
               </div>
             </li>
           </ul>

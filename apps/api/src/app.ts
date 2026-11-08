@@ -4,6 +4,7 @@ import rateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import type { GoogleVerifier } from "./auth/google.js";
 import type { DB } from "./db.js";
+import { registerI18n } from "./i18n.js";
 import type { MailSender } from "./services/email.js";
 import { adminRoutes } from "./routes/admin.js";
 import { authRoutes } from "./routes/auth.js";
@@ -39,6 +40,7 @@ export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: A
   app.register(cors, { origin: opts.corsOrigin?.split(",") ?? true, credentials: true });
   app.register(cookie);
   app.register(rateLimit, { global: false });
+  registerI18n(app);
 
   app.get("/health", async () => ({ ok: true, db: !!opts.deps }));
   app.register(partsRoutes, { prefix: "/v1/parts" });

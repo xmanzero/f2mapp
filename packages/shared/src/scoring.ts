@@ -2,6 +2,7 @@
  * Thang điểm sức mạnh PC — xem docs/scoring-spec.md.
  * Mốc: i5-12400F = 10.000 (CPU), RTX 3060 12GB = 10.000 (GPU); máy mốc = 10.000 điểm sức mạnh.
  */
+import { tr, type Lang } from "./lang";
 import type {
   Badge, Bottleneck, Finding, MachineConfig, NeedLevel, RamGb, Resolution, Scores, Socket, StorageKind,
 } from "./types";
@@ -73,13 +74,15 @@ export function computeScores(cfg: MachineConfig): Scores {
 }
 
 export const TIERS = [
-  { min: 0, code: "bronze", name: "Đồng" },
-  { min: 5000, code: "silver", name: "Bạc" },
-  { min: 9000, code: "gold", name: "Vàng" },
-  { min: 14000, code: "platinum", name: "Bạch kim" },
-  { min: 20000, code: "diamond", name: "Kim cương" },
-  { min: 26000, code: "legend", name: "Huyền thoại" },
+  { min: 0, code: "bronze", name: "Đồng", nameEn: "Bronze" },
+  { min: 5000, code: "silver", name: "Bạc", nameEn: "Silver" },
+  { min: 9000, code: "gold", name: "Vàng", nameEn: "Gold" },
+  { min: 14000, code: "platinum", name: "Bạch kim", nameEn: "Platinum" },
+  { min: 20000, code: "diamond", name: "Kim cương", nameEn: "Diamond" },
+  { min: 26000, code: "legend", name: "Huyền thoại", nameEn: "Legend" },
 ] as const;
+/** Tên hạng theo ngôn ngữ */
+export const tierName = (t: { name: string; nameEn: string }, lang: Lang) => (lang === "en" ? t.nameEn : t.name);
 export type Tier = (typeof TIERS)[number];
 export const tierOf = (power: number): Tier => [...TIERS].reverse().find((t) => power >= t.min) ?? TIERS[0];
 
@@ -91,111 +94,121 @@ export function psuNeeded(cfg: Pick<MachineConfig, "cpu" | "gpu">): number {
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /** Tầng 1: luật phần cứng */
-export function hardwareFindings(cfg: MachineConfig): Finding[] {
+export function hardwareFindings(cfg: MachineConfig, lang: Lang = "vi"): Finding[] {
   const out: Finding[] = [];
   const need = psuNeeded(cfg);
   if (cfg.psuW < need)
     out.push({
       code: "psu_low", severity: cfg.psuW < need - 100 ? "critical" : "warning",
-      message: `Nguồn ${cfg.psuW} W thiếu công suất. CPU (${cfg.cpu.powerW} W) + ${cfg.gpu.name} (${cfg.gpu.boardPowerW} W) cần nguồn từ ${need} W. Máy có thể tắt đột ngột khi chơi game nặng.`,
+      message: tr(lang, `Nguồn ${cfg.psuW} W thiếu công suất. CPU (${cfg.cpu.powerW} W) + ${cfg.gpu.name} (${cfg.gpu.boardPowerW} W) cần nguồn từ ${need} W. Máy có thể tắt đột ngột khi chơi game nặng.`,
+        `A ${cfg.psuW} W PSU is too weak. CPU (${cfg.cpu.powerW} W) + ${cfg.gpu.name} (${cfg.gpu.boardPowerW} W) need at least ${need} W. The PC may shut down under heavy gaming load.`),
     });
   const pf = pcieFactor(cfg);
   if (pf < 1)
     out.push({
       code: "pcie_gen3", severity: cfg.gpu.pcieLanes === 4 ? "critical" : "warning",
-      message: `${cfg.gpu.name} chỉ dùng ${cfg.gpu.pcieLanes} làn PCIe, cắm khe PCIe 3.0 sẽ mất khoảng ${pct(1 - pf)} hiệu năng.`,
+      message: tr(lang, `${cfg.gpu.name} chỉ dùng ${cfg.gpu.pcieLanes} làn PCIe, cắm khe PCIe 3.0 sẽ mất khoảng ${pct(1 - pf)} hiệu năng.`,
+        `${cfg.gpu.name} uses only ${cfg.gpu.pcieLanes} PCIe lanes; in a PCIe 3.0 slot it loses about ${pct(1 - pf)} performance.`),
     });
   if (cfg.ramChannels === 1)
-    out.push({ code: "ram_single_channel", severity: "warning", message: "RAM chạy kênh đơn, băng thông chỉ còn một nửa. Lắp thêm một thanh cùng loại để chạy kênh đôi." });
+    out.push({ code: "ram_single_channel", severity: "warning", message: tr(lang, "RAM chạy kênh đơn, băng thông chỉ còn một nửa. Lắp thêm một thanh cùng loại để chạy kênh đôi.", "RAM runs in single channel, so it has only half the bandwidth. Add a matching stick for dual channel.") });
   if (lowRam(cfg.ramGb))
-    out.push({ code: "ram_8gb", severity: "warning", message: `${cfg.ramGb} GB RAM đã thiếu cho game và trình duyệt hiện nay. Nâng lên 16 GB kênh đôi.` });
+    out.push({ code: "ram_8gb", severity: "warning", message: tr(lang, `${cfg.ramGb} GB RAM đã thiếu cho game và trình duyệt hiện nay. Nâng lên 16 GB kênh đôi.`, `${cfg.ramGb} GB of RAM is not enough for today's games and browsers. Go to 16 GB dual channel.`) });
   if (cfg.storage === "hdd")
-    out.push({ code: "os_on_hdd", severity: "warning", message: "Hệ điều hành nằm trên HDD nên máy khởi động và mở ứng dụng chậm. SSD là nâng cấp đáng tiền nhất." });
+    out.push({ code: "os_on_hdd", severity: "warning", message: tr(lang, "Hệ điều hành nằm trên HDD nên máy khởi động và mở ứng dụng chậm. SSD là nâng cấp đáng tiền nhất.", "The OS is on a hard drive, so booting and opening apps is slow. An SSD is the best-value upgrade.") });
   return out;
 }
 
 /** Tầng 2: điểm nghẽn ở độ phân giải đang dùng */
-export function bottleneckFinding(cfg: MachineConfig): Finding {
+export function bottleneckFinding(cfg: MachineConfig, lang: Lang = "vi"): Finding {
   const b = bottleneck(cfg);
   const r = RESOLUTION_LABEL[cfg.resolution];
   if (b.side === "cpu" && b.loss > 0.15)
-    return { code: "cpu_bound", severity: "warning", message: `CPU nghẽn ở ${r}: ${cfg.cpu.name} chỉ nuôi được khoảng ${pct(1 - b.loss)} số khung hình mà ${cfg.gpu.name} làm được.` };
-  if (b.loss <= 0.1) return { code: "balanced", severity: "ok", message: `Cân bằng ở ${r}: CPU và card đồ họa tương xứng nhau.` };
+    return { code: "cpu_bound", severity: "warning", message: tr(lang, `CPU nghẽn ở ${r}: ${cfg.cpu.name} chỉ nuôi được khoảng ${pct(1 - b.loss)} số khung hình mà ${cfg.gpu.name} làm được.`,
+      `CPU bottleneck at ${r}: ${cfg.cpu.name} can only feed about ${pct(1 - b.loss)} of the frames ${cfg.gpu.name} could render.`) };
+  if (b.loss <= 0.1) return { code: "balanced", severity: "ok", message: tr(lang, `Cân bằng ở ${r}: CPU và card đồ họa tương xứng nhau.`, `Balanced at ${r}: CPU and graphics card are well matched.`) };
   if (b.side === "gpu")
-    return { code: "gpu_bound", severity: "info", message: `Card đồ họa chạy hết công suất ở ${r}, đây là trạng thái bình thường khi chơi game. Muốn tăng FPS thì nâng card.` };
-  return { code: "cpu_slightly_bound", severity: "info", message: `CPU hơi đuối ở ${r} (chênh ${pct(b.loss)}), chưa đáng lo.` };
+    return { code: "gpu_bound", severity: "info", message: tr(lang, `Card đồ họa chạy hết công suất ở ${r}, đây là trạng thái bình thường khi chơi game. Muốn tăng FPS thì nâng card.`,
+      `The graphics card runs at full load at ${r}, which is normal for gaming. For more FPS, upgrade the card.`) };
+  return { code: "cpu_slightly_bound", severity: "info", message: tr(lang, `CPU hơi đuối ở ${r} (chênh ${pct(b.loss)}), chưa đáng lo.`, `The CPU is slightly behind at ${r} (${pct(b.loss)} gap), nothing to worry about yet.`) };
 }
 
 /** Lớp 2: mức đáp ứng từng nhu cầu */
-export function needLevels(cfg: MachineConfig, s: Scores = computeScores(cfg)): NeedLevel[] {
+export function needLevels(cfg: MachineConfig, s: Scores = computeScores(cfg), lang: Lang = "vi"): NeedLevel[] {
+  const T = (vi: string, en: string) => tr(lang, vi, en);
   const fps = estimateFps(cfg);
   const b = bottleneck(cfg);
   const r = RESOLUTION_LABEL[cfg.resolution];
-  const g = fps < 30 ? [1, "Yếu"] : fps < 60 ? [2, "Chơi được"] : fps < 100 ? [3, "Tốt"] : fps < 144 ? [4, "Rất tốt"] : [5, "Cực mượt"];
+  const g = fps < 30 ? [1, T("Yếu", "Weak")] : fps < 60 ? [2, T("Chơi được", "Playable")] : fps < 100 ? [3, T("Tốt", "Good")] : fps < 144 ? [4, T("Rất tốt", "Great")] : [5, T("Cực mượt", "Ultra smooth")];
 
   const rd = s.render;
-  const d = rd < 5000 ? [1, "Yếu"] : rd < 10000 ? [2, "Khá"] : rd < 18000 ? [3, "Tốt"] : rd < 30000 ? [4, "Rất tốt"] : [5, "Chuyên nghiệp"];
-  const dDetail = ["Chỉnh ảnh, dựng video nhẹ", "Chỉnh ảnh, dựng video nhẹ", "Dựng video Full HD, render 3D cơ bản", "Dựng video 4K, render 3D thường xuyên", "Render nặng, làm nghề chuyên nghiệp"][(d[0] as number) - 1]!;
+  const d = rd < 5000 ? [1, T("Yếu", "Weak")] : rd < 10000 ? [2, T("Khá", "Fair")] : rd < 18000 ? [3, T("Tốt", "Good")] : rd < 30000 ? [4, T("Rất tốt", "Great")] : [5, T("Chuyên nghiệp", "Professional")];
+  const dDetail = (lang === "en"
+    ? ["Photo editing, light video work", "Photo editing, light video work", "Full HD video editing, basic 3D rendering", "4K video editing, regular 3D rendering", "Heavy rendering, professional work"]
+    : ["Chỉnh ảnh, dựng video nhẹ", "Chỉnh ảnh, dựng video nhẹ", "Dựng video Full HD, render 3D cơ bản", "Dựng video 4K, render 3D thường xuyên", "Render nặng, làm nghề chuyên nghiệp"])[(d[0] as number) - 1]!;
 
   const v = cfg.gpu.integrated ? 0 : cfg.gpu.vramGb;
-  const a = v < 6 ? [1, "Yếu"] : v < 10 ? [2, "Cơ bản"] : v < 16 ? [3, "Tốt"] : v < 24 ? [4, "Rất tốt"] : [5, v >= 32 ? "Chuyên nghiệp" : "Chuyên sâu"];
+  const a = v < 6 ? [1, T("Yếu", "Weak")] : v < 10 ? [2, T("Cơ bản", "Basic")] : v < 16 ? [3, T("Tốt", "Good")] : v < 24 ? [4, T("Rất tốt", "Great")] : [5, v >= 32 ? T("Chuyên nghiệp", "Professional") : T("Chuyên sâu", "Advanced")];
   let aDetail =
-    v === 0 ? "Không có VRAM riêng, chạy AI bằng CPU rất chậm"
-    : v < 6 ? `${v} GB VRAM: chỉ mô hình rất nhỏ (≤ 3B)`
-    : v < 10 ? `${v} GB VRAM: mô hình 7–8B đã lượng tử hóa`
-    : v < 16 ? `${v} GB VRAM: 7–8B mượt, 14B đã lượng tử hóa`
-    : v < 24 ? `${v} GB VRAM: 14B mượt, tạo ảnh tốt`
-    : v < 32 ? `${v} GB VRAM: mô hình tới 32B đã lượng tử hóa`
-    : `${v} GB VRAM: 32B mượt`;
-  if (/^(RX|Arc)/.test(cfg.gpu.name)) aDetail += " · phần mềm AI hỗ trợ card AMD/Intel kém NVIDIA";
+    v === 0 ? T("Không có VRAM riêng, chạy AI bằng CPU rất chậm", "No dedicated VRAM; running AI on the CPU is very slow")
+    : v < 6 ? T(`${v} GB VRAM: chỉ mô hình rất nhỏ (≤ 3B)`, `${v} GB VRAM: only very small models (≤ 3B)`)
+    : v < 10 ? T(`${v} GB VRAM: mô hình 7–8B đã lượng tử hóa`, `${v} GB VRAM: quantized 7–8B models`)
+    : v < 16 ? T(`${v} GB VRAM: 7–8B mượt, 14B đã lượng tử hóa`, `${v} GB VRAM: 7–8B smooth, quantized 14B`)
+    : v < 24 ? T(`${v} GB VRAM: 14B mượt, tạo ảnh tốt`, `${v} GB VRAM: 14B smooth, good image generation`)
+    : v < 32 ? T(`${v} GB VRAM: mô hình tới 32B đã lượng tử hóa`, `${v} GB VRAM: quantized models up to 32B`)
+    : T(`${v} GB VRAM: 32B mượt`, `${v} GB VRAM: 32B smooth`);
+  if (/^(RX|Arc)/.test(cfg.gpu.name)) aDetail += T(" · phần mềm AI hỗ trợ card AMD/Intel kém NVIDIA", " · AI software supports AMD/Intel cards less well than NVIDIA");
 
   const o = s.office;
-  const of = o < 5000 ? [1, "Yếu"] : o < 6500 ? [2, "Đủ dùng"] : o < 8000 ? [3, "Tốt"] : [4, "Rất tốt"];
+  const of = o < 5000 ? [1, T("Yếu", "Weak")] : o < 6500 ? [2, T("Đủ dùng", "Adequate")] : o < 8000 ? [3, T("Tốt", "Good")] : [4, T("Rất tốt", "Great")];
   const oDetail =
-    of[0] === 4 ? "Dư sức cho Word, Excel, trình duyệt, họp trực tuyến"
-    : cfg.storage === "hdd" ? "Ổ HDD làm máy khởi động, mở ứng dụng chậm"
-    : lowRam(cfg.ramGb) ? `Mở nhiều tab trình duyệt sẽ chậm vì ${cfg.ramGb} GB RAM`
-    : "Dùng ổn, mở nhiều ứng dụng cùng lúc hơi chậm";
+    of[0] === 4 ? T("Dư sức cho Word, Excel, trình duyệt, họp trực tuyến", "Plenty for Office, browsing and video calls")
+    : cfg.storage === "hdd" ? T("Ổ HDD làm máy khởi động, mở ứng dụng chậm", "The hard drive makes booting and opening apps slow")
+    : lowRam(cfg.ramGb) ? T(`Mở nhiều tab trình duyệt sẽ chậm vì ${cfg.ramGb} GB RAM`, `Many browser tabs will be slow with ${cfg.ramGb} GB RAM`)
+    : T("Dùng ổn, mở nhiều ứng dụng cùng lúc hơi chậm", "Fine, a bit slow with many apps open at once");
 
   const lv = (x: (string | number)[]) => ({ level: x[0] as NeedLevel["level"], levelLabel: x[1] as string });
   return [
     { need: "gaming", label: "Gaming", ...lv(g), fps: Math.round(fps),
-      detail: `~${Math.round(fps)} FPS game AAA mới, ${r} thiết lập Ultra` + (b.side === "cpu" && b.loss > 0.15 ? ` · CPU kìm card ${pct(b.loss)}` : "") },
-    { need: "render", label: "Đồ họa", ...lv(d), detail: dDetail },
+      detail: T(`~${Math.round(fps)} FPS game AAA mới, ${r} thiết lập Ultra`, `~${Math.round(fps)} FPS in new AAA games, ${r} Ultra`)
+        + (b.side === "cpu" && b.loss > 0.15 ? T(` · CPU kìm card ${pct(b.loss)}`, ` · CPU holds the card back ${pct(b.loss)}`) : "") },
+    { need: "render", label: T("Đồ họa", "Creative"), ...lv(d), detail: dDetail },
     { need: "ai", label: "AI", ...lv(a), detail: aDetail },
-    { need: "office", label: "Văn phòng", ...lv(of), detail: oDetail },
+    { need: "office", label: T("Văn phòng", "Office"), ...lv(of), detail: oDetail },
   ];
 }
 
 /** Huy hiệu — hiện kèm hạng, không thay hạng */
-export function badgesFor(cfg: MachineConfig, s: Scores = computeScores(cfg), nowYear = new Date().getFullYear()): Badge[] {
+export function badgesFor(cfg: MachineConfig, s: Scores = computeScores(cfg), nowYear = new Date().getFullYear(), lang: Lang = "vi"): Badge[] {
+  const T = (vi: string, en: string) => tr(lang, vi, en);
   const out: Badge[] = [];
-  if (s.power < 3000) out.push({ code: "poor_but_brave", name: "Nghèo vượt khó", description: "Máy yếu mà vẫn chiến được, đáng nể!" });
+  if (s.power < 3000) out.push({ code: "poor_but_brave", name: T("Nghèo vượt khó", "Underdog"), description: T("Máy yếu mà vẫn chiến được, đáng nể!", "A modest PC that still gets it done. Respect!") });
   const y1 = cfg.cpu.releaseYear, y2 = cfg.gpu.releaseYear ?? y1;
   if (y1 && y2 && nowYear - Math.max(y1, y2) >= 6)
-    out.push({ code: "veteran", name: "Lão làng", description: "CPU và card đồ họa đã hơn 6 năm tuổi mà vẫn chạy tốt" });
+    out.push({ code: "veteran", name: T("Lão làng", "Veteran"), description: T("CPU và card đồ họa đã hơn 6 năm tuổi mà vẫn chạy tốt", "CPU and graphics card are over 6 years old and still going") });
   const b = bottleneck(cfg);
   if (b.side === "cpu" && b.loss > 0.3)
-    out.push({ code: "mismatched", name: "Lệch pha", description: "CPU đang kìm card đồ họa hơn 30% ở độ phân giải màn hình đang dùng" });
+    out.push({ code: "mismatched", name: T("Lệch pha", "Mismatched"), description: T("CPU đang kìm card đồ họa hơn 30% ở độ phân giải màn hình đang dùng", "The CPU holds the graphics card back by over 30% at your resolution") });
   if (!cfg.gpu.integrated && cfg.gpu.vramGb >= 24)
-    out.push({ code: "ai_smith", name: "Thợ AI", description: "Từ 24 GB VRAM, chạy được mô hình AI cỡ lớn" });
+    out.push({ code: "ai_smith", name: T("Thợ AI", "AI smith"), description: T("Từ 24 GB VRAM, chạy được mô hình AI cỡ lớn", "24 GB+ of VRAM, runs large AI models") });
   return out;
 }
 
 /** So sánh trước / sau nâng cấp, kèm cảnh báo tương thích */
-export function compareUpgrade(current: MachineConfig, next: MachineConfig) {
+export function compareUpgrade(current: MachineConfig, next: MachineConfig, lang: Lang = "vi") {
   const a = computeScores(current), b = computeScores(next);
   const delta = (k: keyof Scores) => b[k] / a[k] - 1;
   const warnings: Finding[] = [];
   if (next.cpu.socket !== current.cpu.socket) {
     const toDdr5 = SOCKET_MEMORY[next.cpu.socket] === "DDR5" && SOCKET_MEMORY[current.cpu.socket] !== "DDR5";
     warnings.push({ code: "socket_change", severity: "warning",
-      message: `Khác socket (${current.cpu.socket} → ${next.cpu.socket}): phải thay mainboard${toDdr5 ? " và chuyển sang RAM DDR5" : ""}.` });
+      message: tr(lang, `Khác socket (${current.cpu.socket} → ${next.cpu.socket}): phải thay mainboard${toDdr5 ? " và chuyển sang RAM DDR5" : ""}.`,
+        `Different socket (${current.cpu.socket} → ${next.cpu.socket}): needs a new motherboard${toDdr5 ? " and DDR5 RAM" : ""}.`) });
   }
   const need = psuNeeded(next);
-  if (next.psuW < need) warnings.push({ code: "psu_low", severity: "warning", message: `Cần nguồn từ ${need} W cho cấu hình mới (đang ${next.psuW} W).` });
+  if (next.psuW < need) warnings.push({ code: "psu_low", severity: "warning", message: tr(lang, `Cần nguồn từ ${need} W cho cấu hình mới (đang ${next.psuW} W).`, `The new build needs a ${need} W+ PSU (currently ${next.psuW} W).`) });
   const pf = pcieFactor(next);
-  if (pf < 1) warnings.push({ code: "pcie_gen3", severity: "warning", message: `${next.gpu.name} chạy x${next.gpu.pcieLanes}, cắm khe PCIe 3.0 mất khoảng ${pct(1 - pf)}.` });
+  if (pf < 1) warnings.push({ code: "pcie_gen3", severity: "warning", message: tr(lang, `${next.gpu.name} chạy x${next.gpu.pcieLanes}, cắm khe PCIe 3.0 mất khoảng ${pct(1 - pf)}.`, `${next.gpu.name} runs at x${next.gpu.pcieLanes}; in a PCIe 3.0 slot it loses about ${pct(1 - pf)}.`) });
   return {
     before: a, after: b,
     delta: { gaming: delta("gaming"), render: delta("render"), ai: delta("ai"), power: delta("power") },
@@ -205,14 +218,14 @@ export function compareUpgrade(current: MachineConfig, next: MachineConfig) {
 }
 
 /** Kết quả đầy đủ cho một máy */
-export function evaluate(cfg: MachineConfig, nowYear?: number) {
+export function evaluate(cfg: MachineConfig, nowYear?: number, lang: Lang = "vi") {
   const scores = computeScores(cfg);
   return {
     scores,
     tier: tierOf(scores.power),
-    needs: needLevels(cfg, scores),
-    findings: [...hardwareFindings(cfg), bottleneckFinding(cfg)],
+    needs: needLevels(cfg, scores, lang),
+    findings: [...hardwareFindings(cfg, lang), bottleneckFinding(cfg, lang)],
     bottlenecks: RESOLUTIONS.map((r) => ({ resolution: r, ...bottleneck(cfg, r) })),
-    badges: badgesFor(cfg, scores, nowYear),
+    badges: badgesFor(cfg, scores, nowYear, lang),
   };
 }

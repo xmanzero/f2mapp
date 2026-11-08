@@ -20,6 +20,9 @@ export const brandingInput = z.object({
   siteName: z.string().trim().min(1, "Nhập tên web").max(40, "Tên web tối đa 40 ký tự"),
   slogan: z.string().trim().max(80, "Slogan tối đa 80 ký tự"),
   description: z.string().trim().max(300, "Mô tả tối đa 300 ký tự"),
+  /** bản tiếng Anh (trang /en); bỏ trống = câu mặc định của web */
+  sloganEn: z.string().trim().max(80, "Slogan tối đa 80 ký tự").optional(),
+  descriptionEn: z.string().trim().max(300, "Mô tả tối đa 300 ký tự").optional(),
 });
 export type BrandingText = z.infer<typeof brandingInput>;
 
@@ -38,6 +41,7 @@ export async function getBranding(db: DB) {
   };
   return {
     siteName: t.siteName || null, slogan: t.slogan ?? null, description: t.description || null,
+    sloganEn: t.sloganEn || null, descriptionEn: t.descriptionEn || null,
     logo: a("logo"), logoLight: a("logo_light"), favicon: a("favicon"),
   };
 }

@@ -2,10 +2,11 @@ import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { sql } from "kysely";
 import { z } from "zod";
 import type { AppDeps } from "../app.js";
+import { reqLang } from "../i18n.js";
 import { createGoogleVerifier } from "../auth/google.js";
 import { hashPassword, PASSWORD_MAX, PASSWORD_MIN } from "../auth/password.js";
 import { clearSessionCookie, cookieSecureFor, createSession, revokeSession, setSessionCookie } from "../auth/session.js";
-import { clientIp, consumeToken, deviceOf, issueToken, later, mailCtx, noteDevice, nowVn, recentTokens, sendToUser } from "../services/email.js";
+import { clientIp, consumeToken, deviceOf, issueToken, later, mailCtx, noteDevice, recentTokens, sendToUser } from "../services/email.js";
 import { AuthError, getProfile, loginWithGoogle, loginWithPassword, normalizeEmail, registerWithPassword } from "../services/users.js";
 
 export const emailField = z.string().trim().max(254).email("Email chưa đúng định dạng, ví dụ ten@gmail.com");
@@ -40,9 +41,9 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
     const { device, isNew } = await noteDevice(db, userId, req.headers["user-agent"], ip);
     if (created && how === "password" && ban?.email) {
       const t = await issueToken(db, userId, "verify", ban.email);
-      later(sendToUser(mail, "welcome", userId, { link_xac_minh: `${mail.webUrl}/xac-minh-email?t=${t}` }));
+      later(sendToUser(mail, "welcome", userId, { link_xac_minh: `/xac-minh-email?t=${t}` }));
     } else if (created) later(sendToUser(mail, "welcome", userId, { link_xac_minh: "" }));
-    else if (isNew && how !== "reset") later(sendToUser(mail, "new_login", userId, { thoi_gian: nowVn(), ip, thiet_bi: device }));
+    else if (isNew && how !== "reset") later(sendToUser(mail, "new_login", userId, { ip, thiet_bi: device }));
 
     return reply.code(created ? 201 : 200).send({ token, created, user: await getProfile(db, userId) });
   };
@@ -61,7 +62,7 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
     const body = registerBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "bad_request", message: firstIssue(body.error), field: body.error.issues[0]?.path[0] });
     try {
-      return await signIn(req, reply, await registerWithPassword(db, body.data), true);
+      return await signIn(req, reply, await registerWithPassword(db, { ...body.data, locale: reqLang(req) }), true);
     } catch (e) {
       return authFail(reply, e);
     }
@@ -87,7 +88,7 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
     } catch {
       return reply.code(401).send({ error: "bad_token", message: "Không xác thực được tài khoản Google. Thử đăng nhập lại." });
     }
-    const { userId, created } = await loginWithGoogle(db, profile);
+    const { userId, created } = await loginWithGoogle(db, profile, reqLang(req));
     return signIn(req, reply, userId, created, "google");
   });
 
@@ -102,7 +103,7 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
       if (recent.count < 5 && (!recent.last || Date.now() - recent.last.getTime() > 60_000)) {
         const mail = mailCtx(deps, req);
         const t = await issueToken(db, u.id, "reset", u.email);
-        later(sendToUser(mail, "password_reset", u.id, { link: `${mail.webUrl}/dat-lai-mat-khau?t=${t}`, thoi_gian: nowVn(), ip: clientIp(req) }));
+        later(sendToUser(mail, "password_reset", u.id, { link: `/dat-lai-mat-khau?t=${t}`, ip: clientIp(req) }));
       }
     }
     return { ok: true, message: "Nếu email này có tài khoản pcdex, thư đặt lại mật khẩu đã được gửi. Kiểm tra hộp thư (cả mục Spam); link có hiệu lực 60 phút." };
@@ -120,7 +121,7 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
     }).where("id", "=", userId).execute();
     await db.deleteFrom("sessions").where("user_id", "=", userId).execute();
     await db.deleteFrom("email_tokens").where("user_id", "=", userId).where("purpose", "=", "reset").where("used_at", "is", null).execute();
-    later(sendToUser(mailCtx(deps, req), "password_changed", userId, { thoi_gian: nowVn(), ip: clientIp(req), thiet_bi: deviceOf(req.headers["user-agent"]) }));
+    later(sendToUser(mailCtx(deps, req), "password_changed", userId, { ip: clientIp(req), thiet_bi: deviceOf(req.headers["user-agent"]) }));
     return signIn(req, reply, userId, false, "reset");
   });
 

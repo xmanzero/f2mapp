@@ -1,23 +1,24 @@
 "use client";
 
-import { computeScores, type MachineInput, resolveMachine, SCALE_VERSION, tierOf, TIERS } from "@f2m/shared";
+import { useI18n } from "@/i18n/client";
+
+import { computeScores, type MachineInput, resolveMachine, SCALE_VERSION, tierName as tn, tierOf, TIERS } from "@f2m/shared";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_MACHINES, personTint } from "@/data/sample";
 import { api } from "@/lib/api";
-import { n0 } from "@/lib/format";
 import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 import { MachineDetail, type DetailTarget } from "./machine-detail";
 import { TierEmblem, tierVars } from "./tier";
 
 type Filter = "all" | "legend" | "diamond" | "platinum" | "gold_down";
-const FILTERS: [Filter, string, (code: string) => boolean][] = [
-  ["all", "Tất cả", () => true],
-  ["legend", "Huyền thoại", (c) => c === "legend"],
-  ["diamond", "Kim cương", (c) => c === "diamond"],
-  ["platinum", "Bạch kim", (c) => c === "platinum"],
-  ["gold_down", "Vàng trở xuống", (c) => ["gold", "silver", "bronze"].includes(c)],
+const FILTERS: [Filter, (code: string) => boolean][] = [
+  ["all", () => true],
+  ["legend", (c) => c === "legend"],
+  ["diamond", (c) => c === "diamond"],
+  ["platinum", (c) => c === "platinum"],
+  ["gold_down", (c) => ["gold", "silver", "bronze"].includes(c)],
 ];
 /** Dưới số máy thật này thì ghép thêm máy mẫu (có nhãn "mẫu") để bảng không trống */
 const MIN_REAL = 10;
@@ -32,11 +33,13 @@ interface Row {
   userId: string | null; machine: MachineInput | null;
 }
 
-const tierName = (code: string) => TIERS.find((t) => t.code === code)?.name ?? code;
 const res = (r: number) => (r === 2160 ? "4K" : `${r}p`);
 
 export function Leaderboard() {
   const { user } = useSession();
+  const { t, p: lp, n0, locale } = useI18n();
+  const T = t.board;
+  const tierName = (code: string) => ((x) => (x ? tn(x, locale) : code))(TIERS.find((x) => x.code === code));
   const { machine, isSample, ready } = useMachine();
   const [real, setReal] = useState<ApiRow[] | null>(null);
   const [failed, setFailed] = useState(false);
@@ -57,15 +60,15 @@ export function Leaderboard() {
     // khách đã khai báo máy trên trình duyệt: hiện tạm để thấy vị trí
     if (user === null && ready && !isSample) {
       const p = computeScores(resolveMachine(machine)).power;
-      list.push({ key: "local", name: "Máy của bạn", sub: "Chưa đăng nhập, chỉ bạn thấy", cpu: machine.cpu, gpu: machine.gpu,
-        ramGb: machine.ramGb, resolution: machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tierOf(p).name, me: true, sample: false, initial: "B",
+      list.push({ key: "local", name: T.yourPc, sub: T.localSub, cpu: machine.cpu, gpu: machine.gpu,
+        ramGb: machine.ramGb, resolution: machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tn(tierOf(p), locale), me: true, sample: false, initial: "B",
         userId: null, machine });
     }
     if ((real?.length ?? 0) < MIN_REAL) {
       for (const s of SAMPLE_MACHINES) {
         const p = computeScores(resolveMachine(s.machine)).power;
-        list.push({ key: `s-${s.handle}`, name: s.handle, sub: `${s.province} · máy mẫu`, cpu: s.machine.cpu, gpu: s.machine.gpu,
-          ramGb: s.machine.ramGb, resolution: s.machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tierOf(p).name,
+        list.push({ key: `s-${s.handle}`, name: s.handle, sub: `${s.province} · ${T.samplePc}`, cpu: s.machine.cpu, gpu: s.machine.gpu,
+          ramGb: s.machine.ramGb, resolution: s.machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tn(tierOf(p), locale),
           me: false, sample: true, initial: s.handle[0]!.toUpperCase(), userId: null, machine: s.machine });
       }
     }
@@ -75,7 +78,7 @@ export function Leaderboard() {
   const ranked = rows.map((r, i) => ({ ...r, rank: i + 1 }));
   const me = ranked.find((r) => r.me);
   const realCount = real?.length ?? 0;
-  const test = FILTERS.find((f) => f[0] === filter)![2];
+  const test = FILTERS.find((f) => f[0] === filter)![1];
   const shown = ranked.filter((r) => test(r.tierCode));
   const tint = (r: Row) => (r.me ? "var(--accent)" : personTint(r.name));
   const show = (r: Row & { rank: number }) => setOpen({ name: r.name, sub: r.sub, initial: r.initial, tint: tint(r), rank: r.rank, me: r.me, userId: r.userId, machine: r.machine });
@@ -84,21 +87,21 @@ export function Leaderboard() {
     <>
       <div className="title-row">
         <div>
-          <h1>Bảng xếp hạng</h1>
+          <h1>{t.nav.board}</h1>
           <p className="sub">
-            {real === null ? "Đang tải…"
-              : me ? `Máy của bạn (${n0(me.power)} điểm) đứng thứ ${me.rank} trên ${ranked.length} máy.`
-              : user ? <>Bạn chưa khai báo máy. <Link href="/may" className="card-link">Khai báo ở Máy của tôi</Link> để có tên trong bảng.</>
-              : <>{ranked.length} máy, xếp theo điểm sức mạnh. <Link href="/dang-nhap?next=/xep-hang" className="card-link">Đăng nhập</Link> để có tên trong bảng.</>}
+            {real === null ? t.common.loading
+              : me ? T.meRank(n0(me.power), me.rank, ranked.length)
+              : user ? T.noPc(<Link href={lp("/may")} className="card-link">{T.declare}</Link>)
+              : T.guest(ranked.length, <Link href={`${lp("/dang-nhap")}?next=/xep-hang`} className="card-link">{t.common.login}</Link>)}
           </p>
         </div>
         <span className="stamp">
-          {failed ? "Không tải được bảng thật, đang hiện máy mẫu" : `${realCount} máy thật${realCount < MIN_REAL ? " + máy mẫu" : ""} · thang điểm v${SCALE_VERSION}`}
+          {failed ? T.failed : T.realCount(realCount, realCount < MIN_REAL, SCALE_VERSION)}
         </span>
       </div>
 
       {real !== null && ranked.length >= 3 && (
-        <ol className="podium" aria-label="Ba máy mạnh nhất">
+        <ol className="podium" aria-label={T.podium}>
           {ranked.slice(0, 3).map((r) => (
             <li key={r.key} className={`podium-card p${r.rank}${r.me ? " me" : ""}`} style={tierVars(r.tierCode)} onClick={() => show(r)}>
               <div className="podium-top">
@@ -114,10 +117,10 @@ export function Leaderboard() {
         </ol>
       )}
 
-      <div className="counts" role="group" aria-label="Lọc theo hạng">
-        {FILTERS.map(([key, label, f]) => (
+      <div className="counts" role="group" aria-label={T.filterTier}>
+        {FILTERS.map(([key, f]) => (
           <button key={key} className="count" aria-pressed={filter === key} onClick={() => setFilter(key)}>
-            <span className="label">{label}</span>
+            <span className="label">{T.filters[key]}</span>
             <span className="value num">{ranked.filter((r) => f(r.tierCode)).length}</span>
           </button>
         ))}
@@ -125,23 +128,23 @@ export function Leaderboard() {
 
       <section className="panel" aria-labelledby="h-board">
         <header>
-          <h2 id="h-board">{FILTERS.find((f) => f[0] === filter)![1]}</h2>
-          <span className="meta">Mốc 10.000 = Core i5-12400F + RTX 3060 12GB</span>
+          <h2 id="h-board">{T.filters[filter]}</h2>
+          <span className="meta">{T.anchor}</span>
         </header>
         {real === null ? (
           <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" style={{ height: 44, marginTop: 8 }} />)}</div>
         ) : shown.length === 0 ? (
-          <p className="empty">Chưa có máy nào ở hạng này.</p>
+          <p className="empty">{T.none}</p>
         ) : (
           <div className="table-wrap">
             <table className="data board">
               <thead>
                 <tr>
                   <th className="r" style={{ width: 48 }}>#</th>
-                  <th>Người chơi</th>
-                  <th className="hide-sm">Cấu hình</th>
-                  <th className="r">Điểm sức mạnh</th>
-                  <th className="hide-sm">Hạng</th>
+                  <th>{T.colPlayer}</th>
+                  <th className="hide-sm">{T.colBuild}</th>
+                  <th className="r">{T.colPower}</th>
+                  <th className="hide-sm">{T.colTier}</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,7 +155,7 @@ export function Leaderboard() {
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         <span className="avatar" style={{ background: tint(r) }} aria-hidden="true">{r.initial}</span>
                         <div style={{ minWidth: 0 }}>
-                          <button className="row-open" onClick={(e) => { e.stopPropagation(); show(r); }} aria-label={`Xem máy của ${r.name}`}>{r.name}</button>
+                          <button className="row-open" onClick={(e) => { e.stopPropagation(); show(r); }} aria-label={T.viewPc(r.name)}>{r.name}</button>
                           <div className="faint" style={{ fontSize: 13 }}>
                             {r.sub}<span className="show-sm"> · <span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></span>
                           </div>
@@ -161,7 +164,7 @@ export function Leaderboard() {
                     </td>
                     <td className="hide-sm">
                       <div><span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></div>
-                      <div className="faint" style={{ fontSize: 13 }}>{r.ramGb} GB RAM · màn hình {res(r.resolution)}</div>
+                      <div className="faint" style={{ fontSize: 13 }}>{T.ramScreen(r.ramGb, res(r.resolution))}</div>
                     </td>
                     <td className="r">
                       <div className="num" style={{ fontWeight: 600, fontSize: 16 }}>{n0(r.power)}</div>

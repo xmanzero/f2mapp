@@ -1,18 +1,26 @@
 "use client";
 
-import { ANCHOR_CPU, ANCHOR_GPU, bottleneck, computeScores, CPUS, GPUS, resolveMachine, tierOf, type Resolution } from "@f2m/shared";
+import { useI18n } from "@/i18n/client";
+
+import { ANCHOR_CPU, ANCHOR_GPU, bottleneck, computeScores, CPUS, GPUS, resolveMachine, tierName, tierOf, type Resolution } from "@f2m/shared";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { n0, ratio } from "@/lib/format";
 import { useSession } from "@/lib/session";
 import { Combo } from "./combo";
+import { LangSwitch } from "./lang-switch";
 import { TierEmblem, tierVars } from "./tier";
 
 /** Góc phải trên của landing: vào app (đã đăng nhập) hoặc đăng nhập */
 export function TopLink() {
   const { user } = useSession();
-  return user ? <Link href="/may" className="lp-toplink">Vào máy của {user.displayName.split(" ").slice(-1)[0]}</Link>
-    : <Link href="/dang-nhap?next=/may" className="lp-toplink">Đăng nhập</Link>;
+  const { t, p } = useI18n();
+  return (
+    <div className="lp-top">
+      <LangSwitch />
+      {user ? <Link href={p("/may")} className="lp-toplink">{t.landing.toMachine(user.displayName.split(" ").slice(-1)[0]!)}</Link>
+        : <Link href={`${p("/dang-nhap")}?next=/may`} className="lp-toplink">{t.common.login}</Link>}
+    </div>
+  );
 }
 
 // ---------- màn đầu: chấm điểm sống ----------
@@ -24,6 +32,7 @@ const ANCHOR_POWER = (() => {
 
 /** Chọn CPU + card → điểm sức mạnh, hạng, FPS theo màn hình, chỗ nghẽn. Dùng đúng công thức của app (packages/shared). */
 export function LiveScore() {
+  const { t, n0, ratio, locale } = useI18n();
   const [cpu, setCpu] = useState("Core i5-14600K");
   const [gpu, setGpu] = useState("RTX 4070 Super");
   const r = useMemo(() => {
@@ -37,18 +46,18 @@ export function LiveScore() {
   const neck = r.fps[0]!.b.side === "cpu" && r.fps[0]!.b.loss > 0.08;
 
   return (
-    <div className="lp-live" data-ui style={tierVars(r.tier.code)} aria-label="Thử chấm điểm một cấu hình">
+    <div className="lp-live" data-ui style={tierVars(r.tier.code)} aria-label={t.landing.tryAria}>
       <div className="lp-live-pick">
         <label htmlFor="lp-cpu">CPU</label>
-        <Combo id="lp-cpu" value={cpu} options={cpuOpts} onChange={setCpu} ariaLabel="Chọn CPU" />
-        <label htmlFor="lp-gpu">Card đồ họa</label>
-        <Combo id="lp-gpu" value={gpu} options={gpuOpts} onChange={setGpu} ariaLabel="Chọn card đồ họa" />
+        <Combo id="lp-cpu" value={cpu} options={cpuOpts} onChange={setCpu} ariaLabel={t.landing.chooseCpu} />
+        <label htmlFor="lp-gpu">{t.landing.gpu}</label>
+        <Combo id="lp-gpu" value={gpu} options={gpuOpts} onChange={setGpu} ariaLabel={t.landing.chooseGpu} />
       </div>
       <div className="lp-live-score">
         <TierEmblem code={r.tier.code} size={52} label={r.tier.name} />
         <div>
           <output className="lp-live-power num tier-ink" htmlFor="lp-cpu lp-gpu" aria-live="polite">{n0(r.power)}</output>
-          <div className="lp-live-tier"><b className="tier-ink">Hạng {r.tier.name}</b> · gấp {ratio(r.power / ANCHOR_POWER)} lần máy mốc</div>
+          <div className="lp-live-tier">{t.landing.tierLine(tierName(r.tier, locale), ratio(r.power / ANCHOR_POWER))}</div>
         </div>
       </div>
       <ul className="lp-live-fps">
@@ -64,8 +73,8 @@ export function LiveScore() {
         ))}
       </ul>
       <p className="lp-live-note">{neck
-        ? <>Ở 1080p, CPU giữ card lại khoảng {Math.round(r.fps[0]!.b.loss * 100)}%: vạch trắng là mức CPU nuôi được.</>
-        : <>Card chạy hết công suất ở mọi độ phân giải; vạch trắng là mức CPU nuôi được.</>}</p>
+        ? t.landing.cpuHolds(Math.round(r.fps[0]!.b.loss * 100))
+        : t.landing.gpuFull}</p>
     </div>
   );
 }
@@ -75,6 +84,7 @@ export interface Panel { src: string; w: number; h: number; name: string; text: 
 
 export function Showcase({ panels }: { panels: Panel[] }) {
   const row = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
   const [active, setActive] = useState(0);
   // mảnh đang chọn = mảnh có tâm gần tâm hàng nhất
   useEffect(() => {
@@ -104,7 +114,7 @@ export function Showcase({ panels }: { panels: Panel[] }) {
   const p = panels[active]!;
   return (
     <div className="lp-show">
-      <div ref={row} className="lp-show-row" tabIndex={0} aria-label="Các màn hình của pcdex, cuộn ngang"
+      <div ref={row} className="lp-show-row" tabIndex={0} aria-label={t.landing.showAria}
         onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); go(Math.min(panels.length - 1, active + 1)); } if (e.key === "ArrowLeft") { e.preventDefault(); go(Math.max(0, active - 1)); } }}>
         {panels.map((x, i) => (
           <figure key={x.src} data-i={i} className={i === active ? "on" : undefined} onClick={() => go(i)}>
@@ -116,7 +126,7 @@ export function Showcase({ panels }: { panels: Panel[] }) {
       <div className="lp-show-cap" aria-live="polite" data-reveal data-d="2">
         <h3>{p.name}</h3>
         <p>{p.text}</p>
-        <div className="lp-dots" role="group" aria-label="Chọn màn hình">
+        <div className="lp-dots" role="group" aria-label={t.landing.pickScreen}>
           {panels.map((x, i) => <button key={x.src} type="button" aria-label={x.name} aria-pressed={i === active} onClick={() => go(i)} />)}
         </div>
       </div>
@@ -153,6 +163,7 @@ export function PanelNotes({ src, w, h, alt, notes }: { src: string; w: number; 
 export interface Stage { name: string; clause: [string, string]; src: string; w: number; h: number; alt: string }
 
 export function Stages({ stages }: { stages: Stage[] }) {
+  const { t } = useI18n();
   const [i, setI] = useState(0);
   const s = stages[i]!;
   return (
@@ -166,7 +177,7 @@ export function Stages({ stages }: { stages: Stage[] }) {
       </div>
       <div className="lp-stages-ctl" data-reveal data-d="1">
         <input type="range" min={0} max={stages.length - 1} step={1} value={i} onChange={(e) => setI(Number(e.target.value))}
-          aria-label="Bước" aria-valuetext={s.name} style={{ ["--p" as string]: `${(i / (stages.length - 1)) * 100}%` }} />
+          aria-label={t.landing.stepAria} aria-valuetext={s.name} style={{ ["--p" as string]: `${(i / (stages.length - 1)) * 100}%` }} />
         <ol>
           {stages.map((x, k) => (
             <li key={x.name}><button type="button" aria-pressed={k === i} onClick={() => setI(k)}>{x.name}</button></li>
@@ -181,16 +192,17 @@ export function Stages({ stages }: { stages: Stage[] }) {
 export interface Platform { id: string; name: string; status: string; live: boolean; rows: [string, string, string][] }
 
 export function Platforms({ items, action }: { items: Platform[]; action: ReactNode }) {
+  const { t } = useI18n();
   const [id, setId] = useState(items[0]!.id);
   const p = items.find((x) => x.id === id)!;
   return (
     <div className="lp-plat">
       <div className="lp-plat-head" data-reveal>
-        <h2><span className="soft">Một tài khoản,</span> mọi thiết bị</h2>
+        <h2>{t.landing.platformsTitle(t.landing.platformsSoft)}</h2>
         {action}
       </div>
       <div className="lp-plat-body">
-        <div className="lp-plat-tabs" role="tablist" aria-label="Nền tảng" data-reveal data-d="1">
+        <div className="lp-plat-tabs" role="tablist" aria-label={t.landing.platforms} data-reveal data-d="1">
           {items.map((x) => (
             <button key={x.id} type="button" role="tab" aria-selected={x.id === id} id={`tab-${x.id}`} aria-controls="lp-plat-panel" onClick={() => setId(x.id)}>
               <b>{x.name}</b><small>{x.status}</small>
@@ -202,7 +214,7 @@ export function Platforms({ items, action }: { items: Platform[]; action: ReactN
             <li key={title} data-reveal data-d={Math.min(k + 1, 4)}>
               <span className="tag">{tag}</span>
               <span className="what"><b>{title}</b><small>{note}</small></span>
-              <span className={`state${p.live ? " live" : ""}`}>{p.live ? "Đang chạy" : "Sắp có"}</span>
+              <span className={`state${p.live ? " live" : ""}`}>{p.live ? t.landing.live : t.landing.soon}</span>
             </li>
           ))}
         </ul>

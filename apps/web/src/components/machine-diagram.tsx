@@ -1,3 +1,4 @@
+import { useI18n } from "@/i18n/client";
 import { capacityLabel, type MachineSpec } from "@f2m/shared";
 import type { PartView } from "@/lib/use-machine";
 
@@ -15,7 +16,8 @@ export function MachineDiagram({ spec, parts }: { spec: MachineSpec; parts: Part
   const gpuShort = spec.gpu.replace(/^(RTX|GTX|RX|Arc) /, "$1 ").replace(/ (\d+)GB$/, "");
   const cpuShort = spec.cpu.replace(/^(Core|Ryzen) /, "").replace(/^Ultra /, "U");
   const totalGb = sticks.reduce((n, s) => n + s.gb, 0);
-  const summary = `Sơ đồ máy: CPU ${spec.cpu}, ${sticks.length} thanh RAM ${totalGb} GB, card ${spec.gpu}, ${spec.drives.length} ổ cứng, nguồn ${spec.psu.wattage} W`;
+  const { t } = useI18n();
+  const summary = t.diagram.summary(spec.cpu, sticks.length, totalGb, spec.gpu, spec.drives.length, spec.psu.wattage);
 
   return (
     <svg className="diagram" viewBox="0 0 300 220" role="img" aria-label={summary}>

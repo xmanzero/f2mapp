@@ -1,7 +1,10 @@
 "use client";
 
+import { useI18n } from "@/i18n/client";
+import { machineName } from "@/lib/use-machine";
+
 import {
-  CPUS, GPUS, MAX_MACHINES, PART_KIND_LABEL, partLabel, sameScannedPart, specFromScan,
+  CPUS, GPUS, localizePartLabel, MAX_MACHINES, partKindLabel, partLabel, sameScannedPart, specFromScan,
   type MachineSpec, type PartKind, type ScanResult,
 } from "@f2m/shared";
 import { Trash2 } from "lucide-react";
@@ -20,7 +23,6 @@ interface ScanView {
   claimed: { at: string; handle: string | null; machineName: string | null } | null;
 }
 const PSU_W = [450, 500, 550, 600, 650, 750, 850, 1000, 1200, 1600];
-const hhmm = (iso: string) => new Date(iso).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
 
 /** Một dòng so sánh: linh kiện đang khai → linh kiện quét thấy */
 interface DiffLine { kind: PartKind; from: string | null; to: string | null; same: boolean }
@@ -50,6 +52,10 @@ function diff(had: MachineSpec, now: MachineSpec): DiffLine[] {
 export function ClaimScan() {
   const router = useRouter();
   const params = useSearchParams();
+  const { t, p, locale } = useI18n();
+  const T = t.scan;
+  const hhmm = (iso: string) => new Date(iso).toLocaleTimeString(locale === "vi" ? "vi-VN" : "en-US", { hour: "2-digit", minute: "2-digit" });
+  const nm = (n: string) => machineName(n, locale);
   const code = params.get("ma") ?? "";
   const { user } = useSession();
   const [typed, setTyped] = useState("");
@@ -96,7 +102,7 @@ export function ClaimScan() {
         body: { machineId: target === "new" ? null : target, cpu, gpu, ...(target === "new" ? { psuW } : {}) },
       });
       try { sessionStorage.setItem(OPEN_MACHINE_KEY, r.machineId); } catch { /* bỏ qua */ }
-      router.push("/may");
+      router.push(p("/may"));
     } catch (e) {
       setError((e as ApiError).message);
       setBusy(false);
@@ -116,25 +122,25 @@ export function ClaimScan() {
   if (!code)
     return (
       <>
-        <div className="title-row"><div><h1>Gắn kết quả quét máy</h1>
-          <p className="sub">Chạy phần mềm pcdex-scan trên máy tính cần quét, bấm “Gắn vào tài khoản”, rồi quét mã QR bằng điện thoại hoặc nhập mã ở đây.</p></div></div>
+        <div className="title-row"><div><h1>{t.pages.scan}</h1>
+          <p className="sub">{T.intro}</p></div></div>
         <div className="scan-start">
         <section className="panel scan-entry scan-get">
           <Mascot size={96} />
           <div>
-            <h2>Phần mềm pcdex-scan</h2>
-            <p className="muted">Windows 10 / 11, không cần cài đặt, không cần quyền quản trị. Đọc CPU, card, mainboard, RAM, ổ cứng, màn hình trong vài giây. Chỉ gửi thông tin phần cứng khi bạn bấm gắn vào tài khoản.</p>
+            <h2>{T.app}</h2>
+            <p className="muted">{T.appText}</p>
           </div>
-          <a href="/tai/pcdex-scan.exe" download className="btn primary">Tải pcdex-scan.exe</a>
+          <a href="/tai/pcdex-scan.exe" download className="btn primary">{T.download}</a>
         </section>
         <section className="panel scan-entry">
-          <form className="form" onSubmit={(e) => { e.preventDefault(); if (typed.trim()) router.push(`/quet?ma=${encodeURIComponent(typed.trim().toUpperCase())}`); }}>
+          <form className="form" onSubmit={(e) => { e.preventDefault(); if (typed.trim()) router.push(`${p("/quet")}?ma=${encodeURIComponent(typed.trim().toUpperCase())}`); }}>
             <div className="field">
-              <label htmlFor="scan-code">Mã trên phần mềm</label>
+              <label htmlFor="scan-code">{T.codeLabel}</label>
               <input id="scan-code" className="input scan-code" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="ABCD-EFGH"
                 autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={12} />
             </div>
-            <button className="btn primary" disabled={!typed.trim()}>Xem kết quả quét</button>
+            <button className="btn primary" disabled={!typed.trim()}>{T.viewResult}</button>
           </form>
         </section>
         </div>
@@ -142,20 +148,20 @@ export function ClaimScan() {
     );
 
   const title = (
-    <div className="title-row"><div><h1>Gắn kết quả quét máy</h1>
-      <p className="sub">{scan ? <>Mã <b className="num">{scan.pretty}</b> · quét lúc {hhmm(scan.createdAt)}{!scan.claimed && !scan.expired && <> · dùng được đến {hhmm(scan.expiresAt)}</>}</> : "Đang tải…"}</p></div></div>
+    <div className="title-row"><div><h1>{t.pages.scan}</h1>
+      <p className="sub">{scan ? T.head(scan.pretty, hhmm(scan.createdAt), !scan.claimed && !scan.expired ? hhmm(scan.expiresAt) : null) : t.common.loading}</p></div></div>
   );
   if (loadError)
-    return <>{title}<p className="empty">{loadError} <Link href="/quet" className="card-link">Nhập mã khác</Link></p></>;
+    return <>{title}<p className="empty">{loadError} <Link href={p("/quet")} className="card-link">{T.otherCode}</Link></p></>;
   if (!scan) return title;
   if (scan.claimed)
-    return <>{title}<p className="empty">Kết quả quét này đã được gắn vào {scan.claimed.machineName ? <b>{scan.claimed.machineName}</b> : "một máy"}{scan.claimed.handle ? <> của @{scan.claimed.handle}</> : null}. <Link href="/may" className="card-link">Xem máy của tôi</Link></p></>;
+    return <>{title}<p className="empty">{T.claimed(scan.claimed.machineName ? <b>{nm(scan.claimed.machineName)}</b> : null, scan.claimed.handle)} <Link href={p("/may")} className="card-link">{T.seeMine}</Link></p></>;
   if (scan.expired)
-    return <>{title}<p className="empty">Mã đã hết hạn (dùng được 30 phút). Bấm “Quét lại” trên phần mềm để lấy mã mới.</p></>;
+    return <>{title}<p className="empty">{T.expired}</p></>;
 
   const r = scan.result;
-  const kits = r.ram.length ? r.ram.map(partLabel.ram) : ["Không đọc được"];
-  const drives = r.drives.length ? r.drives.map((d) => `${partLabel.drive(d)}${d.isBoot ? " · ổ hệ điều hành" : ""}${d.healthPct != null ? ` · sức khỏe ${d.healthPct}%` : ""}`) : ["Không đọc được"];
+  const kits = r.ram.length ? r.ram.map(partLabel.ram) : [T.unreadable];
+  const drives = r.drives.length ? r.drives.map((d) => `${partLabel.drive(d)}${d.isBoot ? T.bootDrive : ""}${d.healthPct != null ? T.health(d.healthPct) : ""}`) : [T.unreadable];
   const lines = target !== "new" && chosen && preview ? diff(chosen.spec, preview) : null;
   const changed = lines?.filter((l) => !l.same) ?? [];
 
@@ -165,93 +171,93 @@ export function ClaimScan() {
       <div className="grid split">
         <div className="col col-l">
           <section className="panel" aria-labelledby="scanned-h">
-            <header><h2 id="scanned-h">Máy vừa quét</h2><span className="meta">{r.display ? `Màn hình ${r.display}` : null}</span></header>
+            <header><h2 id="scanned-h">{T.scanned}</h2><span className="meta">{r.display ? T.screen(r.display) : null}</span></header>
             <dl className="detail-spec scan-spec">
               <div><dt>CPU</dt><dd>
-                {r.cpu.name ? <>{r.cpu.name}<span className="pill pos">Nhận ra</span>{r.cpu.equivalent && <span className="faint small">tương đương {r.cpu.raw}</span>}</>
+                {r.cpu.name ? <>{r.cpu.name}<span className="pill pos">{T.recognized}</span>{r.cpu.equivalent && <span className="faint small">{T.equivalent(r.cpu.raw)}</span>}</>
                   : <MissingPick raw={r.cpu.raw} value={cpu} onChange={setCpu} options={CPUS.map((c) => c.name)} id="pick-cpu" what="CPU" />}
               </dd></div>
-              <div><dt>Card đồ họa</dt><dd>
-                {r.gpu.name ? <>{r.gpu.name}<span className="pill pos">Nhận ra</span></>
-                  : <MissingPick raw={`${r.gpu.raw}${r.gpu.vramGb ? ` ${r.gpu.vramGb} GB` : ""}`} value={gpu} onChange={setGpu} options={GPUS.map((g) => g.name)} id="pick-gpu" what="card" />}
+              <div><dt>{t.cfg.gpu}</dt><dd>
+                {r.gpu.name ? <>{r.gpu.name}<span className="pill pos">{T.recognized}</span></>
+                  : <MissingPick raw={`${r.gpu.raw}${r.gpu.vramGb ? ` ${r.gpu.vramGb} GB` : ""}`} value={gpu} onChange={setGpu} options={GPUS.map((g) => g.name)} id="pick-gpu" what={T.cardWhat} />}
               </dd></div>
-              <div><dt>Mainboard</dt><dd>{partLabel.mainboard(r.mainboard)} <span className="faint small">khe card PCIe {r.mainboard.pcieGen}.0</span></dd></div>
+              <div><dt>{t.listing.kind.mainboard}</dt><dd>{localizePartLabel(partLabel.mainboard(r.mainboard), locale)} <span className="faint small">{T.slot(r.mainboard.pcieGen)}</span></dd></div>
               <div><dt>RAM</dt><dd className="stack">{kits.map((k) => <span key={k}>{k}</span>)}</dd></div>
-              <div><dt>Ổ cứng</dt><dd className="stack">{drives.map((d, i) => <span key={i}>{d}</span>)}</dd></div>
-              <div><dt>Nguồn</dt><dd><span className="muted">Phần mềm không đọc được nguồn</span></dd></div>
+              <div><dt>{t.listing.kind.storage}</dt><dd className="stack">{drives.map((d, i) => <span key={i}>{d}</span>)}</dd></div>
+              <div><dt>{t.listing.kind.psu}</dt><dd><span className="muted">{T.noPsu}</span></dd></div>
             </dl>
-            {r.notes.length > 0 && <ul className="scan-notes">{r.notes.map((n) => <li key={n}>{n}</li>)}</ul>}
+            {r.notes.length > 0 && <ul className="scan-notes">{r.notes.map((n) => <li key={n}>{T.notes[n] ?? n}</li>)}</ul>}
           </section>
         </div>
 
         <div className="col col-r">
           <section className="panel" aria-labelledby="where-h">
-            <header><h2 id="where-h">Gắn vào đâu?</h2></header>
-            {user === undefined || (user && !machines) ? <p className="muted">Đang tải…</p>
+            <header><h2 id="where-h">{T.where}</h2></header>
+            {user === undefined || (user && !machines) ? <p className="muted">{t.common.loading}</p>
               : user === null ? (
                 <div className="scan-login">
-                  <p>Đăng nhập để lưu cấu hình này vào tài khoản. Linh kiện đọc được từ máy sẽ có nhãn <span className="pill pos">Xác thực đang dùng</span></p>
-                  <Link href={`/dang-nhap?next=${encodeURIComponent(`/quet?ma=${scan.code}`)}`} className="btn primary">Đăng nhập để gắn</Link>
+                  <p>{T.loginText(<span className="pill pos">{t.machine.verified}</span>)}</p>
+                  <Link href={`${p("/dang-nhap")}?next=${encodeURIComponent(`/quet?ma=${scan.code}`)}`} className="btn primary">{T.loginBtn}</Link>
                 </div>
               ) : (
                 <>
                   <fieldset className="pick">
-                    <legend className="sr-only">Chọn máy</legend>
+                    <legend className="sr-only">{T.chooseMachine}</legend>
                     {machines!.map((m) => (
                       <div key={m.id} className="pick-row">
                         <label className="pick-item">
                           <input type="radio" name="target" value={m.id} checked={target === m.id} onChange={() => setTarget(m.id)} />
                           <span className="grow">
-                            <span className="pick-name">Cập nhật {m.name}{m.isPrimary && machines!.length > 1 ? " (máy chính)" : ""}</span>
+                            <span className="pick-name">{T.update(nm(m.name))}{m.isPrimary && machines!.length > 1 ? T.mainPc : ""}</span>
                             <span className="line2">{m.spec.cpu} + {m.spec.gpu}</span>
                           </span>
                         </label>
                         {full && (confirmDel === m.id
-                          ? <span className="confirm-del"><button type="button" className="btn small danger" onClick={() => remove(m.id)}>Xóa hẳn</button><button type="button" className="btn small" onClick={() => setConfirmDel(null)}>Thôi</button></span>
-                          : <button type="button" className="icon-btn" aria-label={`Xóa ${m.name}`} onClick={() => setConfirmDel(m.id)}><Trash2 aria-hidden="true" /></button>)}
+                          ? <span className="confirm-del"><button type="button" className="btn small danger" onClick={() => remove(m.id)}>{T.deleteHard}</button><button type="button" className="btn small" onClick={() => setConfirmDel(null)}>{t.account.never}</button></span>
+                          : <button type="button" className="icon-btn" aria-label={T.deleteAria(nm(m.name))} onClick={() => setConfirmDel(m.id)}><Trash2 aria-hidden="true" /></button>)}
                       </div>
                     ))}
                     <label className={`pick-item${full ? " taken" : ""}`}>
                       <input type="radio" name="target" value="new" checked={target === "new"} disabled={full} onChange={() => setTarget("new")} />
                       <span className="grow">
-                        <span className="pick-name">Tạo máy mới</span>
-                        <span className="line2">{full ? `Đã có ${MAX_MACHINES} máy. Xóa bớt một máy để tạo máy mới.` : machines!.length ? "Thêm làm máy thứ hai" : "Máy đầu tiên trong tài khoản"}</span>
+                        <span className="pick-name">{T.newPc}</span>
+                        <span className="line2">{full ? T.full(MAX_MACHINES) : machines!.length ? T.asSecond : T.asFirst}</span>
                       </span>
                     </label>
                   </fieldset>
-                  {confirmDel && <p className="field-error" role="alert">Xóa máy sẽ xóa cả linh kiện trong kho của máy đó và ẩn tin đang bán. Không hoàn tác được.</p>}
+                  {confirmDel && <p className="field-error" role="alert">{T.deleteWarn}</p>}
 
                   {target === "new" ? (
                     <div className="field" style={{ marginTop: 14 }}>
-                      <label htmlFor="psu">Nguồn (công suất) <span className="req">*</span></label>
+                      <label htmlFor="psu">{T.psu} <span className="req">*</span></label>
                       <span className="select-wrap wide">
                         <select id="psu" className="input" value={psuW} onChange={(e) => setPsuW(Number(e.target.value))}>
                           {PSU_W.map((w) => <option key={w} value={w}>{w} W</option>)}
                         </select>
                       </span>
-                      <span className="hint">Phần mềm không đọc được nguồn. Xem trên nhãn nguồn hoặc hóa đơn; sửa được sau.</span>
+                      <span className="hint">{T.psuHint}</span>
                     </div>
                   ) : lines && (
                     <div className="scan-diff">
-                      <h3 className="sheet-h">{changed.length ? `Thay đổi (${changed.length})` : "Khớp với cấu hình đã khai"}</h3>
+                      <h3 className="sheet-h">{changed.length ? T.changes(changed.length) : T.matches}</h3>
                       <ul>
                         {lines.map((l, i) => (
                           <li key={i} className={l.same ? "same" : "changed"}>
-                            <span className="k">{PART_KIND_LABEL[l.kind]}</span>
-                            {l.same ? <span>{l.to} <span className="faint">giữ nguyên, thêm xác thực</span></span>
+                            <span className="k">{partKindLabel(l.kind, locale)}</span>
+                            {l.same ? <span>{l.to} <span className="faint">{T.keepVerify}</span></span>
                               : l.from && l.to ? <span><s>{l.from}</s> → <b>{l.to}</b></span>
-                                : l.to ? <span><b>{l.to}</b> <span className="faint">thêm mới</span></span>
-                                  : <span><s>{l.from}</s> <span className="faint">chuyển sang “đã thay ra”</span></span>}
+                                : l.to ? <span><b>{l.to}</b> <span className="faint">{T.added}</span></span>
+                                  : <span><s>{l.from}</s> <span className="faint">{T.toStock}</span></span>}
                           </li>
                         ))}
-                        <li className="same"><span className="k">Nguồn</span><span>{partLabel.psu(chosen!.spec.psu)} <span className="faint">giữ nguyên</span></span></li>
+                        <li className="same"><span className="k">{t.listing.kind.psu}</span><span>{localizePartLabel(partLabel.psu(chosen!.spec.psu), locale)} <span className="faint">{T.kept}</span></span></li>
                       </ul>
                     </div>
                   )}
 
                   {error && <p className="form-error" role="alert">{error}</p>}
                   <button type="button" className="btn primary scan-go" disabled={busy || !cpu || !gpu || (target === "new" && full)} onClick={claim}>
-                    {busy ? "Đang lưu…" : target === "new" ? "Tạo máy mới" : `Cập nhật ${chosen?.name ?? "máy"}`}
+                    {busy ? t.common.saving : target === "new" ? T.newPc : T.update(chosen ? nm(chosen.name) : T.machineFallback)}
                   </button>
                 </>
               )}
@@ -264,11 +270,13 @@ export function ClaimScan() {
 
 /** CPU / card chưa có trong danh mục: chọn mẫu gần đúng (mẫu tự chọn không được xác thực) */
 function MissingPick({ raw, value, onChange, options, id, what }: { raw: string; value: string; onChange: (v: string) => void; options: string[]; id: string; what: string }) {
+  const { t } = useI18n();
+  const T = t.scan;
   return (
     <span className="missing-pick">
-      <span>{raw} <span className="pill warn">Chưa có trong danh mục</span></span>
-      <label htmlFor={id} className="faint small">Chọn {what} gần đúng nhất để tính điểm (không được tính là đã xác thực)</label>
-      <Combo id={id} value={value} onChange={onChange} options={options.map((o) => ({ value: o, label: o }))} ariaLabel={`Chọn ${what} gần đúng`} />
+      <span>{raw} <span className="pill warn">{T.notInCatalog}</span></span>
+      <label htmlFor={id} className="faint small">{T.pickClosest(what)}</label>
+      <Combo id={id} value={value} onChange={onChange} options={options.map((o) => ({ value: o, label: o }))} ariaLabel={T.pickClosestAria(what)} />
     </span>
   );
 }

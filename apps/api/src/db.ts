@@ -11,6 +11,7 @@ export interface Database {
     email: string | null;
     province: string | null;
     market_region: Generated<string | null>;
+    locale: Generated<"vi" | "en">;
     role: Generated<"user" | "admin">;
     banned_at: Generated<Date | null>;
     ban_reason: Generated<string | null>;
@@ -96,7 +97,7 @@ export interface Database {
     detail: unknown; created_at: Generated<Date>;
   };
   brand_assets: { kind: "logo" | "logo_light" | "favicon"; mime: string; data: Buffer; width: number; height: number; updated_at: Generated<Date>; updated_by: string | null };
-  email_templates: { key: string; subject: string; body: string; enabled: boolean; updated_at: Generated<Date>; updated_by: string | null };
+  email_templates: { key: string; lang: Generated<"vi" | "en">; subject: string; body: string; enabled: boolean; updated_at: Generated<Date>; updated_by: string | null };
   email_log: {
     id: Generated<string>; template: string; to_email: string; user_id: string | null; subject: string;
     status: "sent" | "failed" | "skipped"; error: string | null; created_at: Generated<Date>;

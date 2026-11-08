@@ -1,15 +1,16 @@
 "use client";
 
-import { resolveMachine } from "@f2m/shared";
+import { useI18n } from "@/i18n/client";
+
+import { localizePartLabel, resolveMachine } from "@f2m/shared";
 import { X } from "lucide-react";
 import Link from "next/link";
 import { Mascot } from "./mascot";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
-import { n0, signedPct, vnd } from "@/lib/format";
 import {
-  CONDITION_LABEL, daysLabel, fitFor, KIND_LABEL, lifeOf, MIN_REAL_LISTINGS, rowTimes, SAMPLE_ROWS, toRow, valueOf,
+  fitFor, lifeOf, MIN_REAL_LISTINGS, rowTimes, SAMPLE_ROWS, toRow, valueOf,
   type Listing, type ListingKind, type MarketRow,
 } from "@/lib/listings";
 import { useSession } from "@/lib/session";
@@ -41,6 +42,10 @@ export function Market() {
   const router = useRouter();
   const params = useSearchParams();
   const { user } = useSession();
+  const { t, p, n0, signedPct, vnd, locale } = useI18n();
+  const T = t.market, L = t.listing;
+  const name = (s: string) => localizePartLabel(s, locale);
+  const note = (s: string) => s.replace(/^Khác socket \((.+)\)$/, (_, x: string) => L.otherSocket(x));
   const [q, setQ] = useState(params.get("q") ?? "");
   const [kind, setKind] = useState<ListingKind | "all">("all");
   const [sort, setSort] = useState<Sort>("new");
@@ -81,28 +86,27 @@ export function Market() {
   const best = mine && rows.filter(({ r }) => inRegion(r.province)).filter((x) => (x.fit.gain ?? 0) > 0.02)
     .sort((a, b) => b.fit.gain! / b.r.priceVnd - a.fit.gain! / a.r.priceVnd)[0];
   const realCount = real?.length ?? 0;
-  const postHref = user ? "/cho/dang-tin" : "/dang-nhap?next=/cho/dang-tin";
+  const postHref = user ? p("/cho/dang-tin") : `${p("/dang-nhap")}?next=/cho/dang-tin`;
 
   return (
     <>
       <div className="title-row">
         <div>
-          <h1>Chợ linh kiện</h1>
+          <h1>{t.nav.market}</h1>
           <p className="sub">
-            {best ? <>Đáng tiền nhất cho máy {isSample ? "mẫu" : "của bạn"}: <b>{best.r.name}</b> {vnd(best.r.priceVnd)}, tăng {Math.round(best.fit.gain! * 100)}% điểm sức mạnh.</>
-              : "Linh kiện cũ do người chơi đăng bán. Giá do người bán đặt."}
+            {best ? T.best(isSample, name(best.r.name), vnd(best.r.priceVnd), Math.round(best.fit.gain! * 100)) : T.intro}
           </p>
         </div>
         <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-          {user && <Link href="/cho/cua-toi" className="btn">Tin của tôi</Link>}
-          <Link href={postHref} className="btn primary">Đăng tin bán</Link>
+          {user && <Link href={p("/cho/cua-toi")} className="btn">{t.pages.myListings}</Link>}
+          <Link href={postHref} className="btn primary">{t.pages.postListing}</Link>
         </div>
       </div>
 
-      <div className="counts" role="group" aria-label="Lọc theo loại linh kiện">
+      <div className="counts" role="group" aria-label={T.filterKind}>
         {KINDS.map((k) => (
           <button key={k} className="count" aria-pressed={kind === k} onClick={() => setKind(k)}>
-            <span className="label">{k === "all" ? "Tất cả" : KIND_LABEL[k]}</span>
+            <span className="label">{k === "all" ? T.all : L.kind[k]}</span>
             <span className="value num">{scoped.filter(({ r }) => k === "all" || r.kind === k).length}</span>
           </button>
         ))}
@@ -110,28 +114,28 @@ export function Market() {
 
       <section className="panel" aria-labelledby="h-list">
         <header>
-          <h2 id="h-list">{kind === "all" ? "Tất cả" : KIND_LABEL[kind]} · <span className="num">{shown.length}</span> tin{region && region !== ALL ? ` ở ${region}` : ""}</h2>
-          <span className="meta">{real === null ? "Đang tải…" : `${realCount} tin thật${realCount < MIN_REAL_LISTINGS ? " + tin mẫu" : ""}`}</span>
+          <h2 id="h-list">{T.count(kind === "all" ? T.all : L.kind[kind]!, <span className="num">{shown.length}</span>, region && region !== ALL ? region : null)}</h2>
+          <span className="meta">{real === null ? t.common.loading : T.realCount(realCount, realCount < MIN_REAL_LISTINGS)}</span>
         </header>
         <div className="toolbar">
-          <div className="segmented wrap" role="group" aria-label="Sắp xếp">
-            {([["new", "Mới nhất"], ["ending", "Sắp hết hạn"], ["value", "Đáng tiền"], ["gain", "Hợp máy tôi"]] as const).map(([k, l]) => (
-              <button key={k} aria-pressed={sort === k} onClick={() => setSort(k)}>{l}</button>
+          <div className="segmented wrap" role="group" aria-label={T.sort}>
+            {(["new", "ending", "value", "gain"] as const).map((k) => (
+              <button key={k} aria-pressed={sort === k} onClick={() => setSort(k)}>{T.sorts[k]}</button>
             ))}
           </div>
           <div className="region">
-            <label htmlFor="region" className="muted">Khu vực</label>
-            <Combo id="region" value={region ?? ALL} onChange={setRegion} disabled={region === null} placeholder="Gõ tỉnh, VD: hai phong"
-              options={[{ value: ALL, label: "Toàn quốc", hint: String(rows.length) },
+            <label htmlFor="region" className="muted">{T.region}</label>
+            <Combo id="region" value={region ?? ALL} onChange={setRegion} disabled={region === null} placeholder={T.regionPh}
+              options={[{ value: ALL, label: T.nationwide, hint: String(rows.length) },
                 ...regionOptions.map((p) => ({ value: p, label: p, hint: regionCount(p) ? String(regionCount(p)) : undefined }))]} />
             {(source === "home" || source === "last_listing") && region !== ALL && (
-              <span id="region-why" className="faint" style={{ fontSize: 12 }}>{source === "home" ? "theo nơi bạn sống" : "theo tin bạn đăng gần nhất"}</span>
+              <span id="region-why" className="faint" style={{ fontSize: 12 }}>{source === "home" ? T.byHome : T.byLast}</span>
             )}
           </div>
           <span className="spacer" />
           {q && (
-            <button className="btn small" onClick={() => { setQ(""); router.replace("/cho"); }}>
-              Tìm “{q}” <X size={14} aria-hidden="true" /><span className="sr-only">Bỏ tìm</span>
+            <button className="btn small" onClick={() => { setQ(""); router.replace(p("/cho")); }}>
+              {T.searching(q)} <X size={14} aria-hidden="true" /><span className="sr-only">{T.clearSearch}</span>
             </button>
           )}
         </div>
@@ -142,26 +146,26 @@ export function Market() {
           <div className="empty-state inline">
             <Mascot size={88} />
             <p>
-              {q ? `Không có tin nào khớp “${q}”${kind !== "all" ? " trong mục này" : ""}` : "Chưa có tin nào trong mục này"}{region && region !== ALL ? ` ở ${region}` : ""}.{" "}
-              {region && region !== ALL ? <button type="button" className="link-btn" onClick={() => setRegion(ALL)}>Xem toàn quốc</button> : <Link href={postHref} className="card-link">Đăng tin bán</Link>}
+              {q ? T.noMatch(q, kind !== "all") : T.noneInKind}{region && region !== ALL ? T.inRegion(region) : ""}.{" "}
+              {region && region !== ALL ? <button type="button" className="link-btn" onClick={() => setRegion(ALL)}>{T.seeNationwide}</button> : <Link href={postHref} className="card-link">{t.pages.postListing}</Link>}
             </p>
           </div>
         ) : (
           <>
           {/* điện thoại: danh sách dòng hai tầng thay cho bảng */}
-          <ul className="mlist show-sm-block" aria-label="Tin rao">
+          <ul className="mlist show-sm-block" aria-label={T.listings}>
             {shown.map(({ r, fit, life }) => (
               <li key={r.id} className={[r.href ? "linked clickable" : "", life ? `life-${life.state}` : ""].join(" ").trim() || undefined}
-                onClick={() => r.href && router.push(r.href)}>
+                onClick={() => r.href && router.push(p(r.href))}>
                 <div className="l1">
                   <Thumb r={r} />
-                  {r.href ? <Link href={r.href} className="row-link" onClick={(e) => e.stopPropagation()}>{r.name}</Link> : <span>{r.name}</span>}
+                  {r.href ? <Link href={p(r.href)} className="row-link" onClick={(e) => e.stopPropagation()}>{name(r.name)}</Link> : <span>{name(r.name)}</span>}
                   <b className="num">{vnd(r.priceVnd)}</b>
                 </div>
                 <div className="l2">
-                  <span className={`pill ${r.condition === "like_new" || r.condition === "new" ? "pos" : r.condition === "for_parts" ? "warn" : ""}`}>{CONDITION_LABEL[r.condition]}</span>
-                  <span className="faint">{[r.province, daysLabel(r.daysAgo), r.sample ? "tin mẫu" : null].filter(Boolean).join(" · ")}</span>
-                  {fit.gain !== null && fit.gain > 0.005 && <span className="gain num">{signedPct(fit.gain)} điểm</span>}
+                  <span className={`pill ${r.condition === "like_new" || r.condition === "new" ? "pos" : r.condition === "for_parts" ? "warn" : ""}`}>{L.condition[r.condition]}</span>
+                  <span className="faint">{[r.province, L.daysAgo(r.daysAgo), r.sample ? T.sample : null].filter(Boolean).join(" · ")}</span>
+                  {fit.gain !== null && fit.gain > 0.005 && <span className="gain num">{signedPct(fit.gain)} {t.machine.points}</span>}
                 </div>
                 {life && <div style={{ marginTop: 8 }}><LifeBar life={life} compact /></div>}
               </li>
@@ -171,28 +175,28 @@ export function Market() {
             <table className="data market">
               <thead>
                 <tr>
-                  <th>Linh kiện</th>
-                  <th className="r">Giá</th>
-                  <th className="r hide-sm">Điểm / triệu</th>
-                  <th className="r">Lắp vào máy {isSample ? "mẫu" : "bạn"}</th>
-                  <th className="r">Kết thúc</th>
+                  <th>{T.colPart}</th>
+                  <th className="r">{T.colPrice}</th>
+                  <th className="r hide-sm">{T.colValue}</th>
+                  <th className="r">{T.colFit(isSample)}</th>
+                  <th className="r">{T.colEnds}</th>
                 </tr>
               </thead>
               <tbody>
                 {shown.map(({ r, fit, value, life }) => (
                   <tr key={r.id} className={[r.href ? "linked clickable" : "", life ? `life-${life.state}` : ""].join(" ").trim() || undefined}
-                    onClick={() => r.href && router.push(r.href)}>
+                    onClick={() => r.href && router.push(p(r.href))}>
                     <td>
                      <div className="cell-thumb">
                       <Thumb r={r} />
                       <div style={{ minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        {r.href ? <Link href={r.href} className="row-link" style={{ fontWeight: 500 }} onClick={(e) => e.stopPropagation()}>{r.name}</Link> : <span style={{ fontWeight: 500 }}>{r.name}</span>}
-                        <span className={`pill ${r.condition === "like_new" || r.condition === "new" ? "pos" : r.condition === "for_parts" ? "warn" : ""}`}>{CONDITION_LABEL[r.condition]}</span>
+                        {r.href ? <Link href={p(r.href)} className="row-link" style={{ fontWeight: 500 }} onClick={(e) => e.stopPropagation()}>{name(r.name)}</Link> : <span style={{ fontWeight: 500 }}>{name(r.name)}</span>}
+                        <span className={`pill ${r.condition === "like_new" || r.condition === "new" ? "pos" : r.condition === "for_parts" ? "warn" : ""}`}>{L.condition[r.condition]}</span>
                       </div>
                       <div className="faint" style={{ fontSize: 13, marginTop: 2 }}>
-                        {[r.province, r.seller, daysLabel(r.daysAgo), r.warrantyMonths ? `bảo hành ${r.warrantyMonths} tháng` : null, r.sample ? "tin mẫu" : r.inUse ? "đang dùng trong máy" : null].filter(Boolean).join(" · ")}
-                        {r.verified !== null && <span className={`verify${r.verified ? " ok" : ""}`}>{r.verified ? "Xác thực đang dùng" : "Chưa xác thực"}</span>}
+                        {[r.province, r.seller, L.daysAgo(r.daysAgo), r.warrantyMonths ? T.warranty(r.warrantyMonths) : null, r.sample ? T.sample : r.inUse ? T.inUse : null].filter(Boolean).join(" · ")}
+                        {r.verified !== null && <span className={`verify${r.verified ? " ok" : ""}`}>{r.verified ? t.machine.verified : t.machine.unverified}</span>}
                       </div>
                       </div>
                      </div>
@@ -200,8 +204,8 @@ export function Market() {
                     <td className="r num" style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{vnd(r.priceVnd)}</td>
                     <td className="r num hide-sm">{value === null ? <span className="faint">—</span> : n0(value)}</td>
                     <td className="r num" style={{ whiteSpace: "nowrap" }}>
-                      {fit.gain === null ? <span className="faint">{fit.note}</span>
-                        : <span style={{ color: fit.gain > 0.005 ? "var(--positive)" : "var(--faint)", fontWeight: 500 }}>{signedPct(fit.gain)} điểm</span>}
+                      {fit.gain === null ? <span className="faint">{note(fit.note)}</span>
+                        : <span style={{ color: fit.gain > 0.005 ? "var(--positive)" : "var(--faint)", fontWeight: 500 }}>{signedPct(fit.gain)} {t.machine.points}</span>}
                     </td>
                     <td className="r">{life ? <LifeBar life={life} /> : <span className="skeleton" style={{ display: "inline-block", width: 120, height: 32 }} />}</td>
                   </tr>
@@ -212,7 +216,7 @@ export function Market() {
           </>
         )}
         <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>
-          “Lắp vào máy” tính theo cấu hình ở <Link href="/may" className="card-link">Máy của tôi</Link>. Điểm / triệu: điểm linh kiện (card: sức mạnh game, CPU: gaming) chia cho giá.
+          {T.footnote(<Link href={p("/may")} className="card-link">{t.nav.machine}</Link>)}
         </p>
       </section>
     </>

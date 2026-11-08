@@ -3,6 +3,7 @@
  * Công thức điểm dùng dạng tóm tắt MachineInput — quy đổi bằng specToInput().
  * Phần mềm quét máy (Windows) đọc được: CPU, card, mainboard, RAM, ổ cứng (cả sức khỏe). Không đọc được nguồn.
  */
+import { tr, type Lang } from "./lang";
 import { z } from "zod";
 import { findCpu } from "./catalog";
 import { SOCKET_MEMORY } from "./scoring";
@@ -14,6 +15,10 @@ export const PART_KINDS: PartKind[] = ["cpu", "gpu", "mainboard", "ram", "storag
 export const PART_KIND_LABEL: Record<PartKind, string> = {
   cpu: "CPU", gpu: "Card đồ họa", mainboard: "Mainboard", ram: "RAM", storage: "Ổ cứng", psu: "Nguồn",
 };
+export const PART_KIND_LABEL_EN: Record<PartKind, string> = {
+  cpu: "CPU", gpu: "Graphics card", mainboard: "Motherboard", ram: "RAM", storage: "Storage", psu: "PSU",
+};
+export const partKindLabel = (k: PartKind, lang: Lang = "vi") => (lang === "en" ? PART_KIND_LABEL_EN : PART_KIND_LABEL)[k];
 /** Linh kiện phần mềm quét đọc được (nguồn thì không) */
 export const VERIFIABLE_KINDS: PartKind[] = ["cpu", "gpu", "mainboard", "ram", "storage"];
 export const MAX_MACHINES = 2;
@@ -132,42 +137,43 @@ export const partKey = {
  * Kiểm tra RAM có hợp với máy không (máy bàn). Trả về cảnh báo theo mức:
  * critical = không chạy được; warning = chạy nhưng thiệt; info = cần biết.
  */
-export function ramFindings(spec: Pick<MachineSpec, "cpu" | "ram">): Finding[] {
+export function ramFindings(spec: Pick<MachineSpec, "cpu" | "ram">, lang: Lang = "vi"): Finding[] {
+  const T = (vi: string, en: string) => tr(lang, vi, en);
   const out: Finding[] = [];
   const cpu = findCpu(spec.cpu);
   const mem = cpu ? SOCKET_MEMORY[cpu.socket] : null;
   const types = [...new Set(spec.ram.map((k) => k.type))];
   if (types.length > 1)
-    out.push({ code: "ram_mixed_type", severity: "critical", message: `Không dùng chung ${types.join(" và ")} trên một mainboard. Giữ một loại RAM.` });
+    out.push({ code: "ram_mixed_type", severity: "critical", message: T(`Không dùng chung ${types.join(" và ")} trên một mainboard. Giữ một loại RAM.`, `${types.join(" and ")} can't be mixed on one motherboard. Keep one RAM type.`) });
   for (const t of types)
     if (mem && mem !== "DDR4/DDR5" && t !== mem)
-      out.push({ code: "ram_type_platform", severity: "critical", message: `${spec.cpu} (${cpu!.socket}) chỉ dùng ${mem}, không lắp được RAM ${t}.` });
+      out.push({ code: "ram_type_platform", severity: "critical", message: T(`${spec.cpu} (${cpu!.socket}) chỉ dùng ${mem}, không lắp được RAM ${t}.`, `${spec.cpu} (${cpu!.socket}) only takes ${mem}; ${t} RAM won't fit.`) });
   if (spec.ram.some((k) => k.formFactor === "sodimm"))
-    out.push({ code: "ram_sodimm", severity: "critical", message: "RAM SO-DIMM là RAM laptop, không lắp được khe RAM máy bàn." });
+    out.push({ code: "ram_sodimm", severity: "critical", message: T("RAM SO-DIMM là RAM laptop, không lắp được khe RAM máy bàn.", "SO-DIMM is laptop RAM and won't fit desktop RAM slots.") });
   if (spec.ram.some((k) => k.registered))
-    out.push({ code: "ram_registered", severity: "critical", message: "RAM RDIMM là RAM máy chủ, không chạy trên mainboard phổ thông." });
+    out.push({ code: "ram_registered", severity: "critical", message: T("RAM RDIMM là RAM máy chủ, không chạy trên mainboard phổ thông.", "RDIMM is server RAM and won't run on consumer motherboards.") });
   else if (spec.ram.some((k) => k.ecc))
     out.push({ code: "ram_ecc", severity: "info", message: cpu?.socket.startsWith("AM")
-      ? "RAM ECC chạy được trên nhiều mainboard AMD, nhưng tính năng sửa lỗi chỉ bật khi mainboard hỗ trợ."
-      : "Mainboard Intel phổ thông thường không bật ECC: RAM chạy như RAM thường, hoặc không nhận. Kiểm tra trang hỗ trợ của mainboard." });
+      ? T("RAM ECC chạy được trên nhiều mainboard AMD, nhưng tính năng sửa lỗi chỉ bật khi mainboard hỗ trợ.", "ECC RAM runs on many AMD boards, but error correction only works if the board supports it.")
+      : T("Mainboard Intel phổ thông thường không bật ECC: RAM chạy như RAM thường, hoặc không nhận. Kiểm tra trang hỗ trợ của mainboard.", "Consumer Intel boards usually don't enable ECC: the RAM runs as normal RAM or isn't detected. Check your board's support page.") });
   const speeds = [...new Set(spec.ram.map((k) => k.speedMhz).filter((x): x is number => !!x))];
   if (spec.ram.length > 1 && speeds.length > 1)
-    out.push({ code: "ram_mixed_speed", severity: "info", message: `Các bộ RAM khác tốc độ sẽ cùng chạy ở ${Math.min(...speeds)} MHz.` });
+    out.push({ code: "ram_mixed_speed", severity: "info", message: T(`Các bộ RAM khác tốc độ sẽ cùng chạy ở ${Math.min(...speeds)} MHz.`, `RAM kits with different speeds will all run at ${Math.min(...speeds)} MHz.`) });
   return out;
 }
 
 /** Ổ cứng: sức khỏe thấp, hệ điều hành trên HDD khi có SSD */
-export function driveFindings(spec: Pick<MachineSpec, "drives">): Finding[] {
+export function driveFindings(spec: Pick<MachineSpec, "drives">, lang: Lang = "vi"): Finding[] {
   const out: Finding[] = [];
   for (const d of spec.drives)
     if (d.healthPct !== null && d.healthPct < 70)
       out.push({ code: "drive_health", severity: d.healthPct < 40 ? "critical" : "warning",
-        message: `${partLabel.drive(d)} còn ${d.healthPct}% sức khỏe. Sao lưu dữ liệu quan trọng và tính chuyện thay ổ.` });
+        message: tr(lang, `${partLabel.drive(d)} còn ${d.healthPct}% sức khỏe. Sao lưu dữ liệu quan trọng và tính chuyện thay ổ.`, `${partLabel.drive(d)} is at ${d.healthPct}% health. Back up important data and plan to replace it.`) });
   const boot = bootDrive(spec);
   if (boot?.interface === "hdd" && spec.drives.some((d) => d.interface !== "hdd"))
-    out.push({ code: "boot_on_hdd_has_ssd", severity: "warning", message: "Máy có SSD nhưng hệ điều hành đang nằm trên HDD. Cài lại Windows sang SSD để máy nhanh hơn." });
+    out.push({ code: "boot_on_hdd_has_ssd", severity: "warning", message: tr(lang, "Máy có SSD nhưng hệ điều hành đang nằm trên HDD. Cài lại Windows sang SSD để máy nhanh hơn.", "You have an SSD but the OS is on a hard drive. Reinstall Windows on the SSD for a faster PC.") });
   return out;
 }
 
 /** Mọi cảnh báo từ cấu hình chi tiết */
-export const specFindings = (spec: MachineSpec): Finding[] => [...ramFindings(spec), ...driveFindings(spec)];
+export const specFindings = (spec: MachineSpec, lang: Lang = "vi"): Finding[] => [...ramFindings(spec, lang), ...driveFindings(spec, lang)];

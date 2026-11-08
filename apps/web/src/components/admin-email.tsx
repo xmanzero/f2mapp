@@ -16,19 +16,22 @@ export function EmailTemplates({ defaultTo }: { defaultTo: string }) {
   const [list, setList] = useState<Template[] | null>(null);
   const [smtpReady, setSmtpReady] = useState(true);
   const [key, setKey] = useState("welcome");
+  /** mẫu tiếng Việt hay tiếng Anh (người dùng nhận thư theo ngôn ngữ của tài khoản) */
+  const [lang, setLang] = useState<"vi" | "en">("vi");
+  const dk = `${lang}:${key}`;
   /** bản đang soạn của từng mẫu (chưa lưu); không có = đúng như bản đã lưu */
   const [drafts, setDrafts] = useState<Record<string, Draft>>({});
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(() => api<{ templates: Template[]; smtpReady: boolean }>("/v1/admin/email/templates")
+  const load = useCallback(() => api<{ templates: Template[]; smtpReady: boolean }>(`/v1/admin/email/templates?lang=${lang}`)
     .then((r) => { setList(r.templates); setSmtpReady(r.smtpReady); return r.templates; })
-    .catch((e: ApiError) => { setError(e.message); return null; }), []);
+    .catch((e: ApiError) => { setError(e.message); return null; }), [lang]);
   useEffect(() => { void load(); }, [load]);
 
   const cur = list?.find((t) => t.key === key) ?? null;
-  const draft: Draft | null = cur ? drafts[key] ?? { subject: cur.subject, body: cur.body, enabled: cur.enabled } : null;
+  const draft: Draft | null = cur ? drafts[dk] ?? { subject: cur.subject, body: cur.body, enabled: cur.enabled } : null;
   const dirty = !!cur && !!draft && (draft.subject !== cur.subject || draft.body !== cur.body || draft.enabled !== cur.enabled);
-  const setDraft = (d: Draft) => setDrafts((x) => ({ ...x, [key]: d }));
+  const setDraft = (d: Draft) => setDrafts((x) => ({ ...x, [dk]: d }));
 
   const open = (k: string) => {
     if (k === key) return;
@@ -41,6 +44,11 @@ export function EmailTemplates({ defaultTo }: { defaultTo: string }) {
   return (
     <>
       {!smtpReady && <p className="notice" style={{ marginBottom: 16 }}>Chưa cấu hình SMTP (hoặc đang tắt): thư sẽ không được gửi, chỉ ghi “bỏ qua” trong nhật ký. Cấu hình ở mục Máy chủ SMTP.</p>}
+      <div className="segmented admin-sub" role="group" aria-label="Ngôn ngữ của mẫu">
+        {([["vi", "Tiếng Việt"], ["en", "English"]] as const).map(([v, l]) => (
+          <button key={v} type="button" aria-pressed={lang === v} onClick={() => { if (v !== lang && (!dirty || confirm("Mẫu đang sửa chưa lưu. Bỏ thay đổi?"))) { setList(null); setLang(v); } }}>{l}</button>
+        ))}
+      </div>
       <div className="mail-grid">
         <nav className="panel mail-list" aria-label="Mẫu thư">
           <ul>
@@ -59,15 +67,15 @@ export function EmailTemplates({ defaultTo }: { defaultTo: string }) {
             ))}
           </ul>
         </nav>
-        <Editor key={cur.key} t={cur} draft={draft} setDraft={setDraft} dirty={dirty} defaultTo={defaultTo} smtpReady={smtpReady}
-          onSaved={(ts) => { setList(ts); setDrafts((x) => Object.fromEntries(Object.entries(x).filter(([k]) => k !== key))); }} />
+        <Editor key={dk} t={cur} lang={lang} draft={draft} setDraft={setDraft} dirty={dirty} defaultTo={defaultTo} smtpReady={smtpReady}
+          onSaved={(ts) => { setList(ts); setDrafts((x) => Object.fromEntries(Object.entries(x).filter(([k]) => k !== dk))); }} />
       </div>
     </>
   );
 }
 
-function Editor({ t, draft, setDraft, dirty, defaultTo, smtpReady, onSaved }: {
-  t: Template; draft: Draft; setDraft: (d: Draft) => void;
+function Editor({ t, lang, draft, setDraft, dirty, defaultTo, smtpReady, onSaved }: {
+  t: Template; lang: "vi" | "en"; draft: Draft; setDraft: (d: Draft) => void;
   dirty: boolean; defaultTo: string; smtpReady: boolean; onSaved: (ts: Template[]) => void;
 }) {
   const [busy, setBusy] = useState(false);
@@ -83,11 +91,11 @@ function Editor({ t, draft, setDraft, dirty, defaultTo, smtpReady, onSaved }: {
   useEffect(() => {
     const id = setTimeout(() => {
       if (!draft.subject.trim() || !draft.body.trim()) return;
-      api<{ subject: string; html: string; warning: string | null }>(`/v1/admin/email/templates/${t.key}/preview`, { body: { subject: draft.subject, body: draft.body } })
+      api<{ subject: string; html: string; warning: string | null }>(`/v1/admin/email/templates/${t.key}/preview?lang=${lang}`, { body: { subject: draft.subject, body: draft.body } })
         .then(setPreview).catch(() => {});
     }, 400);
     return () => clearTimeout(id);
-  }, [t.key, draft.subject, draft.body]);
+  }, [t.key, lang, draft.subject, draft.body]);
 
   const insert = (name: string) => {
     const tag = `{{${name}}}`;
@@ -106,18 +114,18 @@ function Editor({ t, draft, setDraft, dirty, defaultTo, smtpReady, onSaved }: {
     setBusy(false);
   };
   const save = () => run(async () => {
-    const r = await api<{ templates: Template[] }>(`/v1/admin/email/templates/${t.key}`, { method: "PUT", body: draft });
+    const r = await api<{ templates: Template[] }>(`/v1/admin/email/templates/${t.key}?lang=${lang}`, { method: "PUT", body: draft });
     onSaved(r.templates);
     setMsg({ ok: true, text: draft.enabled ? "Đã lưu. Thư gửi từ giờ dùng mẫu này." : "Đã lưu. Mẫu đang tắt: sự kiện này sẽ không gửi thư." });
   });
   const reset = () => run(async () => {
-    const r = await api<{ templates: Template[] }>(`/v1/admin/email/templates/${t.key}`, { method: "DELETE" });
+    const r = await api<{ templates: Template[] }>(`/v1/admin/email/templates/${t.key}?lang=${lang}`, { method: "DELETE" });
     setConfirmReset(false);
     onSaved(r.templates);
     setMsg({ ok: true, text: "Đã khôi phục mẫu mặc định." });
   });
   const test = () => run(async () => {
-    await api(`/v1/admin/email/templates/${t.key}/test`, { body: { subject: draft.subject, body: draft.body, to } });
+    await api(`/v1/admin/email/templates/${t.key}/test?lang=${lang}`, { body: { subject: draft.subject, body: draft.body, to } });
     setMsg({ ok: true, text: `Đã gửi thử bản đang soạn tới ${to}, với dữ liệu mẫu.` });
   });
 

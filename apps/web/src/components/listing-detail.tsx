@@ -1,14 +1,16 @@
 "use client";
 
-import { findCpu, findGpu, resolveMachine, RESOLUTION_LABEL, TIERS } from "@f2m/shared";
+import { useI18n } from "@/i18n/client";
+import { machineName } from "@/lib/use-machine";
+
+import { findCpu, findGpu, localizePartLabel, resolveMachine, RESOLUTION_LABEL, TIERS, tierName } from "@f2m/shared";
 import { Copy } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "@/lib/api";
-import { n0, signedPct, vnd } from "@/lib/format";
 import {
-  CONDITION_LABEL, daysLabel, daysSince, DURATIONS, fitFor, KIND_LABEL, lifeOf, medianPrice, SAMPLE_ROWS, sampleListing, STATUS_LABEL, toRow, valueOf,
+  daysSince, DURATIONS, fitFor, lifeOf, medianPrice, SAMPLE_ROWS, sampleListing, toRow, valueOf,
   type Listing, type ListingStatus, type MarketRow,
 } from "@/lib/listings";
 import { MAX_PHOTOS, photoUrl, shrinkImage, uploadPhoto } from "@/lib/photos";
@@ -26,23 +28,26 @@ export function ListingDetail() {
   const [others, setOthers] = useState<MarketRow[]>([]);
   const { machine, isSample, ready } = useMachine();
   const now = useNow();
+  const { t, p, n0, signedPct, vnd, date, locale } = useI18n();
+  const T = t.detail, L = t.listing;
 
   useEffect(() => {
-    if (!id) { setItem(null); setError("Thiếu mã tin"); return; }
+    if (!id) { setItem(null); setError(T.missingId); return; }
     const sample = sampleListing(id, Date.now());
     if (sample) setItem(sample);
     else api<{ item: Listing }>(`/v1/listings/${id}`).then((r) => setItem(r.item)).catch((e: ApiError) => { setItem(null); setError(e.message); });
     api<{ items: Listing[] }>("/v1/listings?limit=200").then((r) => setOthers([...r.items.map(toRow), ...SAMPLE_ROWS])).catch(() => setOthers(SAMPLE_ROWS));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const mine = useMemo(() => (ready ? resolveMachine(machine) : null), [ready, machine]);
 
-  if (item === undefined) return <div className="title-row"><div><h1>Tin rao</h1><p className="sub">Đang tải…</p></div></div>;
+  if (item === undefined) return <div className="title-row"><div><h1>{t.pages.listing}</h1><p className="sub">{t.common.loading}</p></div></div>;
   if (item === null)
     return (
       <>
-        <div className="title-row"><div><h1>Tin rao</h1><p className="sub">{error}</p></div></div>
-        <p className="empty">Tin có thể đã bán hoặc người bán đã ẩn. <Link href="/cho" className="card-link">Về chợ linh kiện</Link></p>
+        <div className="title-row"><div><h1>{t.pages.listing}</h1><p className="sub">{error}</p></div></div>
+        <p className="empty">{T.gone} <Link href={p("/cho")} className="card-link">{T.backToMarket}</Link></p>
       </>
     );
 
@@ -57,11 +62,11 @@ export function ListingDetail() {
     <>
       <div className="title-row">
         <div>
-          <p className="crumb"><Link href="/cho" className="card-link">Chợ linh kiện</Link> · {KIND_LABEL[item.kind]}</p>
-          <h1>{item.name}</h1>
+          <p className="crumb"><Link href={p("/cho")} className="card-link">{t.nav.market}</Link> · {L.kind[item.kind]}</p>
+          <h1>{localizePartLabel(item.name, locale)}</h1>
           <p className="sub">
-            {[CONDITION_LABEL[item.condition], item.province, `đăng ${daysLabel(daysSince(item.createdAt))}`].filter(Boolean).join(" · ")}
-            {item.status !== "active" && <> · <b>{STATUS_LABEL[item.status]}</b></>}
+            {[L.condition[item.condition], item.province, T.posted(L.daysAgo(daysSince(item.createdAt)))].filter(Boolean).join(" · ")}
+            {item.status !== "active" && <> · <b>{L.status[item.status]}</b></>}
           </p>
         </div>
         <span className="answer num">{vnd(item.priceVnd)}</span>
@@ -69,33 +74,33 @@ export function ListingDetail() {
 
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-info">
-          <header><h2 id="h-info">Thông tin</h2><span className="meta">Người bán: {item.seller.displayName} (@{item.seller.handle})</span></header>
-          {item.sample && <p className="notice" style={{ marginTop: 0 }}>Đây là tin mẫu để minh họa chợ, không có người bán thật.</p>}
-          {item.mine && photoFails > 0 && <p className="notice" style={{ marginTop: 0 }}>Tin đã đăng nhưng {photoFails} ảnh chưa gửi được. Thêm lại ở phần Quản lý tin bên dưới.</p>}
-          <Gallery urls={item.photos.map(photoUrl)} name={item.name} />
+          <header><h2 id="h-info">{T.info}</h2><span className="meta">{T.seller(item.seller.displayName, item.seller.handle)}</span></header>
+          {item.sample && <p className="notice" style={{ marginTop: 0 }}>{T.sampleNotice}</p>}
+          {item.mine && photoFails > 0 && <p className="notice" style={{ marginTop: 0 }}>{T.photoFails(photoFails)}</p>}
+          <Gallery urls={item.photos.map(photoUrl)} name={localizePartLabel(item.name, locale)} />
           {now && <div className="life-row"><LifeBar life={lifeOf(new Date(item.createdAt).getTime(), new Date(item.expiresAt).getTime(), now)} /></div>}
           {item.source && (
             <div className="source">
               <div className="grow">
-                <div style={{ fontWeight: 500 }}>{item.source.inUse ? "Đang dùng trong máy người bán" : "Đã thay ra khỏi máy người bán"}</div>
+                <div style={{ fontWeight: 500 }}>{item.source.inUse ? T.inUse : T.removed}</div>
                 <div className="line2">
-                  Máy “{item.source.machineName}”{item.source.machine ? `: ${item.source.machine}` : ""}
-                  {item.source.tier ? ` · hạng ${TIERS.find((t) => t.code === item.source!.tier)?.name ?? item.source.tier}` : ""}
-                  {` · có trong máy từ ${new Date(item.source.installedAt).toLocaleDateString("vi-VN")}`}
+                  {T.machine(machineName(item.source.machineName, locale))}{item.source.machine ? `: ${item.source.machine}` : ""}
+                  {item.source.tier ? T.tier(((x) => (x ? tierName(x, locale) : item.source!.tier!))(TIERS.find((x) => x.code === item.source!.tier))) : ""}
+                  {T.since(date(item.source.installedAt))}
                 </div>
               </div>
               <span className={`pill ${item.source.verified ? "pos" : ""}`}
-                title={item.source.verified ? "Phần mềm pcdex-scan đã quét thấy linh kiện này đang dùng trong máy người bán" : "Người bán tự khai, chưa quét bằng phần mềm pcdex-scan để xác nhận"}>
-                {item.source.verified ? "Xác thực đang dùng" : "Chưa xác thực"}
+                title={item.source.verified ? T.verifiedTip : T.unverifiedTip}>
+                {item.source.verified ? t.machine.verified : t.machine.unverified}
               </span>
             </div>
           )}
           <dl className="rows">
-            <div className="row"><dt className="grow muted">Tình trạng</dt><dd>{CONDITION_LABEL[item.condition]}</dd></div>
-            <div className="row"><dt className="grow muted">Bảo hành</dt><dd>{item.warrantyMonths ? `${item.warrantyMonths} tháng` : "Không"}</dd></div>
-            {gpu && <div className="row"><dt className="grow muted">Thông số</dt><dd className="num">{gpu.vramGb} GB VRAM · PCIe x{gpu.pcieLanes} · {gpu.boardPowerW} W · nguồn từ {gpu.psuRecommendedW} W</dd></div>}
-            {cpu && <div className="row"><dt className="grow muted">Thông số</dt><dd className="num">{cpu.socket} · {cpu.powerW} W</dd></div>}
-            <div className="row"><dt className="grow muted">Khu vực</dt><dd>{item.province ?? "—"}</dd></div>
+            <div className="row"><dt className="grow muted">{T.condition}</dt><dd>{L.condition[item.condition]}</dd></div>
+            <div className="row"><dt className="grow muted">{T.warranty}</dt><dd>{item.warrantyMonths ? T.months(item.warrantyMonths) : T.none}</dd></div>
+            {gpu && <div className="row"><dt className="grow muted">{T.specs}</dt><dd className="num">{gpu.vramGb} GB VRAM · PCIe x{gpu.pcieLanes} · {gpu.boardPowerW} W · {T.psuFrom(gpu.psuRecommendedW)}</dd></div>}
+            {cpu && <div className="row"><dt className="grow muted">{T.specs}</dt><dd className="num">{cpu.socket} · {cpu.powerW} W</dd></div>}
+            <div className="row"><dt className="grow muted">{T.area}</dt><dd>{item.province ?? "—"}</dd></div>
           </dl>
           {item.description && <p className="desc">{item.description}</p>}
           <Contact item={item} />
@@ -103,39 +108,39 @@ export function ListingDetail() {
         </section>
 
         <section className="panel s5" aria-labelledby="h-worth">
-          <header><h2 id="h-worth">Có đáng mua?</h2></header>
+          <header><h2 id="h-worth">{T.worth}</h2></header>
           {item.inCatalog ? (
             <ul className="rows">
               <li className="row">
                 <div className="grow">
-                  <div style={{ fontWeight: 500 }}>Lắp vào máy {isSample ? "mẫu" : "của bạn"}</div>
+                  <div style={{ fontWeight: 500 }}>{T.fitTitle(isSample)}</div>
                   <div className="line2">
-                    {fit.gain === null ? fit.note : fit.fpsBefore !== undefined && mine ? `Game ${RESOLUTION_LABEL[mine.resolution]}: ~${fit.fpsBefore} → ~${fit.fpsAfter} FPS` : ""}
+                    {fit.gain === null ? fit.note.replace(/^Khác socket \((.+)\)$/, (_, x: string) => L.otherSocket(x)) : fit.fpsBefore !== undefined && mine ? T.fitFps(RESOLUTION_LABEL[mine.resolution], fit.fpsBefore, fit.fpsAfter!) : ""}
                   </div>
                 </div>
                 {fit.gain !== null && <span className="num" style={{ fontSize: 20, fontWeight: 600, color: fit.gain > 0.005 ? "var(--positive)" : "var(--faint)" }}>{signedPct(fit.gain)}</span>}
               </li>
               <li className="row">
                 <div className="grow">
-                  <div style={{ fontWeight: 500 }}>Điểm trên mỗi triệu đồng</div>
-                  <div className="line2">{item.kind === "gpu" ? "Sức mạnh game" : "Điểm gaming"} chia cho giá. Cao hơn là đáng tiền hơn.</div>
+                  <div style={{ fontWeight: 500 }}>{T.valueTitle}</div>
+                  <div className="line2">{T.valueText(item.kind === "gpu")}</div>
                 </div>
                 <span className="num" style={{ fontSize: 20, fontWeight: 600 }}>{value === null ? "—" : n0(value)}</span>
               </li>
               <li className="row">
                 <div className="grow">
-                  <div style={{ fontWeight: 500 }}>So với tin cùng linh kiện</div>
-                  <div className="line2">{market ? `Giá giữa của ${market.count} tin khác: ${vnd(market.median)}` : "Chưa có tin nào khác để so."}</div>
+                  <div style={{ fontWeight: 500 }}>{T.vsTitle}</div>
+                  <div className="line2">{market ? T.vsText(market.count, vnd(market.median)) : T.vsNone}</div>
                 </div>
                 {priceVsMarket !== null && <span className={`pill ${priceVsMarket <= -0.05 ? "pos" : priceVsMarket >= 0.1 ? "warn" : ""}`}>
-                  {Math.abs(priceVsMarket) < 0.05 ? "Ngang giá" : priceVsMarket < 0 ? `Rẻ hơn ${Math.round(-priceVsMarket * 100)}%` : `Đắt hơn ${Math.round(priceVsMarket * 100)}%`}
+                  {Math.abs(priceVsMarket) < 0.05 ? T.same : priceVsMarket < 0 ? T.cheaper(Math.round(-priceVsMarket * 100)) : T.pricier(Math.round(priceVsMarket * 100))}
                 </span>}
               </li>
             </ul>
           ) : (
-            <p className="empty">Linh kiện này chưa có trong danh mục điểm của pcdex nên chưa so được điểm và giá.</p>
+            <p className="empty">{T.notInCatalog}</p>
           )}
-          {isSample && item.inCatalog && <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>Đang so với máy mẫu. <Link href="/may" className="card-link">Khai báo máy của bạn</Link> để thấy đúng mức tăng.</p>}
+          {isSample && item.inCatalog && <p className="faint" style={{ fontSize: 13, marginTop: 12 }}>{T.vsSample(<Link href={p("/may")} className="card-link">{T.declare}</Link>)}</p>}
         </section>
       </div>
     </>
@@ -144,15 +149,17 @@ export function ListingDetail() {
 
 function Contact({ item }: { item: Listing }) {
   const [copied, setCopied] = useState(false);
+  const { t, p } = useI18n();
+  const T = t.detail;
   if (item.mine) return null;
-  if (item.sample) return <p className="contact"><span className="muted">Tin mẫu: không có số liên hệ.</span></p>;
+  if (item.sample) return <p className="contact"><span className="muted">{T.sampleContact}</span></p>;
   if (item.contactHidden)
-    return <p className="contact"><span className="muted">Liên hệ người bán:</span> <Link href={`/dang-nhap?next=${encodeURIComponent(`/cho/tin?id=${item.id}`)}`} className="card-link">Đăng nhập để xem số</Link></p>;
+    return <p className="contact"><span className="muted">{T.contactSeller}</span> <Link href={`${p("/dang-nhap")}?next=${encodeURIComponent(`/cho/tin?id=${item.id}`)}`} className="card-link">{T.loginToSee}</Link></p>;
   return (
     <p className="contact">
-      <span className="muted">Liên hệ (Zalo / điện thoại):</span> <b className="num">{item.contact}</b>
+      <span className="muted">{T.contact}</span> <b className="num">{item.contact}</b>
       <button className="btn small" onClick={() => navigator.clipboard?.writeText(item.contact ?? "").then(() => setCopied(true)).catch(() => {})}>
-        <Copy size={14} aria-hidden="true" /> {copied ? "Đã chép" : "Chép số"}
+        <Copy size={14} aria-hidden="true" /> {copied ? T.copied : T.copy}
       </button>
     </p>
   );
@@ -160,6 +167,8 @@ function Contact({ item }: { item: Listing }) {
 
 function OwnerTools({ item, onChange }: { item: Listing; onChange: (l: Listing) => void }) {
   const [price, setPrice] = useState(String(item.priceVnd));
+  const { t, n0 } = useI18n();
+  const T = t.detail;
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const patch = async (body: object, done: string) => {
@@ -172,32 +181,32 @@ function OwnerTools({ item, onChange }: { item: Listing; onChange: (l: Listing) 
   const [days, setDays] = useState<number>(7);
   const live = item.status === "active" || item.status === "reserved";
   const actions: [ListingStatus, string][] = item.status === "active"
-    ? [["reserved", "Đã có người hẹn"], ["sold", "Đã bán"], ["hidden", "Ẩn tin"]]
-    : item.status === "reserved" ? [["active", "Hủy hẹn"], ["sold", "Đã bán"], ["hidden", "Ẩn tin"]]
-    : item.status === "hidden" ? [["sold", "Đã bán"]]
+    ? [["reserved", T.actReserved], ["sold", T.actSold], ["hidden", T.actHide]]
+    : item.status === "reserved" ? [["active", T.actUnreserve], ["sold", T.actSold], ["hidden", T.actHide]]
+    : item.status === "hidden" ? [["sold", T.actSold]]
     : [];
   return (
     <div className="owner">
-      <h3>Quản lý tin của bạn</h3>
-      <form className="owner-price" onSubmit={(e) => { e.preventDefault(); void patch({ priceVnd: Number(price.replace(/\D/g, "")) }, "Đã đổi giá"); }}>
-        <label htmlFor="price" className="muted">Giá (₫)</label>
-        <input id="price" className="input" inputMode="numeric" value={Number(price.replace(/\D/g, "") || 0).toLocaleString("vi-VN")}
+      <h3>{T.manage}</h3>
+      <form className="owner-price" onSubmit={(e) => { e.preventDefault(); void patch({ priceVnd: Number(price.replace(/\D/g, "")) }, T.priceChanged); }}>
+        <label htmlFor="price" className="muted">{T.price}</label>
+        <input id="price" className="input" inputMode="numeric" value={n0(Number(price.replace(/\D/g, "") || 0))}
           onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))} />
-        <button className="btn" disabled={busy}>Đổi giá</button>
+        <button className="btn" disabled={busy}>{T.changePrice}</button>
       </form>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {actions.map(([s, label]) => <button key={s} className="btn small" disabled={busy} onClick={() => void patch({ status: s }, `Đã chuyển sang: ${STATUS_LABEL[s]}`)}>{label}</button>)}
+        {actions.map(([s, label]) => <button key={s} className="btn small" disabled={busy} onClick={() => void patch({ status: s }, T.movedTo(t.listing.status[s]!))}>{label}</button>)}
       </div>
       {item.status !== "sold" && <OwnerPhotos item={item} onChange={onChange} />}
       {item.status !== "sold" && (
         <div className="owner-renew">
-          <span className="muted">{live ? "Gia hạn thêm, tính từ bây giờ" : "Đăng lại trong"}</span>
-          <div className="segmented wrap" role="group" aria-label="Thời gian bán">
-            {DURATIONS.map((d) => <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)}>{d} ngày</button>)}
+          <span className="muted">{live ? T.extend : T.relist}</span>
+          <div className="segmented wrap" role="group" aria-label={T.duration}>
+            {DURATIONS.map((d) => <button key={d} type="button" aria-pressed={days === d} onClick={() => setDays(d)}>{t.common.days(d)}</button>)}
           </div>
           <button className="btn small primary" disabled={busy}
-            onClick={() => void patch(live ? { durationDays: days } : { status: "active", durationDays: days }, live ? `Đã gia hạn ${days} ngày` : `Đã đăng lại, bán trong ${days} ngày`)}>
-            {live ? "Gia hạn" : "Đăng lại"}
+            onClick={() => void patch(live ? { durationDays: days } : { status: "active", durationDays: days }, live ? T.extended(days) : T.relisted(days))}>
+            {live ? T.extendBtn : T.relistBtn}
           </button>
         </div>
       )}

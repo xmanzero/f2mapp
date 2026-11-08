@@ -1,10 +1,13 @@
 "use client";
 
+import { localizePartLabel } from "@f2m/shared";
+import { useI18n } from "@/i18n/client";
+import { machineName } from "@/lib/use-machine";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { vnd } from "@/lib/format";
-import { daysLabel, daysSince, KIND_LABEL, remainingLabel, STATUS_LABEL, type Listing, type ListingStatus, type SellablePart } from "@/lib/listings";
+import { daysSince, type Listing, type ListingStatus, type SellablePart } from "@/lib/listings";
 import { useSession } from "@/lib/session";
 import { useNow } from "@/lib/use-now";
 
@@ -12,6 +15,9 @@ const STATUS_CLASS: Record<ListingStatus, string> = { active: "pos", reserved: "
 
 export function MyListings() {
   const { user } = useSession();
+  const { t, p: lp, vnd, locale } = useI18n();
+  const T = t.myListings, L = t.listing;
+  const label = (s: string) => localizePartLabel(s, locale);
   const [data, setData] = useState<{ items: Listing[]; parts: SellablePart[] } | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const now = useNow();
@@ -27,16 +33,16 @@ export function MyListings() {
   }
   async function removePart(p: SellablePart) {
     setMsg(null);
-    try { await api(`/v1/me/parts/${p.id}`, { method: "DELETE" }); setMsg(`Đã xóa ${p.label} khỏi kho.`); load(); }
+    try { await api(`/v1/me/parts/${p.id}`, { method: "DELETE" }); setMsg(T.removedFromStock(label(p.label))); load(); }
     catch (e) { setMsg((e as Error).message); }
   }
 
-  if (user === undefined) return <div className="title-row"><div><h1>Tin của tôi</h1><p className="sub">Đang tải…</p></div></div>;
+  if (user === undefined) return <div className="title-row"><div><h1>{t.pages.myListings}</h1><p className="sub">{t.common.loading}</p></div></div>;
   if (user === null)
     return (
       <>
-        <div className="title-row"><div><h1>Tin của tôi</h1><p className="sub">Cần đăng nhập.</p></div></div>
-        <p className="empty"><Link href="/dang-nhap?next=/cho/cua-toi" className="card-link">Đăng nhập</Link> để xem và quản lý tin đã đăng.</p>
+        <div className="title-row"><div><h1>{t.pages.myListings}</h1><p className="sub">{T.needLogin}</p></div></div>
+        <p className="empty"><Link href={`${lp("/dang-nhap")}?next=/cho/cua-toi`} className="card-link">{t.common.login}</Link>{T.toManage}</p>
       </>
     );
 
@@ -46,36 +52,36 @@ export function MyListings() {
     <>
       <div className="title-row">
         <div>
-          <p className="crumb"><Link href="/cho" className="card-link">Chợ linh kiện</Link></p>
-          <h1>Tin của tôi</h1>
-          <p className="sub">{data ? `${active} tin đang bán · ${items.filter((l) => l.status === "sold").length} tin đã bán` : failed ? "Không tải được danh sách. Thử tải lại trang." : "Đang tải…"}</p>
+          <p className="crumb"><Link href={lp("/cho")} className="card-link">{t.nav.market}</Link></p>
+          <h1>{t.pages.myListings}</h1>
+          <p className="sub">{data ? T.summary(active, items.filter((l) => l.status === "sold").length) : failed ? T.loadFailed : t.common.loading}</p>
         </div>
-        <Link href="/cho/dang-tin" className="btn primary">Đăng tin bán</Link>
+        <Link href={lp("/cho/dang-tin")} className="btn primary">{t.pages.postListing}</Link>
       </div>
 
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-mine">
-          <header><h2 id="h-mine">Tin đã đăng</h2><span className="meta">Tối đa 20 tin đang bán</span></header>
+          <header><h2 id="h-mine">{T.posted}</h2><span className="meta">{T.maxActive}</span></header>
           {!data ? (
             <div aria-busy="true">{[0, 1, 2].map((i) => <div key={i} className="skeleton" style={{ height: 52, marginTop: 8 }} />)}</div>
           ) : items.length === 0 ? (
-            <p className="empty">Bạn chưa đăng tin nào. <Link href="/cho/dang-tin" className="card-link">Đăng tin đầu tiên</Link></p>
+            <p className="empty">{T.none} <Link href={lp("/cho/dang-tin")} className="card-link">{T.first}</Link></p>
           ) : (
             <ul className="rows">
               {items.map((l) => (
                 <li key={l.id} className="row">
                   <div className="grow">
-                    <Link href={`/cho/tin?id=${l.id}`} className="card-link">{l.name}</Link>
+                    <Link href={`${lp("/cho/tin")}?id=${l.id}`} className="card-link">{label(l.name)}</Link>
                     <div className="line2">
-                      đăng {daysLabel(daysSince(l.createdAt))}
-                      {l.soldAt ? ` · bán ${daysLabel(daysSince(l.soldAt))}` : ""}
-                      {now && (l.status === "active" || l.status === "reserved") ? ` · ${remainingLabel(new Date(l.expiresAt).getTime() - now)}` : ""}
-                      {l.status === "expired" ? " · mở tin để đăng lại" : ""}
+                      {T.postedAgo(L.daysAgo(daysSince(l.createdAt)))}
+                      {l.soldAt ? T.soldAgo(L.daysAgo(daysSince(l.soldAt))) : ""}
+                      {now && (l.status === "active" || l.status === "reserved") ? ` · ${L.remaining(new Date(l.expiresAt).getTime() - now)}` : ""}
+                      {l.status === "expired" ? T.reopen : ""}
                     </div>
                   </div>
                   {l.removedReason
-                    ? <span className="pill neg" title={`Quản trị viên đã gỡ tin: ${l.removedReason}`}>Bị gỡ: {l.removedReason}</span>
-                    : <span className={`pill ${STATUS_CLASS[l.status]}`}>{STATUS_LABEL[l.status]}</span>}
+                    ? <span className="pill neg" title={T.removedTip(l.removedReason)}>{T.removedPill(l.removedReason)}</span>
+                    : <span className={`pill ${STATUS_CLASS[l.status]}`}>{L.status[l.status]}</span>}
                   <span className="num" style={{ fontWeight: 600, minWidth: 110, textAlign: "right" }}>{vnd(l.priceVnd)}</span>
                 </li>
               ))}
@@ -84,20 +90,20 @@ export function MyListings() {
         </section>
 
         <section className="panel s5" aria-labelledby="h-replaced">
-          <header><h2 id="h-replaced">Đã thay ra, chưa bán</h2></header>
+          <header><h2 id="h-replaced">{T.stock}</h2></header>
           {!data ? (
             <div className="skeleton" style={{ height: 52 }} aria-busy="true" />
           ) : (() => {
             const stored = data.parts.filter((p) => !p.inUse && !p.listingId);
             return stored.length === 0 ? (
-              <p className="empty">Khi bạn đổi linh kiện ở <Link href="/may" className="card-link">Máy của tôi</Link>, linh kiện cũ sẽ hiện ở đây để đăng bán nhanh. Linh kiện đang lắp cũng bán được từ trang đăng tin.</p>
+              <p className="empty">{T.stockEmpty(<Link href={lp("/may")} className="card-link">{t.nav.machine}</Link>)}</p>
             ) : (
               <ul className="rows">
                 {stored.map((p) => (
                   <li key={p.id} className="row">
-                    <div className="grow"><div style={{ fontWeight: 500 }}>{p.label}</div><div className="line2">{KIND_LABEL[p.kind]} · từ máy “{p.machineName}”</div></div>
-                    <Link href={`/cho/dang-tin?mp=${p.id}`} className="btn small">Đăng bán</Link>
-                    <button className="btn small" onClick={() => void removePart(p)} aria-label={`Xóa ${p.label} khỏi kho`}>Xóa</button>
+                    <div className="grow"><div style={{ fontWeight: 500 }}>{label(p.label)}</div><div className="line2">{L.kind[p.kind]} · {T.fromPc(machineName(p.machineName, locale))}</div></div>
+                    <Link href={`${lp("/cho/dang-tin")}?mp=${p.id}`} className="btn small">{t.machine.sell}</Link>
+                    <button className="btn small" onClick={() => void removePart(p)} aria-label={T.removeAria(label(p.label))}>{t.common.delete}</button>
                   </li>
                 ))}
               </ul>

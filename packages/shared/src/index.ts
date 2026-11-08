@@ -5,3 +5,4 @@ export * from "./schemas";
 export * from "./upgrades";
 export * from "./spec";
 export * from "./scan";
+export * from "./lang";

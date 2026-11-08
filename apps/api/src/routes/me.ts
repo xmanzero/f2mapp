@@ -4,12 +4,13 @@ import {
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { AppDeps } from "../app.js";
+import { reqLang } from "../i18n.js";
 import { clearSessionCookie, cookieSecureFor, revokeOtherSessions, userIdFromRequest } from "../auth/session.js";
 import { passwordField } from "./auth.js";
 import {
   deleteMachine, deleteStoredPart, leaderboard, publicMachine, loadMachines, loadPrimaryMachine, MachineError, saveSpec, savePrimaryMachine, setPrimary,
 } from "../services/machines.js";
-import { clientIp, deviceOf, issueToken, later, mailCtx, nowVn, recentTokens, sendToUser } from "../services/email.js";
+import { clientIp, deviceOf, issueToken, later, mailCtx, recentTokens, sendToUser } from "../services/email.js";
 import { AuthError, changePassword, getProfile, HANDLE_RE } from "../services/users.js";
 
 const patchBody = z.object({
@@ -17,6 +18,8 @@ const patchBody = z.object({
   handle: z.string().trim().toLowerCase().regex(HANDLE_RE, "Tên tài khoản 3–20 ký tự: chữ thường không dấu, số, dấu chấm, gạch dưới").optional(),
   province: z.string().trim().max(40).nullable().optional(),
   marketRegion: z.string().trim().min(1).max(40).nullable().optional(),
+  /** ngôn ngữ giao diện và email */
+  locale: z.enum(["vi", "en"]).optional(),
 });
 
 export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
@@ -39,7 +42,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     if (!uid) return;
     const body = patchBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "bad_request", message: body.error.issues[0]?.message ?? "Dữ liệu chưa đúng" });
-    const { displayName, handle, province, marketRegion } = body.data;
+    const { displayName, handle, province, marketRegion, locale } = body.data;
     if (handle) {
       const taken = await db.selectFrom("users").select("id").where("handle", "=", handle).where("id", "!=", uid).executeTakeFirst();
       if (taken) return reply.code(409).send({ error: "handle_taken", message: `Tên tài khoản "${handle}" đã có người dùng.` });
@@ -49,6 +52,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
       ...(handle !== undefined && { handle }),
       ...(province !== undefined && { province: province || null }),
       ...(marketRegion !== undefined && { market_region: marketRegion }),
+      ...(locale !== undefined && { locale }),
     };
     if (Object.keys(set).length) await db.updateTable("users").set(set).where("id", "=", uid).execute();
     return { user: await publicProfile(uid) };
@@ -84,7 +88,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
       throw e;
     }
     await revokeOtherSessions(db, req, uid);
-    later(sendToUser(mailCtx(deps, req), "password_changed", uid, { thoi_gian: nowVn(), ip: clientIp(req), thiet_bi: deviceOf(req.headers["user-agent"]) }));
+    later(sendToUser(mailCtx(deps, req), "password_changed", uid, { ip: clientIp(req), thiet_bi: deviceOf(req.headers["user-agent"]) }));
     return { ok: true, user: await publicProfile(uid) };
   });
 
@@ -101,7 +105,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     if (recent.count >= 5) return reply.code(429).send({ error: "too_many", message: "Đã gửi 5 thư trong 1 giờ. Thử lại sau." });
     const mail = mailCtx(deps, req);
     const t = await issueToken(db, uid, "verify", u.email);
-    const status = await sendToUser(mail, "verify_email", uid, { link: `${mail.webUrl}/xac-minh-email?t=${t}` });
+    const status = await sendToUser(mail, "verify_email", uid, { link: `/xac-minh-email?t=${t}` });
     if (status !== "sent") return reply.code(503).send({ error: "mail_off", message: "Chưa gửi được thư lúc này. Thử lại sau." });
     return { ok: true, email: u.email };
   });
@@ -119,7 +123,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     const body = machineBody.safeParse(req.body);
     if (!body.success) { reply.code(400).send({ error: "bad_request", message: body.error.issues[0]?.message ?? "Cấu hình chưa đúng", issues: body.error.issues }); return null; }
     // RAM không lắp được vào máy này thì chặn ngay
-    const bad = ramFindings(body.data.spec).filter((f) => f.severity === "critical");
+    const bad = ramFindings(body.data.spec, reqLang(req)).filter((f) => f.severity === "critical");
     if (bad.length) { reply.code(400).send({ error: "ram_incompatible", message: bad[0]!.message }); return null; }
     try { resolveMachine(specToInput(body.data.spec)); } catch (e) { machineFail(reply, e); return null; }
     return body.data;

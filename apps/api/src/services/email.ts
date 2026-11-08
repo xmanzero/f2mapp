@@ -137,6 +137,96 @@ Bạn vẫn xem được tin trong mục Tin của tôi nhưng không tự mở 
 ];
 const defOf = (key: string) => TEMPLATES.find((t) => t.key === key);
 
+/** Bản tiếng Anh của mẫu mặc định (người dùng chọn tiếng Anh). Biến giống hệt bản tiếng Việt. */
+const EN: Record<TemplateKey, { subject: string; body: string }> = {
+  welcome: {
+    subject: "Welcome to pcdex, {{ten}}",
+    body: `Hi {{ten}},
+
+Your pcdex account has been created with the username **@{{handle}}**.
+{{#link_xac_minh}}
+Click the button below to verify your email. The link is valid for 48 hours.
+
+[Verify email]({{link_xac_minh}})
+{{/link_xac_minh}}
+Start by entering your PC build, or get pcdex-scan to read it automatically on Windows.
+
+[Open My PC]({{link_app}}/may)
+
+If you didn't create this account, you can ignore this email.`,
+  },
+  verify_email: {
+    subject: "Verify your email for pcdex",
+    body: `Hi {{ten}},
+
+Click the button below to verify {{email}} for the account @{{handle}}. The link is valid for 48 hours.
+
+[Verify email]({{link}})
+
+If you didn't request this, you can ignore this email.`,
+  },
+  password_reset: {
+    subject: "Reset your pcdex password",
+    body: `Hi {{ten}},
+
+Someone asked to reset the password for @{{handle}} at {{thoi_gian}} (IP {{ip}}).
+
+[Reset password]({{link}})
+
+The link works once and expires in 60 minutes. If it wasn't you, ignore this email; your current password stays the same.`,
+  },
+  password_changed: {
+    subject: "Your pcdex password was changed",
+    body: `Hi {{ten}},
+
+The password for @{{handle}} was changed at {{thoi_gian}}.
+
+Device: {{thiet_bi}}
+IP: {{ip}}
+
+Other devices have been signed out. If this wasn't you, reset your password now:
+
+[Reset password]({{link_app}}/quen-mat-khau)`,
+  },
+  new_login: {
+    subject: "New sign-in to pcdex",
+    body: `Hi {{ten}},
+
+Your account @{{handle}} just signed in from a new device.
+
+Device: {{thiet_bi}}
+IP: {{ip}}
+Time: {{thoi_gian}}
+
+If this was you, there's nothing to do. If not, change your password now and sign out other devices on the Account page.
+
+[Open Account]({{link_app}}/tai-khoan)`,
+  },
+  account_banned: {
+    subject: "Your pcdex account has been locked",
+    body: `Hi {{ten}},
+
+The account @{{handle}} was locked at {{thoi_gian}}.{{#ly_do}} Reason: {{ly_do}}.{{/ly_do}}
+
+While locked you can't sign in and your listings are hidden from the market. If you think this is a mistake, contact lienhe@pcdex.app.`,
+  },
+  listing_removed: {
+    subject: "Your listing “{{tin}}” was removed",
+    body: `Hi {{ten}},
+
+Your listing **{{tin}}** was removed from the market by an admin at {{thoi_gian}}.{{#ly_do}} Reason: {{ly_do}}.{{/ly_do}}
+
+You can still see it under My listings but can't reopen it. Contact lienhe@pcdex.app if you'd like to discuss it.
+
+[My listings]({{link_app}}/cho/cua-toi)`,
+  },
+};
+export type MailLang = "vi" | "en";
+export const MAIL_LANGS: MailLang[] = ["vi", "en"];
+export const isMailLang = (l: unknown): l is MailLang => l === "vi" || l === "en";
+/** Mẫu mặc định theo ngôn ngữ */
+const defaultOf = (key: TemplateKey, lang: MailLang) => (lang === "en" ? EN[key] : { subject: defOf(key)!.subject, body: defOf(key)!.body });
+
 // ---------- dựng thư ----------
 type Vars = Record<string, string | null | undefined>;
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
@@ -198,24 +288,25 @@ ${paras}
 }
 
 // ---------- mẫu đã sửa (bảng email_templates) ----------
-export async function getTemplate(db: DB, key: TemplateKey) {
-  const def = defOf(key)!;
-  const row = await db.selectFrom("email_templates").selectAll().where("key", "=", key).executeTakeFirst();
+export async function getTemplate(db: DB, key: TemplateKey, lang: MailLang = "vi") {
+  const def = defaultOf(key, lang);
+  const row = await db.selectFrom("email_templates").selectAll().where("key", "=", key).where("lang", "=", lang).executeTakeFirst();
   return { subject: row?.subject ?? def.subject, body: row?.body ?? def.body, enabled: row?.enabled ?? true };
 }
 
-export async function listTemplates(db: DB) {
+export async function listTemplates(db: DB, lang: MailLang = "vi") {
   const rows = await db.selectFrom("email_templates as t").leftJoin("users as u", "u.id", "t.updated_by")
-    .select(["t.key", "t.subject", "t.body", "t.enabled", "t.updated_at", "u.handle"]).execute();
+    .select(["t.key", "t.subject", "t.body", "t.enabled", "t.updated_at", "u.handle"]).where("t.lang", "=", lang).execute();
   const sent = await db.selectFrom("email_log").select((eb) => ["template", eb.fn.countAll<string>().as("n"), eb.fn.max("created_at").as("last")])
     .where("status", "=", "sent").groupBy("template").execute();
   return TEMPLATES.map((d) => {
     const r = rows.find((x) => x.key === d.key);
     const s = sent.find((x) => x.template === d.key);
+    const def = defaultOf(d.key, lang);
     return {
       key: d.key, name: d.name, event: d.event, vars: d.vars.map(({ name, desc }) => ({ name, desc })),
-      subject: r?.subject ?? d.subject, body: r?.body ?? d.body, enabled: r?.enabled ?? true, customized: !!r,
-      updatedAt: r?.updated_at ?? null, updatedBy: r?.handle ?? null, defaultSubject: d.subject, defaultBody: d.body,
+      subject: r?.subject ?? def.subject, body: r?.body ?? def.body, enabled: r?.enabled ?? true, customized: !!r,
+      updatedAt: r?.updated_at ?? null, updatedBy: r?.handle ?? null, defaultSubject: def.subject, defaultBody: def.body,
       sent: Number(s?.n ?? 0), lastSent: s?.last ?? null,
     };
   });
@@ -239,13 +330,13 @@ export function checkTemplate(key: TemplateKey, input: { subject: string; body: 
   return null;
 }
 
-export async function saveTemplate(db: DB, key: TemplateKey, input: TemplateInput, adminId: string) {
+export async function saveTemplate(db: DB, key: TemplateKey, input: TemplateInput, adminId: string, lang: MailLang = "vi") {
   const v = { subject: input.subject, body: input.body, enabled: input.enabled, updated_by: adminId };
-  await db.insertInto("email_templates").values({ key, ...v })
-    .onConflict((oc) => oc.column("key").doUpdateSet({ ...v, updated_at: new Date() })).execute();
+  await db.insertInto("email_templates").values({ key, lang, ...v })
+    .onConflict((oc) => oc.columns(["key", "lang"]).doUpdateSet({ ...v, updated_at: new Date() })).execute();
 }
-export async function resetTemplate(db: DB, key: TemplateKey) {
-  await db.deleteFrom("email_templates").where("key", "=", key).execute();
+export async function resetTemplate(db: DB, key: TemplateKey, lang: MailLang = "vi") {
+  await db.deleteFrom("email_templates").where("key", "=", key).where("lang", "=", lang).execute();
 }
 
 /** Dữ liệu mẫu để xem trước / gửi thử */
@@ -273,11 +364,14 @@ export async function logEmail(db: DB, row: { template: string; to: string; user
 }
 
 /** Gửi một thư theo mẫu. Không bao giờ ném lỗi: kết quả (gửi / lỗi / bỏ qua) ghi vào email_log. */
-export async function sendTemplate(ctx: MailCtx, key: TemplateKey, to: string, vars: Vars, userId?: string | null) {
-  let subject = defOf(key)!.subject;
+export async function sendTemplate(ctx: MailCtx, key: TemplateKey, to: string, vars: Vars, userId?: string | null, lang: MailLang = "vi") {
+  let subject = defaultOf(key, lang).subject;
   try {
-    const tpl = await getTemplate(ctx.db, key);
-    const out = render(tpl, { link_app: ctx.webUrl ?? "https://pcdex.app", email: to, ...vars });
+    const tpl = await getTemplate(ctx.db, key, lang);
+    // link trong thư trỏ về trang đúng ngôn ngữ; biến link dạng "/đường-dẫn" được nối thành địa chỉ đầy đủ
+    const base = `${ctx.webUrl ?? "https://pcdex.app"}${lang === "vi" ? "" : `/${lang}`}`;
+    const abs = Object.fromEntries(Object.entries(vars).map(([k, v]) => [k, typeof v === "string" && k.startsWith("link") && v.startsWith("/") ? base + v : v]));
+    const out = render(tpl, { link_app: base, email: to, thoi_gian: timeFor(lang), ...abs, thiet_bi: vars.thiet_bi ? deviceIn(vars.thiet_bi, lang) : vars.thiet_bi });
     subject = out.subject;
     if (!tpl.enabled) { await logEmail(ctx.db, { template: key, to, userId, subject, status: "skipped", error: "Mẫu đang tắt" }); return "skipped" as const; }
     await deliver(ctx, { to, ...out });
@@ -293,9 +387,9 @@ export async function sendTemplate(ctx: MailCtx, key: TemplateKey, to: string, v
 
 /** Gửi theo mẫu cho một người dùng (lấy tên, handle, email); người dùng không có email thì thôi */
 export async function sendToUser(ctx: MailCtx, key: TemplateKey, userId: string, vars: Vars = {}) {
-  const u = await ctx.db.selectFrom("users").select(["email", "display_name", "handle"]).where("id", "=", userId).executeTakeFirst();
+  const u = await ctx.db.selectFrom("users").select(["email", "display_name", "handle", "locale"]).where("id", "=", userId).executeTakeFirst();
   if (!u?.email) return "skipped" as const;
-  return sendTemplate(ctx, key, u.email, { ten: u.display_name, handle: u.handle, ...vars }, userId);
+  return sendTemplate(ctx, key, u.email, { ten: u.display_name, handle: u.handle, ...vars }, userId, isMailLang(u.locale) ? u.locale : "vi");
 }
 
 /** Gửi nền: không chặn phản hồi API, lỗi đã ghi nhật ký */
@@ -364,6 +458,13 @@ export function deviceOf(ua: string | undefined) {
 export const nowVn = () => new Date().toLocaleString("vi-VN", {
   timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", year: "numeric",
 });
+/** Thời điểm hiện tại theo ngôn ngữ thư (luôn giờ Việt Nam: máy chủ và chợ ở Việt Nam) */
+export const timeFor = (lang: MailLang) => lang === "vi" ? nowVn()
+  : `${new Date().toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", month: "short", day: "numeric", year: "numeric" })} (Vietnam time)`;
+/** "Chrome trên Windows" → "Chrome on Windows" */
+export const deviceIn = (d: string, lang: MailLang) => lang === "vi" ? d
+  : d.replace(" trên ", " on ").replace("Thiết bị không rõ", "Unknown device").replace("Trình duyệt khác", "Other browser")
+    .replace("hệ điều hành khác", "another OS").replace("Ứng dụng pcdex", "pcdex app");
 
 /**
  * Ghi nhận thiết bị đăng nhập. Trả về true khi nên báo "đăng nhập từ thiết bị mới":

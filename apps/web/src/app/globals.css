@@ -455,6 +455,12 @@ table.data tr.life-ending td:first-child { border-left: 3px solid var(--warning)
 .theme-toggle:hover { background: var(--raised); }
 .theme-toggle svg { width: 18px; height: 18px; stroke-width: 1.5; }
 .theme-toggle + .account { margin-left: 0; }
+/* Nút đổi ngôn ngữ (cạnh nút Ngày / Đêm): ghi mã ngôn ngữ sẽ chuyển sang */
+.lang-switch { margin-left: auto; height: 40px; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--control); border-radius: 999px; background: transparent; color: var(--text); font-weight: 600; font-size: 13px; letter-spacing: 0.02em; cursor: pointer; flex: none; transition: background-color var(--t-hover) ease; }
+.lang-switch:hover { background: var(--raised); }
+.lang-switch svg { width: 16px; height: 16px; stroke-width: 1.5; }
+.lang-switch + .theme-toggle { margin-left: 0; }
+@media (max-width: 520px) { .lang-switch { padding: 0 10px; } .lang-switch svg { display: none; } }
 
 /* ---------- thẻ điểm: nền theo màu hạng ---------- */
 .score-card { background: var(--tier-field); }

@@ -6,7 +6,7 @@ import { ApiError, api } from "@/lib/api";
 import { DEFAULT_BRANDING, type BrandAsset, type Branding } from "@/lib/branding-shared";
 import { BrandLogo, BrandMark } from "./brand-logo";
 
-type Raw = { siteName: string | null; slogan: string | null; description: string | null; logo: BrandAsset | null; logoLight: BrandAsset | null; favicon: BrandAsset | null };
+type Raw = { siteName: string | null; slogan: string | null; description: string | null; sloganEn: string | null; descriptionEn: string | null; logo: BrandAsset | null; logoLight: BrandAsset | null; favicon: BrandAsset | null };
 type Kind = "logo" | "logo_light" | "favicon";
 
 const SLOTS: { kind: Kind; key: "logo" | "logoLight" | "favicon"; name: string; hint: string; ground: "dark" | "light" }[] = [
@@ -18,24 +18,29 @@ const SLOTS: { kind: Kind; key: "logo" | "logoLight" | "favicon"; name: string; 
     hint: "Icon trên tab trình duyệt, màn hình điện thoại. Ảnh vuông, tốt nhất SVG hoặc PNG 512×512. Máy chủ tự tạo các cỡ 16–512 px." },
 ];
 
+const textOf = (r: Raw) => ({
+  siteName: r.siteName ?? DEFAULT_BRANDING.siteName, slogan: r.slogan ?? DEFAULT_BRANDING.slogan, description: r.description ?? DEFAULT_BRANDING.description,
+  sloganEn: r.sloganEn ?? "", descriptionEn: r.descriptionEn ?? "",
+});
+
 /** Thương hiệu: tên web, slogan, mô tả, logo (nền tối / nền sáng), favicon — áp dụng cho toàn bộ web */
 export function AdminBranding() {
   const router = useRouter();
   const [raw, setRaw] = useState<Raw | null>(null);
-  const [text, setText] = useState({ siteName: "", slogan: "", description: "" });
+  const [text, setText] = useState({ siteName: "", slogan: "", description: "", sloganEn: "", descriptionEn: "" });
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
     api<Raw>("/v1/admin/branding").then((r) => {
       setRaw(r);
-      setText({ siteName: r.siteName ?? DEFAULT_BRANDING.siteName, slogan: r.slogan ?? DEFAULT_BRANDING.slogan, description: r.description ?? DEFAULT_BRANDING.description });
+      setText(textOf(r));
     }).catch((e: ApiError) => setMsg({ ok: false, text: e.message }));
   }, []);
 
   // xem trước: chữ đang soạn + ảnh đã lưu
   const preview: Branding | null = raw && {
-    siteName: text.siteName || DEFAULT_BRANDING.siteName, slogan: text.slogan, description: text.description,
+    siteName: text.siteName || DEFAULT_BRANDING.siteName, slogan: text.slogan, description: text.description, sloganEn: text.sloganEn || null, descriptionEn: text.descriptionEn || null,
     logo: raw.logo, logoLight: raw.logoLight, favicon: raw.favicon,
   };
 
@@ -64,8 +69,8 @@ export function AdminBranding() {
   const reset = (kind: Kind) => run(kind, async () => applied(await api<Raw>(`/v1/admin/branding/${kind}`, { method: "DELETE" }), "Đã dùng lại ảnh mặc định."));
 
   if (!raw || !preview) return msg ? <p className="form-error" role="alert">{msg.text}</p> : <p className="muted">Đang tải…</p>;
-  const textDirty = text.siteName !== (raw.siteName ?? DEFAULT_BRANDING.siteName) || text.slogan !== (raw.slogan ?? DEFAULT_BRANDING.slogan)
-    || text.description !== (raw.description ?? DEFAULT_BRANDING.description);
+  const saved = textOf(raw);
+  const textDirty = (Object.keys(saved) as (keyof typeof saved)[]).some((k) => saved[k] !== text[k]);
 
   return (
     <div className="brand-admin">
@@ -84,9 +89,18 @@ export function AdminBranding() {
               <textarea id="b-desc" className="input" rows={3} maxLength={300} value={text.description} onChange={(e) => setText({ ...text, description: e.target.value })} />
               <span className="hint">{text.description.length}/300 · hiện dưới tiêu đề trong kết quả tìm kiếm và khi chia sẻ link.</span>
             </div>
+            <div className="row2">
+              <Field id="b-slogan-en" label="Slogan tiếng Anh (trang /en)" max={80} value={text.sloganEn} onChange={(v) => setText({ ...text, sloganEn: v })}
+                hint="Bỏ trống: “The PC social network”." />
+              <div className="field">
+                <label htmlFor="b-desc-en">Mô tả tiếng Anh</label>
+                <textarea id="b-desc-en" className="input" rows={2} maxLength={300} value={text.descriptionEn} onChange={(e) => setText({ ...text, descriptionEn: e.target.value })} />
+                <span className="hint">Bỏ trống: dùng mô tả mặc định tiếng Anh.</span>
+              </div>
+            </div>
             <div className="mail-actions">
               <button className="btn primary" disabled={busy === "text" || !textDirty || !text.siteName.trim()}>{busy === "text" ? "Đang lưu…" : textDirty ? "Lưu" : "Đã lưu"}</button>
-              {textDirty && <button type="button" className="btn" onClick={() => setText({ siteName: raw.siteName ?? DEFAULT_BRANDING.siteName, slogan: raw.slogan ?? DEFAULT_BRANDING.slogan, description: raw.description ?? DEFAULT_BRANDING.description })}>Bỏ thay đổi</button>}
+              {textDirty && <button type="button" className="btn" onClick={() => setText(saved)}>Bỏ thay đổi</button>}
             </div>
           </form>
         </section>

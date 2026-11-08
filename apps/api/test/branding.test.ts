@@ -25,7 +25,7 @@ afterAll(async () => { await t.close(); });
 
 describe("thương hiệu", () => {
   it("chưa đặt gì: mọi trường null (web dùng mặc định)", async () => {
-    expect((await req("GET", "/v1/branding")).json()).toEqual({ siteName: null, slogan: null, description: null, logo: null, logoLight: null, favicon: null });
+    expect((await req("GET", "/v1/branding")).json()).toEqual({ siteName: null, slogan: null, description: null, sloganEn: null, descriptionEn: null, logo: null, logoLight: null, favicon: null });
   });
 
   it("chỉ admin sửa được; lưu tên, slogan, mô tả", async () => {

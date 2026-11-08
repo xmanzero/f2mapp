@@ -17,6 +17,12 @@ Bộ gốc ở `PCDEX_Brand_Kit/` (logo, app icon, mascot, guideline PDF). Chủ
 
 Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.css). Bố cục gốc (taste-skill, seed 1715617894): `.taste-skill/app/direction.json`.
 
+## Đa ngôn ngữ (08/11/2026)
+
+- Nút đổi ngôn ngữ (biểu tượng + mã ngôn ngữ sẽ chuyển sang, VD "EN") cạnh nút Ngày / Đêm; trên landing ở góc phải cạnh link đăng nhập. Điện thoại: chỉ mã ngôn ngữ.
+- Chữ tiếng Anh dài hơn tiếng Việt ~10–20%: nút, nhãn dùng `white-space: nowrap` khi cần; kiểm tra cả hai ngôn ngữ ở 390px.
+- Số theo ngôn ngữ (10.000 / 10,000); giá luôn bằng đồng (chợ Việt Nam).
+
 ## Ngày / Đêm (08/11/2026)
 
 - Đêm là gốc; Ngày bật theo hệ điều hành hoặc nút mặt trời/mặt trăng ở thanh trên (lưu `localStorage` `f2m.theme`). Script nội tuyến trong `<head>` đặt `data-theme` trước khi vẽ trang (không nháy, theo hướng dẫn "Preventing flash" của Next 16). `?theme=dark|light` trên địa chỉ để xem thử / kiểm tra.

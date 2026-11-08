@@ -30,7 +30,7 @@ export class AuthError extends Error {
 }
 
 /** Đăng ký bằng email + mật khẩu */
-export async function registerWithPassword(db: DB, input: { email: string; password: string; displayName: string }) {
+export async function registerWithPassword(db: DB, input: { email: string; password: string; displayName: string; locale?: "vi" | "en" }) {
   const email = normalizeEmail(input.email);
   const existing = await byEmail(db, email);
   if (existing)
@@ -42,7 +42,7 @@ export async function registerWithPassword(db: DB, input: { email: string; passw
     display_name: input.displayName.trim().slice(0, 40),
     email, phone: null, province: null,
     password_hash: await hashPassword(input.password),
-    email_verified_at: null, locked_until: null,
+    email_verified_at: null, locked_until: null, locale: input.locale ?? "vi",
   }).returning("id").executeTakeFirstOrThrow();
   return user.id;
 }
@@ -77,7 +77,7 @@ export async function loginWithPassword(db: DB, emailRaw: string, password: stri
  * email đăng ký bằng mật khẩu chưa được xác minh, nên khi chủ thật của email (Google đã xác minh) đăng nhập,
  * mật khẩu cũ bị xóa và mọi phiên cũ bị đăng xuất — chặn việc ai đó đăng ký trước bằng email của người khác.
  */
-export async function loginWithGoogle(db: DB, g: { sub: string; email: string | null; name: string | null }) {
+export async function loginWithGoogle(db: DB, g: { sub: string; email: string | null; name: string | null }, locale: "vi" | "en" = "vi") {
   const linked = await db.selectFrom("user_identities").select("user_id")
     .where("provider", "=", "google").where("subject", "=", g.sub).executeTakeFirst();
   if (linked) return { userId: linked.user_id, created: false };
@@ -99,7 +99,7 @@ export async function loginWithGoogle(db: DB, g: { sub: string; email: string | 
       handle: await uniqueHandle(t, email?.split("@")[0] ?? g.name),
       display_name: (g.name ?? "Người chơi").slice(0, 40),
       email, phone: null, province: null, password_hash: null,
-      email_verified_at: email ? new Date() : null, locked_until: null,
+      email_verified_at: email ? new Date() : null, locked_until: null, locale,
     }).returning("id").executeTakeFirstOrThrow();
     await t.insertInto("user_identities").values({ provider: "google", subject: g.sub, user_id: user.id }).execute();
     return { userId: user.id, created: true };
@@ -116,7 +116,7 @@ export async function changePassword(db: DB, userId: string, current: string | u
 }
 
 export async function getProfile(db: DB, userId: string) {
-  const u = await db.selectFrom("users").select(["id", "handle", "display_name", "email", "province", "market_region", "password_hash", "email_verified_at", "role"])
+  const u = await db.selectFrom("users").select(["id", "handle", "display_name", "email", "province", "market_region", "password_hash", "email_verified_at", "role", "locale"])
     .where("id", "=", userId).executeTakeFirst();
   if (!u) return null;
   const ids = await db.selectFrom("user_identities").select("provider").where("user_id", "=", userId).execute();
@@ -124,7 +124,7 @@ export async function getProfile(db: DB, userId: string) {
   const last = await db.selectFrom("listings").select("province").where("seller_id", "=", userId).where("province", "is not", null)
     .orderBy("created_at", "desc").limit(1).executeTakeFirst();
   return {
-    id: u.id, handle: u.handle, displayName: u.display_name, province: u.province, email: u.email, role: u.role,
+    id: u.id, handle: u.handle, displayName: u.display_name, province: u.province, email: u.email, role: u.role, locale: u.locale,
     emailVerified: !!u.email_verified_at, hasPassword: !!u.password_hash,
     /** khu vực lọc chợ đã lưu: tên tỉnh, "all" = toàn quốc, null = chưa chọn */
     marketRegion: u.market_region, lastListingProvince: last?.province ?? null,
