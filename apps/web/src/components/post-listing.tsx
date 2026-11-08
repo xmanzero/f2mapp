@@ -9,9 +9,11 @@ import {
   CONDITION_LABEL, DURATIONS, endLabel, KIND_LABEL, medianPrice, SAMPLE_ROWS, toRow, valueOf,
   type Condition, type Listing, type MarketRow, type SellablePart,
 } from "@/lib/listings";
+import { MAX_PHOTOS, shrinkImage, uploadPhoto } from "@/lib/photos";
 import { PROVINCES } from "@/lib/provinces";
 import { useSession } from "@/lib/session";
 import { useNow } from "@/lib/use-now";
+import { PhotoPicker } from "./photos";
 
 const CONTACT_KEY = "f2m.contact";
 
@@ -25,6 +27,10 @@ export function PostListing() {
   const now = useNow(60_000);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pics, setPics] = useState<{ key: string; src: string; blob: Blob }[]>([]);
+  const [picError, setPicError] = useState<string | null>(null);
+  const [step, setStep] = useState<string | null>(null);
+  useEffect(() => () => pics.forEach((p) => URL.revokeObjectURL(p.src)), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!user) return;
@@ -64,6 +70,18 @@ export function PostListing() {
       </>
     );
 
+  const addPics = async (files: File[]) => {
+    setPicError(null);
+    for (const file of files) {
+      try {
+        const blob = await shrinkImage(file);
+        setPics((x) => (x.length >= MAX_PHOTOS ? x : [...x, { key: `${Date.now()}-${Math.random()}`, src: URL.createObjectURL(blob), blob }]));
+      } catch (e) { setPicError((e as Error).message); }
+    }
+  };
+  const removePic = (key: string) => setPics((x) => { const p = x.find((y) => y.key === key); if (p) URL.revokeObjectURL(p.src); return x.filter((y) => y.key !== key); });
+  const coverPic = (key: string) => setPics((x) => [...x.filter((y) => y.key === key), ...x.filter((y) => y.key !== key)]);
+
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((x) => ({ ...x, [k]: v }));
   const submit = async () => {
     setBusy(true); setError(null);
@@ -75,7 +93,13 @@ export function PostListing() {
         },
       });
       try { localStorage.setItem(CONTACT_KEY, f.contact); } catch { /* bỏ qua */ }
-      router.push(`/cho/tin?id=${r.item.id}`);
+      // tin đã đăng; gửi ảnh lần lượt (ảnh lỗi thì báo ở trang tin, thêm lại được ở đó)
+      let failed = 0;
+      for (const [i, p] of pics.entries()) {
+        setStep(`Đang gửi ảnh ${i + 1}/${pics.length}…`);
+        try { await uploadPhoto(r.item.id, p.blob); } catch { failed++; }
+      }
+      router.push(`/cho/tin?id=${r.item.id}${failed ? `&loi-anh=${failed}` : ""}`);
     } catch (e) {
       setError((e as ApiError).message);
       setBusy(false);
@@ -169,8 +193,9 @@ export function PostListing() {
                 <textarea id="desc" className="input" maxLength={1000} value={f.description} onChange={(e) => set("description", e.target.value)}
                   placeholder="Thời gian dùng, đã sửa chưa, có hộp không, giao hàng hay gặp trực tiếp…" />
               </div>
+              <PhotoPicker items={pics} onAdd={(fs) => void addPics(fs)} onRemove={removePic} onCover={coverPic} disabled={busy} error={picError} />
               {error && <p className="form-error" role="alert" style={{ marginTop: 0 }}>{error}</p>}
-              <button className="btn primary block" disabled={busy || !part || price < 10_000}>{busy ? "Đang đăng…" : "Đăng tin"}</button>
+              <button className="btn primary block" disabled={busy || !part || price < 10_000}>{busy ? (step ?? "Đang đăng…") : "Đăng tin"}</button>
             </form>
           )}
         </section>
@@ -178,6 +203,10 @@ export function PostListing() {
         <section className="panel s5" aria-labelledby="h-preview">
           <header><h2 id="h-preview">Xem trước</h2><span className="meta">Người mua sẽ thấy</span></header>
           <div className="preview">
+            {pics[0] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="preview-photo" src={pics[0].src} alt="Ảnh bìa" />
+            )}
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <b style={{ fontSize: 16 }}>{part?.label ?? "Chọn linh kiện"}</b>
               <span className={`pill ${f.condition === "like_new" || f.condition === "new" ? "pos" : f.condition === "for_parts" ? "warn" : ""}`}>{CONDITION_LABEL[f.condition]}</span>

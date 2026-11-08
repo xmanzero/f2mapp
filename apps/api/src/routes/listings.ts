@@ -6,6 +6,7 @@ import { loadMachines } from "../services/machines.js";
 import {
   createListing, createListingSchema, getListing, listListings, ListingError, myListings, sellableParts, updateListing, updateListingSchema,
 } from "../services/listings.js";
+import { addPhoto, deletePhoto, getPhoto, MAX_PHOTO_BYTES, orderPhotos } from "../services/photos.js";
 
 const idParam = z.object({ id: z.string().uuid() });
 
@@ -62,6 +63,62 @@ export const listingRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) 
     } catch (e) {
       return fail(reply, e);
     }
+  });
+
+  // ---------- ảnh ----------
+  // Thân yêu cầu là chính tệp ảnh (Content-Type: image/jpeg | image/png | image/webp), không cần multipart
+  app.addContentTypeParser(/^image\/(jpeg|png|webp)$/, { parseAs: "buffer", bodyLimit: MAX_PHOTO_BYTES + 1024 }, (_req, body, done) => done(null, body));
+  const photoParam = z.object({ id: z.string().uuid(), photoId: z.string().uuid() });
+
+  app.post("/listings/:id/photos", { bodyLimit: MAX_PHOTO_BYTES + 1024, config: { rateLimit: { max: 60, timeWindow: "1 hour" } } }, async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const p = idParam.safeParse(req.params);
+    if (!p.success) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy tin" });
+    if (!Buffer.isBuffer(req.body)) return reply.code(415).send({ error: "listing", message: "Chỉ nhận ảnh JPEG, PNG hoặc WebP" });
+    try {
+      const photoId = await addPhoto(db, uid, p.data.id, req.body);
+      return reply.code(201).send({ id: photoId, item: await getListing(db, p.data.id, uid) });
+    } catch (e) {
+      return fail(reply, e);
+    }
+  });
+
+  app.delete("/listings/:id/photos/:photoId", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const p = photoParam.safeParse(req.params);
+    if (!p.success) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy ảnh" });
+    try {
+      await deletePhoto(db, uid, p.data.id, p.data.photoId);
+      return { item: await getListing(db, p.data.id, uid) };
+    } catch (e) {
+      return fail(reply, e);
+    }
+  });
+
+  app.put("/listings/:id/photos", async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const p = idParam.safeParse(req.params);
+    const body = z.object({ order: z.array(z.string().uuid()).max(5) }).safeParse(req.body);
+    if (!p.success) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy tin" });
+    if (!body.success) return reply.code(400).send({ error: "bad_request", message: "Danh sách ảnh không hợp lệ" });
+    try {
+      await orderPhotos(db, uid, p.data.id, body.data.order);
+      return { item: await getListing(db, p.data.id, uid) };
+    } catch (e) {
+      return fail(reply, e);
+    }
+  });
+
+  /** Tệp ảnh. Id ảnh không bao giờ đổi nội dung nên cho trình duyệt lưu đệm lâu. */
+  app.get("/photos/:photoId", async (req, reply) => {
+    const p = z.object({ photoId: z.string().uuid() }).safeParse(req.params);
+    const photo = p.success ? await getPhoto(db, p.data.photoId) : undefined;
+    if (!photo) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy ảnh" });
+    return reply.header("Content-Type", photo.mime).header("Cache-Control", "public, max-age=31536000, immutable")
+      .header("X-Content-Type-Options", "nosniff").send(Buffer.from(photo.data));
   });
 
   app.get("/me/listings", async (req, reply) => {

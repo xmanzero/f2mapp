@@ -84,6 +84,15 @@ export interface Database {
     expires_at: Date;
     part_was_in_use: Generated<boolean>;
   };
+  listing_photos: {
+    id: Generated<string>;
+    listing_id: string;
+    position: Generated<number>;
+    mime: "image/jpeg" | "image/png" | "image/webp";
+    size_bytes: number;
+    data: Buffer | Uint8Array;
+    created_at: Generated<Date>;
+  };
   machine_scores: {
     machine_id: string;
     scale_version: string;

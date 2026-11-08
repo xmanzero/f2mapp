@@ -5,6 +5,7 @@
 import { SCALE_VERSION } from "@f2m/shared";
 import { z } from "zod";
 import type { DB } from "../db.js";
+import { photoIds } from "./photos.js";
 
 export const LISTING_KINDS = ["cpu", "gpu", "mainboard", "ram", "storage", "psu"] as const;
 export const CONDITIONS = ["new", "like_new", "used", "for_parts"] as const;
@@ -71,7 +72,7 @@ async function machineHeadlines(db: DB, machineIds: string[]) {
 }
 
 /** Dạng trả về cho client; liên hệ chỉ có khi người xem đã đăng nhập */
-function shape(r: Raw, viewerId: string | null, headlines: Map<string, string>) {
+function shape(r: Raw, viewerId: string | null, headlines: Map<string, string>, photos: Map<string, string[]> = new Map()) {
   return {
     id: r.id, kind: r.kind, name: r.title ?? r.part_name ?? "", partName: r.part_name, inCatalog: !!r.part_name,
     priceVnd: Number(r.price_vnd), condition: r.condition, warrantyMonths: r.warranty_months,
@@ -85,6 +86,8 @@ function shape(r: Raw, viewerId: string | null, headlines: Map<string, string>) 
       verified: !!r.part_verified_at && r.part_status === "in_use", verifiedAt: r.part_verified_at,
       details: r.part_details,
     } : null,
+    /** id ảnh theo thứ tự, ảnh đầu là ảnh bìa; tải ở GET /photos/:id */
+    photos: photos.get(r.id) ?? [],
     mine: viewerId === r.seller_id,
     contact: viewerId ? r.contact : null,
     contactHidden: !viewerId,
@@ -94,7 +97,8 @@ export type ListingView = ReturnType<typeof shape>;
 
 async function shapeAll(db: DB, rows: Raw[], viewerId: string | null) {
   const heads = await machineHeadlines(db, [...new Set(rows.map((r) => r.machine_id).filter((x): x is string => !!x))]);
-  return rows.map((r) => shape(r, viewerId, heads));
+  const photos = await photoIds(db, rows.map((r) => r.id));
+  return rows.map((r) => shape(r, viewerId, heads, photos));
 }
 
 /**

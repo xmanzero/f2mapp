@@ -8,15 +8,19 @@ import { useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import { n0, signedPct, vnd } from "@/lib/format";
 import {
-  CONDITION_LABEL, daysLabel, daysSince, DURATIONS, fitFor, KIND_LABEL, lifeOf, medianPrice, SAMPLE_ROWS, STATUS_LABEL, toRow, valueOf,
+  CONDITION_LABEL, daysLabel, daysSince, DURATIONS, fitFor, KIND_LABEL, lifeOf, medianPrice, SAMPLE_ROWS, sampleListing, STATUS_LABEL, toRow, valueOf,
   type Listing, type ListingStatus, type MarketRow,
 } from "@/lib/listings";
+import { MAX_PHOTOS, photoUrl, shrinkImage, uploadPhoto } from "@/lib/photos";
 import { useMachine } from "@/lib/use-machine";
 import { useNow } from "@/lib/use-now";
 import { LifeBar } from "./life-bar";
+import { Gallery, PhotoPicker } from "./photos";
 
 export function ListingDetail() {
-  const id = useSearchParams().get("id") ?? "";
+  const params = useSearchParams();
+  const id = params.get("id") ?? "";
+  const photoFails = Number(params.get("loi-anh")) || 0;
   const [item, setItem] = useState<Listing | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [others, setOthers] = useState<MarketRow[]>([]);
@@ -25,7 +29,9 @@ export function ListingDetail() {
 
   useEffect(() => {
     if (!id) { setItem(null); setError("Thiếu mã tin"); return; }
-    api<{ item: Listing }>(`/v1/listings/${id}`).then((r) => setItem(r.item)).catch((e: ApiError) => { setItem(null); setError(e.message); });
+    const sample = sampleListing(id, Date.now());
+    if (sample) setItem(sample);
+    else api<{ item: Listing }>(`/v1/listings/${id}`).then((r) => setItem(r.item)).catch((e: ApiError) => { setItem(null); setError(e.message); });
     api<{ items: Listing[] }>("/v1/listings?limit=200").then((r) => setOthers([...r.items.map(toRow), ...SAMPLE_ROWS])).catch(() => setOthers(SAMPLE_ROWS));
   }, [id]);
 
@@ -64,6 +70,9 @@ export function ListingDetail() {
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-info">
           <header><h2 id="h-info">Thông tin</h2><span className="meta">Người bán: {item.seller.displayName} (@{item.seller.handle})</span></header>
+          {item.sample && <p className="notice" style={{ marginTop: 0 }}>Đây là tin mẫu để minh họa chợ, không có người bán thật.</p>}
+          {item.mine && photoFails > 0 && <p className="notice" style={{ marginTop: 0 }}>Tin đã đăng nhưng {photoFails} ảnh chưa gửi được. Thêm lại ở phần Quản lý tin bên dưới.</p>}
+          <Gallery urls={item.photos.map(photoUrl)} name={item.name} />
           {now && <div className="life-row"><LifeBar life={lifeOf(new Date(item.createdAt).getTime(), new Date(item.expiresAt).getTime(), now)} /></div>}
           {item.source && (
             <div className="source">
@@ -136,6 +145,7 @@ export function ListingDetail() {
 function Contact({ item }: { item: Listing }) {
   const [copied, setCopied] = useState(false);
   if (item.mine) return null;
+  if (item.sample) return <p className="contact"><span className="muted">Tin mẫu: không có số liên hệ.</span></p>;
   if (item.contactHidden)
     return <p className="contact"><span className="muted">Liên hệ người bán:</span> <Link href={`/dang-nhap?next=${encodeURIComponent(`/cho/tin?id=${item.id}`)}`} className="card-link">Đăng nhập để xem số</Link></p>;
   return (
@@ -178,6 +188,7 @@ function OwnerTools({ item, onChange }: { item: Listing; onChange: (l: Listing) 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {actions.map(([s, label]) => <button key={s} className="btn small" disabled={busy} onClick={() => void patch({ status: s }, `Đã chuyển sang: ${STATUS_LABEL[s]}`)}>{label}</button>)}
       </div>
+      {item.status !== "sold" && <OwnerPhotos item={item} onChange={onChange} />}
       {item.status !== "sold" && (
         <div className="owner-renew">
           <span className="muted">{live ? "Gia hạn thêm, tính từ bây giờ" : "Đăng lại trong"}</span>
@@ -192,5 +203,27 @@ function OwnerTools({ item, onChange }: { item: Listing; onChange: (l: Listing) 
       )}
       {msg && <p className="stamp" role="status">{msg}</p>}
     </div>
+  );
+}
+
+/** Người bán thêm / bỏ / đổi ảnh bìa của tin đã đăng */
+function OwnerPhotos({ item, onChange }: { item: Listing; onChange: (l: Listing) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const run = async (f: () => Promise<Listing | void>) => {
+    setBusy(true); setError(null);
+    try { const l = await f(); if (l) onChange(l); } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
+  };
+  const add = (files: File[]) => run(async () => {
+    let last: Listing | undefined;
+    for (const file of files.slice(0, MAX_PHOTOS - item.photos.length)) last = await uploadPhoto(item.id, await shrinkImage(file));
+    return last;
+  });
+  const remove = (pid: string) => run(async () => (await api<{ item: Listing }>(`/v1/listings/${item.id}/photos/${pid}`, { method: "DELETE" })).item);
+  const cover = (pid: string) => run(async () => (await api<{ item: Listing }>(`/v1/listings/${item.id}/photos`,
+    { method: "PUT", body: { order: [pid, ...item.photos.filter((x) => x !== pid)] } })).item);
+  return (
+    <PhotoPicker items={item.photos.map((pid) => ({ key: pid, src: photoUrl(pid) }))} onAdd={(fs) => void add(fs)}
+      onRemove={(k) => void remove(k)} onCover={(k) => void cover(k)} disabled={busy} error={error} />
   );
 }

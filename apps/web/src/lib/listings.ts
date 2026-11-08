@@ -12,7 +12,11 @@ export interface Listing {
   seller: { id: string; handle: string; displayName: string };
   /** Linh kiện này trong máy người bán */
   source: { machineName: string; machine: string; tier: string | null; power: number | null; inUse: boolean; installedAt: string; verified: boolean; verifiedAt: string | null } | null;
+  /** id ảnh theo thứ tự, ảnh đầu là ảnh bìa */
+  photos: string[];
   mine: boolean; contact: string | null; contactHidden: boolean;
+  /** tin mẫu (dữ liệu giả lập để chợ không trống) */
+  sample?: boolean;
 }
 /** Linh kiện bán được (đang lắp / đã thay ra) trong các máy của người dùng */
 export interface SellablePart {
@@ -32,6 +36,8 @@ export interface MarketRow {
   verified: boolean | null; inUse: boolean;
   /** Tin thật: thời điểm đăng / hết hạn (ISO). Tin mẫu: tính từ daysAgo + sampleDays khi biết giờ hiện tại */
   createdAt: string | null; expiresAt: string | null; sampleDays: number;
+  /** id ảnh bìa và số ảnh */
+  photo: string | null; photoCount: number;
 }
 
 export const daysSince = (iso: string) => Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000));
@@ -42,15 +48,30 @@ export function toRow(l: Listing): MarketRow {
     id: l.id, kind: l.kind, name: l.name, partName: l.partName, priceVnd: l.priceVnd, condition: l.condition,
     warrantyMonths: l.warrantyMonths, province: l.province, seller: l.seller.handle, daysAgo: daysSince(l.createdAt),
     sample: false, href: `/cho/tin?id=${l.id}`, verified: l.source?.verified ?? false, inUse: l.source?.inUse ?? false,
-    createdAt: l.createdAt, expiresAt: l.expiresAt, sampleDays: 0,
+    createdAt: l.createdAt, expiresAt: l.expiresAt, sampleDays: 0, photo: l.photos[0] ?? null, photoCount: l.photos.length,
   };
 }
 export const SAMPLE_ROWS: MarketRow[] = SAMPLE_LISTINGS.map((s) => ({
   id: s.id, kind: s.kind, name: s.part, partName: s.kind === "gpu" || s.kind === "cpu" ? s.part : null,
   priceVnd: s.priceVnd, condition: s.condition, warrantyMonths: s.warrantyMonths, province: s.province,
-  seller: s.seller, daysAgo: s.daysAgo, sample: true, href: null, verified: null, inUse: false,
-  createdAt: null, expiresAt: null, sampleDays: s.durationDays,
+  seller: s.seller, daysAgo: s.daysAgo, sample: true, href: `/cho/tin?id=${s.id}`, verified: null, inUse: false,
+  createdAt: null, expiresAt: null, sampleDays: s.durationDays, photo: null, photoCount: 0,
 }));
+
+/** Tin mẫu dạng tin đầy đủ để mở trang chi tiết; thời điểm tính từ `now` (chỉ gọi ở trình duyệt) */
+export function sampleListing(id: string, now: number): Listing | null {
+  const s = SAMPLE_LISTINGS.find((x) => x.id === id);
+  if (!s) return null;
+  const created = now - s.daysAgo * 86_400_000 - 3 * 3_600_000;
+  const iso = (t: number) => new Date(t).toISOString();
+  return {
+    id: s.id, kind: s.kind, name: s.part, partName: s.kind === "gpu" || s.kind === "cpu" ? s.part : null, inCatalog: s.kind === "gpu" || s.kind === "cpu",
+    priceVnd: s.priceVnd, condition: s.condition, warrantyMonths: s.warrantyMonths, province: s.province,
+    description: null, status: "active", createdAt: iso(created), updatedAt: iso(created), soldAt: null, expiresAt: iso(created + s.durationDays * 86_400_000),
+    seller: { id: "", handle: s.seller, displayName: s.seller }, source: null, photos: [],
+    mine: false, contact: null, contactHidden: false, sample: true,
+  };
+}
 /** Dưới số tin thật này thì ghép thêm tin mẫu (có nhãn) để chợ không trống */
 export const MIN_REAL_LISTINGS = 10;
 
@@ -121,8 +142,10 @@ export const LIFE_LABEL: Record<LifeState, string> = { new: "Mới đăng", norm
 export function remainingLabel(ms: number) {
   if (ms <= 0) return "đã hết hạn";
   if (ms < HOUR) return `còn ${Math.max(1, Math.round(ms / 60_000))} phút`;
-  if (ms < DAY) return `còn ${Math.round(ms / HOUR)} giờ`;
-  const d = Math.floor(ms / DAY), h = Math.round((ms - d * DAY) / HOUR);
+  // làm tròn theo giờ trước rồi mới tách ngày / giờ (tránh "2 ngày 24 giờ")
+  const hours = Math.round(ms / HOUR);
+  if (hours < 24) return `còn ${hours} giờ`;
+  const d = Math.floor(hours / 24), h = hours % 24;
   return h && d < 3 ? `còn ${d} ngày ${h} giờ` : `còn ${Math.round(ms / DAY)} ngày`;
 }
 /** "15/11 lúc 07:06" */
