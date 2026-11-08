@@ -10,6 +10,7 @@ export interface Database {
     phone: string | null;
     email: string | null;
     province: string | null;
+    market_region: Generated<string | null>;
     password_hash: string | null;
     email_verified_at: Date | null;
     failed_logins: Generated<number>;

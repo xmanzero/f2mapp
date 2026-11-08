@@ -15,6 +15,8 @@ import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 import { useNow } from "@/lib/use-now";
 import { photoUrl } from "@/lib/photos";
+import { PROVINCES } from "@/lib/provinces";
+import { ALL, useMarketRegion } from "@/lib/region";
 import { LifeBar } from "./life-bar";
 
 const KIND_SHORT: Record<ListingKind, string> = { gpu: "VGA", cpu: "CPU", mainboard: "MAIN", ram: "RAM", storage: "SSD", psu: "PSU" };
@@ -43,6 +45,7 @@ export function Market() {
   const [real, setReal] = useState<MarketRow[] | null>(null);
   const { machine, isSample, ready } = useMachine();
   const now = useNow();
+  const { region, setRegion, source } = useMarketRegion();
 
   useEffect(() => { setQ(params.get("q") ?? ""); }, [params]);
   useEffect(() => {
@@ -58,7 +61,11 @@ export function Market() {
     })
     // tin hết hạn tự hủy: không hiện (máy chủ đã lọc tin thật; đây là cho tin mẫu và tin vừa hết hạn khi trang đang mở)
     .filter((x) => x.life?.state !== "expired"), [all, mine, now]);
-  const scoped = rows.filter(({ r }) => !q || r.name.toLowerCase().includes(q.toLowerCase()));
+  const inRegion = (p: string | null) => !region || region === ALL || p === region;
+  const scoped = rows.filter(({ r }) => (!q || r.name.toLowerCase().includes(q.toLowerCase())) && inRegion(r.province));
+  // tỉnh có trong danh sách chọn: 34 tỉnh + tỉnh lạ có trong tin (dữ liệu cũ)
+  const regionOptions: string[] = [...PROVINCES, ...new Set(rows.map(({ r }) => r.province).filter((p): p is string => !!p && !(PROVINCES as readonly string[]).includes(p)))];
+  const regionCount = (p: string) => rows.filter(({ r }) => r.province === p).length;
   const shown = scoped
     .filter(({ r }) => kind === "all" || r.kind === kind)
     .sort((a, b) =>
@@ -69,7 +76,7 @@ export function Market() {
       : (b.fit.gain ?? -9) - (a.fit.gain ?? -9));
 
   // Phát hiện: tin tăng điểm máy bạn nhiều nhất trên mỗi triệu đồng
-  const best = mine && [...rows].filter((x) => (x.fit.gain ?? 0) > 0.02)
+  const best = mine && rows.filter(({ r }) => inRegion(r.province)).filter((x) => (x.fit.gain ?? 0) > 0.02)
     .sort((a, b) => b.fit.gain! / b.r.priceVnd - a.fit.gain! / a.r.priceVnd)[0];
   const realCount = real?.length ?? 0;
   const postHref = user ? "/cho/dang-tin" : "/dang-nhap?next=/cho/dang-tin";
@@ -101,7 +108,7 @@ export function Market() {
 
       <section className="panel" aria-labelledby="h-list">
         <header>
-          <h2 id="h-list">{kind === "all" ? "Tất cả" : KIND_LABEL[kind]} · <span className="num">{shown.length}</span> tin</h2>
+          <h2 id="h-list">{kind === "all" ? "Tất cả" : KIND_LABEL[kind]} · <span className="num">{shown.length}</span> tin{region && region !== ALL ? ` ở ${region}` : ""}</h2>
           <span className="meta">{real === null ? "Đang tải…" : `${realCount} tin thật${realCount < MIN_REAL_LISTINGS ? " + tin mẫu" : ""}`}</span>
         </header>
         <div className="toolbar">
@@ -110,6 +117,17 @@ export function Market() {
               <button key={k} aria-pressed={sort === k} onClick={() => setSort(k)}>{l}</button>
             ))}
           </div>
+          <label className="region">
+            <span className="muted">Khu vực</span>
+            <select className="input" value={region ?? ALL} onChange={(e) => setRegion(e.target.value)} disabled={region === null}
+              aria-describedby={source === "home" || source === "last_listing" ? "region-why" : undefined}>
+              <option value={ALL}>Toàn quốc ({rows.length})</option>
+              {regionOptions.map((p) => <option key={p} value={p}>{p}{regionCount(p) ? ` (${regionCount(p)})` : ""}</option>)}
+            </select>
+            {(source === "home" || source === "last_listing") && region !== ALL && (
+              <span id="region-why" className="faint" style={{ fontSize: 12 }}>{source === "home" ? "theo nơi bạn sống" : "theo tin bạn đăng gần nhất"}</span>
+            )}
+          </label>
           <span className="spacer" />
           {q && (
             <button className="btn small" onClick={() => { setQ(""); router.replace("/cho"); }}>
@@ -121,7 +139,10 @@ export function Market() {
         {real === null ? (
           <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" style={{ height: 52, marginTop: 8 }} />)}</div>
         ) : shown.length === 0 ? (
-          <p className="empty">{q ? `Không có tin nào khớp “${q}”${kind !== "all" ? " trong mục này" : ""}.` : "Chưa có tin nào trong mục này."} <Link href={postHref} className="card-link">Đăng tin bán</Link></p>
+          <p className="empty">
+            {q ? `Không có tin nào khớp “${q}”${kind !== "all" ? " trong mục này" : ""}` : "Chưa có tin nào trong mục này"}{region && region !== ALL ? ` ở ${region}` : ""}.{" "}
+            {region && region !== ALL ? <button type="button" className="link-btn" onClick={() => setRegion(ALL)}>Xem toàn quốc</button> : <Link href={postHref} className="card-link">Đăng tin bán</Link>}
+          </p>
         ) : (
           <>
           {/* điện thoại: danh sách dòng hai tầng thay cho bảng */}

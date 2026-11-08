@@ -1,7 +1,7 @@
 import { computeScores, resolveMachine, tierOf, type MachineInput } from "@f2m/shared";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { hashPassword, verifyPassword } from "../src/auth/password.js";
-import { ageParts, setup } from "./helpers.js";
+import { ageParts, setup, spec } from "./helpers.js";
 
 let t: Awaited<ReturnType<typeof setup>>;
 beforeAll(async () => { t = await setup(); }, 60_000);
@@ -96,6 +96,19 @@ describe("tài khoản và máy", () => {
     expect((await req("PATCH", "/v1/me", { handle: "khoa.pc", province: "Hà Nội" }, a.token)).json().user.handle).toBe("khoa.pc");
     expect((await req("PATCH", "/v1/me", { handle: "khoa.pc" }, b.token)).statusCode).toBe(409);
     expect((await req("PATCH", "/v1/me", { handle: "Có Dấu" }, b.token)).statusCode).toBe(400);
+  });
+
+  it("khu vực lọc chợ: lưu vào tài khoản; chưa chọn thì gợi ý tỉnh của tin đăng gần nhất", async () => {
+    const a = (await register("khuvuc@test.vn")).json();
+    let me = (await req("GET", "/v1/me", undefined, a.token)).json().user;
+    expect(me).toMatchObject({ marketRegion: null, lastListingProvince: null });
+    await req("POST", "/v1/me/machines", { spec: spec() }, a.token);
+    const cpu = (await req("GET", "/v1/me/listings", undefined, a.token)).json().parts.find((p: { kind: string }) => p.kind === "cpu");
+    await req("POST", "/v1/listings", { machinePartId: cpu.id, priceVnd: 1_900_000, condition: "used", contact: "0912345678", province: "Đà Nẵng" }, a.token);
+    expect((await req("GET", "/v1/me", undefined, a.token)).json().user.lastListingProvince).toBe("Đà Nẵng");
+    me = (await req("PATCH", "/v1/me", { marketRegion: "Hải Phòng" }, a.token)).json().user;
+    expect(me.marketRegion).toBe("Hải Phòng");
+    expect((await req("PATCH", "/v1/me", { marketRegion: "all" }, a.token)).json().user.marketRegion).toBe("all");
   });
 
   it("đổi mật khẩu: phải đúng mật khẩu cũ; xong thì thiết bị khác bị đăng xuất", async () => {

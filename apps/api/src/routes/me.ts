@@ -15,6 +15,7 @@ const patchBody = z.object({
   displayName: z.string().trim().min(2, "Tên hiển thị từ 2 ký tự").max(40).optional(),
   handle: z.string().trim().toLowerCase().regex(HANDLE_RE, "Tên tài khoản 3–20 ký tự: chữ thường không dấu, số, dấu chấm, gạch dưới").optional(),
   province: z.string().trim().max(40).nullable().optional(),
+  marketRegion: z.string().trim().min(1).max(40).nullable().optional(),
 });
 
 export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
@@ -37,7 +38,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     if (!uid) return;
     const body = patchBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "bad_request", message: body.error.issues[0]?.message ?? "Dữ liệu chưa đúng" });
-    const { displayName, handle, province } = body.data;
+    const { displayName, handle, province, marketRegion } = body.data;
     if (handle) {
       const taken = await db.selectFrom("users").select("id").where("handle", "=", handle).where("id", "!=", uid).executeTakeFirst();
       if (taken) return reply.code(409).send({ error: "handle_taken", message: `Tên tài khoản "${handle}" đã có người dùng.` });
@@ -46,6 +47,7 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
       ...(displayName !== undefined && { display_name: displayName }),
       ...(handle !== undefined && { handle }),
       ...(province !== undefined && { province: province || null }),
+      ...(marketRegion !== undefined && { market_region: marketRegion }),
     };
     if (Object.keys(set).length) await db.updateTable("users").set(set).where("id", "=", uid).execute();
     return { user: await publicProfile(uid) };

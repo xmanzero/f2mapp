@@ -571,3 +571,6 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .pick[aria-invalid="true"] { outline: 2px solid var(--negative); outline-offset: 4px; border-radius: 12px; }
 .pick:focus { outline: none; }
 .pick[aria-invalid="true"]:focus { outline: 2px solid var(--negative); }
+/* lọc khu vực ở chợ */
+.region { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.region select.input { height: 34px; width: auto; min-width: 170px; padding-top: 0; padding-bottom: 0; }
