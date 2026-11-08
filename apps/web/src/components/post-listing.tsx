@@ -13,6 +13,7 @@ import { MAX_PHOTOS, shrinkImage, uploadPhoto } from "@/lib/photos";
 import { PROVINCES } from "@/lib/provinces";
 import { useSession } from "@/lib/session";
 import { useNow } from "@/lib/use-now";
+import { Combo } from "./combo";
 import { PhotoPicker } from "./photos";
 
 const CONTACT_KEY = "f2m.contact";
@@ -188,10 +189,8 @@ export function PostListing() {
                 </div>
                 <div className="field">
                   <label htmlFor="province">Khu vực</label>
-                  <select id="province" className="input" value={f.province} onChange={(e) => set("province", e.target.value)}>
-                    <option value="">Chưa chọn</option>
-                    {PROVINCES.map((p) => <option key={p}>{p}</option>)}
-                  </select>
+                  <Combo id="province" value={f.province} onChange={(v) => set("province", v)} placeholder="Gõ tỉnh, VD: ha noi"
+                    options={[{ value: "", label: "Chưa chọn" }, ...PROVINCES.map((p) => ({ value: p, label: p }))]} />
                 </div>
               </div>
               <div className="field">

@@ -574,3 +574,18 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 /* lọc khu vực ở chợ */
 .region { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
 .region select.input { height: 34px; width: auto; min-width: 170px; padding-top: 0; padding-bottom: 0; }
+/* ô chọn có gõ tìm */
+.combo { position: relative; min-width: 0; }
+.combo .input { width: 100%; padding-left: 36px; padding-right: 34px; cursor: pointer; }
+.combo.open .input { cursor: text; }
+.combo-icon, .combo-chev { position: absolute; top: 50%; translate: 0 -50%; width: 16px; height: 16px; color: var(--faint); pointer-events: none; }
+.combo-icon { left: 12px; } .combo-chev { right: 12px; transition: rotate var(--t-hover) ease; }
+.combo.open .combo-chev { rotate: 180deg; }
+.combo-list { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); min-width: 200px; max-height: 280px; overflow-y: auto; margin: 0; padding: 6px; list-style: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 12px 28px rgb(0 0 0 / 0.18); }
+.combo-list li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.combo-list li.active { background: var(--raised); }
+.combo-list li[aria-selected="true"] { font-weight: 600; }
+.combo-list .combo-empty { color: var(--faint); cursor: default; }
+.region .combo { width: 220px; }
+.region .combo .input { height: 34px; padding-top: 0; padding-bottom: 0; }

@@ -17,6 +17,7 @@ import { useNow } from "@/lib/use-now";
 import { photoUrl } from "@/lib/photos";
 import { PROVINCES } from "@/lib/provinces";
 import { ALL, useMarketRegion } from "@/lib/region";
+import { Combo } from "./combo";
 import { LifeBar } from "./life-bar";
 
 const KIND_SHORT: Record<ListingKind, string> = { gpu: "VGA", cpu: "CPU", mainboard: "MAIN", ram: "RAM", storage: "SSD", psu: "PSU" };
@@ -117,17 +118,15 @@ export function Market() {
               <button key={k} aria-pressed={sort === k} onClick={() => setSort(k)}>{l}</button>
             ))}
           </div>
-          <label className="region">
-            <span className="muted">Khu vực</span>
-            <select className="input" value={region ?? ALL} onChange={(e) => setRegion(e.target.value)} disabled={region === null}
-              aria-describedby={source === "home" || source === "last_listing" ? "region-why" : undefined}>
-              <option value={ALL}>Toàn quốc ({rows.length})</option>
-              {regionOptions.map((p) => <option key={p} value={p}>{p}{regionCount(p) ? ` (${regionCount(p)})` : ""}</option>)}
-            </select>
+          <div className="region">
+            <label htmlFor="region" className="muted">Khu vực</label>
+            <Combo id="region" value={region ?? ALL} onChange={setRegion} disabled={region === null} placeholder="Gõ tỉnh, VD: hai phong"
+              options={[{ value: ALL, label: "Toàn quốc", hint: String(rows.length) },
+                ...regionOptions.map((p) => ({ value: p, label: p, hint: regionCount(p) ? String(regionCount(p)) : undefined }))]} />
             {(source === "home" || source === "last_listing") && region !== ALL && (
               <span id="region-why" className="faint" style={{ fontSize: 12 }}>{source === "home" ? "theo nơi bạn sống" : "theo tin bạn đăng gần nhất"}</span>
             )}
-          </label>
+          </div>
           <span className="spacer" />
           {q && (
             <button className="btn small" onClick={() => { setQ(""); router.replace("/cho"); }}>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { api, ApiError, type Profile } from "@/lib/api";
 import { PROVINCES } from "@/lib/provinces";
 import { useSession } from "@/lib/session";
+import { Combo } from "./combo";
 import { PasswordInput } from "./login";
 
 /** Đặt mật khẩu (tài khoản Google) hoặc đổi mật khẩu */
@@ -115,10 +116,8 @@ export function Account() {
             </div>
             <div className="field">
               <label htmlFor="province">Tỉnh / thành</label>
-              <select id="province" className="input" value={form.province} onChange={set("province")}>
-                <option value="">Chưa chọn</option>
-                {PROVINCES.map((p) => <option key={p}>{p}</option>)}
-              </select>
+              <Combo id="province" value={form.province} onChange={(v) => setForm((x) => ({ ...x, province: v }))} placeholder="Gõ tỉnh, VD: ha noi"
+                options={[{ value: "", label: "Chưa chọn" }, ...PROVINCES.map((p) => ({ value: p, label: p }))]} />
             </div>
             {state.error && <p className="form-error" role="alert">{state.error}</p>}
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
