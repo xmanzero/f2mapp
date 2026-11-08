@@ -82,6 +82,13 @@ export function PostListing() {
   const removePic = (key: string) => setPics((x) => { const p = x.find((y) => y.key === key); if (p) URL.revokeObjectURL(p.src); return x.filter((y) => y.key !== key); });
   const coverPic = (key: string) => setPics((x) => [...x.filter((y) => y.key === key), ...x.filter((y) => y.key !== key)]);
 
+  // lý do chưa đăng được, hiện ngay dưới nút
+  const missing = [
+    !part && "chọn linh kiện",
+    price < 10_000 && (price ? "giá bán từ 10.000 ₫" : "giá bán"),
+    f.contact.trim().length < 6 && "Zalo / số điện thoại",
+  ].filter((x): x is string => !!x);
+
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((x) => ({ ...x, [k]: v }));
   const submit = async () => {
     setBusy(true); setError(null);
@@ -149,9 +156,11 @@ export function PostListing() {
                 <div className="field">
                   <label htmlFor="price">Giá bán (₫)</label>
                   <input id="price" className="input num" inputMode="numeric" required value={price ? price.toLocaleString("vi-VN") : ""}
-                    onChange={(e) => set("price", e.target.value.replace(/\D/g, "").slice(0, 9))} placeholder={ref ? ref.median.toLocaleString("vi-VN") : "4.300.000"}
+                    onChange={(e) => set("price", e.target.value.replace(/\D/g, "").slice(0, 9))} placeholder="Nhập giá bán"
                     aria-describedby="price-hint" />
-                  <span id="price-hint" className="hint">{ref ? `Giá giữa của ${ref.count} tin cùng linh kiện: ${vnd(ref.median)}` : "Từ 10.000 ₫"}</span>
+                  <span id="price-hint" className="hint">
+                    {ref ? <>Giá giữa của {ref.count} tin cùng linh kiện: {vnd(ref.median)}{!price && <> · <button type="button" className="link-btn" onClick={() => set("price", String(ref.median))}>Dùng giá này</button></>}</> : "Từ 10.000 ₫"}
+                  </span>
                 </div>
                 <div className="field">
                   <label htmlFor="condition">Tình trạng</label>
@@ -195,7 +204,8 @@ export function PostListing() {
               </div>
               <PhotoPicker items={pics} onAdd={(fs) => void addPics(fs)} onRemove={removePic} onCover={coverPic} disabled={busy} error={picError} />
               {error && <p className="form-error" role="alert" style={{ marginTop: 0 }}>{error}</p>}
-              <button className="btn primary block" disabled={busy || !part || price < 10_000}>{busy ? (step ?? "Đang đăng…") : "Đăng tin"}</button>
+              <button className="btn primary block" disabled={busy || missing.length > 0}>{busy ? (step ?? "Đang đăng…") : "Đăng tin"}</button>
+              {missing.length > 0 && !busy && <p className="hint" role="status" style={{ margin: 0, textAlign: "center" }}>Còn thiếu: {missing.join(", ")}</p>}
             </form>
           )}
         </section>
