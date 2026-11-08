@@ -61,10 +61,14 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
     router.push(r.created ? "/tai-khoan?moi=1" : next);
   };
 
+  // Google chỉ cho phép nguồn HTTPS (hoặc localhost): vào bằng IP LAN qua http thì ẩn nút, chỉ đường sang pcdex.app
+  const [secureOrigin, setSecureOrigin] = useState(false);
+  useEffect(() => { setSecureOrigin(location.protocol === "https:" || location.hostname === "localhost"); }, []);
+
   // Nút Google (Google Identity Services) — chỉ khi máy chủ có Client ID
   useEffect(() => {
     const clientId = config?.google.clientId;
-    if (!clientId || !googleBox.current) return;
+    if (!clientId || !secureOrigin || !googleBox.current) return;
     const render = () => {
       window.google!.accounts.id.initialize({
         client_id: clientId,
@@ -84,7 +88,7 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
     s.onload = render;
     document.head.appendChild(s);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config]);
+  }, [config, secureOrigin]);
 
   const submit = async () => {
     setBusy(true);
@@ -157,10 +161,12 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
           </form>
 
           <div className="or"><span>hoặc</span></div>
-          {config?.google.clientId ? (
+          {config?.google.clientId && secureOrigin ? (
             <div ref={googleBox} className="google-box" />
+          ) : config?.google.clientId ? (
+            <p className="muted">Đăng nhập bằng Google dùng ở <a href="https://pcdex.app/dang-nhap" className="card-link">pcdex.app</a> (địa chỉ nội bộ không hỗ trợ).</p>
           ) : (
-            <p className="muted">Đăng nhập bằng Google sẽ bật khi pcdex có tên miền riêng.</p>
+            <p className="muted">Đăng nhập bằng Google chưa bật.</p>
           )}
         </section>
 

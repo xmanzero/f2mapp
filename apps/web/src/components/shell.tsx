@@ -64,6 +64,7 @@ function Frame({ children }: { children: ReactNode }) {
         </nav>
         <p className="foot">
           Thang điểm v{SCALE_VERSION}. Mốc 10.000: Core i5-12400F + RTX 3060 12GB.
+          <br /><Link href="/chinh-sach-quyen-rieng-tu">Quyền riêng tư</Link> · <Link href="/dieu-khoan">Điều khoản</Link>
         </p>
       </aside>
 

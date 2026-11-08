@@ -176,3 +176,21 @@ it("một IP đăng ký quá giới hạn mỗi giờ thì bị chặn (429)", a
   expect(codes).toEqual([201, 201, 429]);
   await s.close();
 }, 60_000);
+
+describe("xóa tài khoản", () => {
+  it("phải gõ đúng tên tài khoản; xóa xong mất máy, tin, phiên", async () => {
+    const r = await t.app.inject({ method: "POST", url: "/v1/auth/register", payload: { email: "xoa@test.vn", password: "matkhau-dai-123", displayName: "Xoa Toi" } });
+    const tk = r.json().token as string;
+    const auth = { authorization: `Bearer ${tk}` };
+    await t.app.inject({ method: "POST", url: "/v1/me/machines", headers: auth, payload: { spec: spec() } });
+    const handle = (await t.app.inject({ method: "GET", url: "/v1/me", headers: auth })).json().user.handle as string;
+    expect((await t.app.inject({ method: "DELETE", url: "/v1/me", headers: auth, payload: { confirm: "sai" } })).statusCode).toBe(400);
+    expect((await t.app.inject({ method: "DELETE", url: "/v1/me", payload: { confirm: handle } })).statusCode).toBe(401);
+    expect((await t.app.inject({ method: "DELETE", url: "/v1/me", headers: auth, payload: { confirm: `@${handle.toUpperCase()}` } })).statusCode).toBe(200);
+    expect((await t.app.inject({ method: "GET", url: "/v1/me", headers: auth })).statusCode).toBe(401);
+    expect(await t.db.selectFrom("users").select("id").where("email", "=", "xoa@test.vn").executeTakeFirst()).toBeUndefined();
+    expect((await t.db.selectFrom("machines").select((eb) => eb.fn.countAll<string>().as("n")).executeTakeFirstOrThrow()).n).toBeDefined();
+    // đăng ký lại bằng email cũ được
+    expect((await t.app.inject({ method: "POST", url: "/v1/auth/register", payload: { email: "xoa@test.vn", password: "matkhau-dai-123", displayName: "Xoa Lai" } })).statusCode).toBe(201);
+  });
+});

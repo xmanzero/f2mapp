@@ -4,7 +4,7 @@ import {
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { AppDeps } from "../app.js";
-import { revokeOtherSessions, userIdFromRequest } from "../auth/session.js";
+import { clearSessionCookie, cookieSecureFor, revokeOtherSessions, userIdFromRequest } from "../auth/session.js";
 import { passwordField } from "./auth.js";
 import {
   deleteMachine, deleteStoredPart, leaderboard, publicMachine, loadMachines, loadPrimaryMachine, MachineError, saveSpec, savePrimaryMachine, setPrimary,
@@ -51,6 +51,23 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     };
     if (Object.keys(set).length) await db.updateTable("users").set(set).where("id", "=", uid).execute();
     return { user: await publicProfile(uid) };
+  });
+
+  /**
+   * Xóa tài khoản (người dùng tự xóa): mất hết máy, linh kiện, tin rao, ảnh, phiên đăng nhập, liên kết Google.
+   * Xác nhận bằng cách gõ lại tên tài khoản. Không hoàn tác được.
+   */
+  app.delete("/me", { config: { rateLimit: { max: 5, timeWindow: "10 minutes" } } }, async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const body = z.object({ confirm: z.string().trim().toLowerCase() }).safeParse(req.body);
+    const me = await db.selectFrom("users").select("handle").where("id", "=", uid).executeTakeFirst();
+    if (!me) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy tài khoản" });
+    if (!body.success || body.data.confirm.replace(/^@/, "") !== me.handle)
+      return reply.code(400).send({ error: "confirm", message: `Gõ đúng tên tài khoản @${me.handle} để xác nhận xóa.` });
+    await db.deleteFrom("users").where("id", "=", uid).execute(); // các bảng con xóa theo (on delete cascade)
+    clearSessionCookie(reply, cookieSecureFor(req, deps.cookieSecure));
+    return { ok: true };
   });
 
   const passwordBody = z.object({ currentPassword: z.string().max(128).optional(), newPassword: passwordField });

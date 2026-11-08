@@ -142,7 +142,48 @@ export function Account() {
           {user.email && <PasswordForm hasPassword={user.hasPassword} onDone={setUser} />}
           <button className="btn" style={{ marginTop: 16 }} onClick={async () => { await logout(); router.push("/"); }}>Đăng xuất</button>
         </section>
+
+        <DeleteAccount handle={user.handle} />
       </div>
     </>
+  );
+}
+
+/** Tự xóa tài khoản: gõ lại tên tài khoản để xác nhận. Không hoàn tác được. */
+function DeleteAccount({ handle }: { handle: string }) {
+  const router = useRouter();
+  const { refresh } = useSession();
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const ok = typed.trim().replace(/^@/, "").toLowerCase() === handle;
+  const run = async () => {
+    setBusy(true); setError(null);
+    try {
+      await api("/v1/me", { method: "DELETE", body: { confirm: typed } });
+      try { localStorage.removeItem("f2m.spec.v1"); localStorage.removeItem("f2m.contact"); } catch { /* bỏ qua */ }
+      await refresh();
+      router.push("/");
+    } catch (e) { setError((e as ApiError).message); setBusy(false); }
+  };
+  return (
+    <section className="panel s12 danger-zone" aria-labelledby="h-delete">
+      <header><h2 id="h-delete">Xóa tài khoản</h2></header>
+      <p className="muted">Xóa vĩnh viễn tài khoản <b>@{handle}</b> cùng mọi máy đã khai, linh kiện trong kho, tin rao và ảnh, kết quả quét đã gắn và liên kết Google. Không hoàn tác được.</p>
+      {!open ? (
+        <button type="button" className="btn danger-outline" onClick={() => setOpen(true)}>Xóa tài khoản…</button>
+      ) : (
+        <div className="field" style={{ maxWidth: 420, marginTop: 12 }}>
+          <label htmlFor="del-confirm">Gõ <b>{handle}</b> để xác nhận</label>
+          <input id="del-confirm" className="input" value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off" spellCheck={false} autoFocus />
+          {error && <p className="field-error" role="alert">{error}</p>}
+          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+            <button type="button" className="btn danger" disabled={!ok || busy} onClick={run}>{busy ? "Đang xóa…" : "Xóa vĩnh viễn"}</button>
+            <button type="button" className="btn" onClick={() => { setOpen(false); setTyped(""); setError(null); }}>Thôi</button>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }
