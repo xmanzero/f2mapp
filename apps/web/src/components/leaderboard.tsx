@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { n0 } from "@/lib/format";
 import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
+import { TierEmblem, tierVars } from "./tier";
 
 type Filter = "all" | "legend" | "diamond" | "platinum" | "gold_down";
 const FILTERS: [Filter, string, (code: string) => boolean][] = [
@@ -90,6 +91,23 @@ export function Leaderboard() {
         </span>
       </div>
 
+      {real !== null && ranked.length >= 3 && (
+        <ol className="podium" aria-label="Ba máy mạnh nhất">
+          {ranked.slice(0, 3).map((r) => (
+            <li key={r.key} className={`podium-card p${r.rank}${r.me ? " me" : ""}`} style={tierVars(r.tierCode)}>
+              <div className="podium-top">
+                <span className="podium-rank num">#{r.rank}</span>
+                <TierEmblem code={r.tierCode} label={r.tierName} size={44} />
+              </div>
+              <div className="podium-name">{r.name}</div>
+              <div className="faint" style={{ fontSize: 13 }}>{r.sub}</div>
+              <div className="podium-score num tier-ink">{n0(r.power)}</div>
+              <div className="faint" style={{ fontSize: 13 }}><span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></div>
+            </li>
+          ))}
+        </ol>
+      )}
+
       <div className="counts" role="group" aria-label="Lọc theo hạng">
         {FILTERS.map(([key, label, f]) => (
           <button key={key} className="count" aria-pressed={filter === key} onClick={() => setFilter(key)}>
@@ -143,7 +161,7 @@ export function Leaderboard() {
                       <div className="num" style={{ fontWeight: 600, fontSize: 16 }}>{n0(r.power)}</div>
                       <div className="faint show-sm" style={{ fontSize: 13 }}>{r.tierName}</div>
                     </td>
-                    <td className="hide-sm"><span className="pill">{r.tierName}</span></td>
+                    <td className="hide-sm"><span className="pill tier-pill" style={tierVars(r.tierCode)}>{r.tierName}</span></td>
                   </tr>
                 ))}
               </tbody>

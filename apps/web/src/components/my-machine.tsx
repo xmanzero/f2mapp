@@ -11,7 +11,9 @@ import { SAMPLE_MACHINES } from "@/data/sample";
 import { api } from "@/lib/api";
 import type { SellablePart } from "@/lib/listings";
 import { n0, ratio, signedPct } from "@/lib/format";
-import { useMachine } from "@/lib/use-machine";
+import { useMachine, type PartView } from "@/lib/use-machine";
+import { MachineDiagram } from "./machine-diagram";
+import { TierEmblem, tierVars } from "./tier";
 import { ConfigEditor } from "./config-editor";
 
 const SEV_ORDER: Record<Severity, number> = { critical: 0, warning: 1, info: 2, ok: 3 };
@@ -81,7 +83,7 @@ export function MyMachine() {
 
       <div className="grid split">
         <div className="col col-l">
-          <ScoreCard r={r} verified={active.verified} isAccount={!!active.id} />
+          <ScoreCard r={r} verified={active.verified} isAccount={!!active.id} spec={shownSpec} parts={active.parts} />
           <OsdCard cfg={cfg} bottlenecks={r.bottlenecks} />
           <NeedsCard needs={r.needs} />
           <UpgradesCard items={upgrades} active={preview} onPreview={setPreview} />
@@ -181,7 +183,7 @@ function TierProgress({ power }: { power: number }) {
   return (
     <div style={{ marginTop: 16 }}>
       <p>Còn <b className="num">{n0(to.min - power)}</b> điểm lên {to.name}</p>
-      <div className="tier-track" role="img" aria-label={`Đã đi được ${Math.round(pct)}% từ ${from.name} lên ${to.name}`}>
+      <div className="tier-track tier-fill" role="img" aria-label={`Đã đi được ${Math.round(pct)}% từ ${from.name} lên ${to.name}`}>
         <div style={{ width: `${pct}%` }} />
       </div>
       <div className="tier-ends faint num"><span>{from.name} {n0(from.min)}</span><span>{to.name} {n0(to.min)}</span></div>
@@ -201,30 +203,44 @@ function RankLine({ power }: { power: number }) {
   );
 }
 
-function ScoreCard({ r, verified, isAccount }: { r: Result; verified: boolean; isAccount: boolean }) {
+function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verified: boolean; isAccount: boolean; spec: MachineSpec; parts: PartView[] }) {
   const s = r.scores;
   return (
-    <section className="panel s5" aria-labelledby="h-score">
+    <section className="panel score-card" style={tierVars(r.tier.code)} aria-labelledby="h-score">
       <header>
         <h2 id="h-score">Điểm sức mạnh</h2>
         <span className="meta">Gaming 50% · Đồ họa 30% · AI 20%</span>
       </header>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <span className="answer num">{n0(s.power)}</span>
-        <span className="pill">Hạng {r.tier.name}</span>
-        {isAccount && <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm benchmark đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa chạy phần mềm benchmark"}>{verified ? "Xác thực đang dùng" : "Chưa xác thực"}</span>}
+      <div className="score-body">
+        <div className="score-main">
+          <div className="score-head">
+            <TierEmblem code={r.tier.code} label={r.tier.name} />
+            <div>
+              <span className="answer num tier-ink">{n0(s.power)}</span>
+              <div className="tier-name">Hạng {r.tier.name}</div>
+            </div>
+          </div>
+          <p className="muted" style={{ marginTop: 10 }}>Gấp <span className="num">{ratio(s.power / 10000)}</span> lần máy mốc (i5-12400F + RTX 3060)</p>
+          {isAccount && (
+            <p style={{ marginTop: 8 }}>
+              <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm benchmark đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa chạy phần mềm benchmark"}>
+                {verified ? "Xác thực đang dùng" : "Chưa xác thực"}
+              </span>
+            </p>
+          )}
+          <TierProgress power={s.power} />
+          <RankLine power={s.power} />
+        </div>
+        <figure className="score-figure">
+          <MachineDiagram spec={spec} parts={parts} />
+          <figcaption className="faint">Sơ đồ máy{isAccount ? " · viền xanh = xác thực đang dùng" : ""}</figcaption>
+        </figure>
       </div>
-      <p className="muted" style={{ marginTop: 6 }}>Gấp <span className="num">{ratio(s.power / 10000)}</span> lần máy mốc (i5-12400F + RTX 3060 = 10.000)</p>
-      <TierProgress power={s.power} />
-      <RankLine power={s.power} />
 
       {r.badges.length > 0 && (
-        <ul className="rows" style={{ marginTop: 10 }} aria-label="Huy hiệu">
+        <ul className="badges" aria-label="Huy hiệu">
           {r.badges.map((b) => (
-            <li key={b.code} className="row" style={{ minHeight: 40, padding: "8px 0" }}>
-              <span className="pill pos">{b.name}</span>
-              <span className="faint" style={{ fontSize: 12 }}>{b.description}</span>
-            </li>
+            <li key={b.code} title={b.description}><span className="pill pos">{b.name}</span><span className="faint">{b.description}</span></li>
           ))}
         </ul>
       )}

@@ -13,6 +13,19 @@
 
 Token đầy đủ: [apps/web/src/app/globals.css](../apps/web/src/app/globals.css). Thông số gốc: `.taste-skill/app/direction.json`.
 
+## Ngày / Đêm (08/11/2026)
+
+- Đêm là gốc; Ngày bật theo hệ điều hành hoặc nút mặt trời/mặt trăng ở thanh trên (lưu `localStorage` `f2m.theme`). Script nội tuyến trong `<head>` đặt `data-theme` trước khi vẽ trang (không nháy, theo hướng dẫn "Preventing flash" của Next 16). `?theme=dark|light` trên địa chỉ để xem thử / kiểm tra.
+- Mọi màu là token trong `:root` (Đêm), `@media (prefers-color-scheme: light) :root:not([data-theme="dark"])` và `:root[data-theme="light"]` (Ngày). Ngày: nền #eef0f3, thẻ trắng, màu dữ liệu xanh ô liu #4f7f0e (lime #c6f24e không đọc được trên nền trắng).
+
+## Màu hạng và điểm nhấn (08/11/2026)
+
+- Mỗi hạng một màu: Đồng, Bạc, Vàng, Bạch kim, Kim cương, Huyền thoại (`--t-*` chữ/viền, `--t-*-f` nền thẻ; bản Ngày đậm hơn để đọc được). Thẻ điểm sức mạnh và thẻ top 3 nhuộm nền theo màu hạng. Không dùng nền kem (bị cấm) — Vàng ở chế độ Ngày dùng nền xám lạnh.
+- Huy hiệu hạng (`components/tier.tsx`): lục giác, số vạch = bậc hạng (Đồng 1 … Huyền thoại 6).
+- Sơ đồ máy (`components/machine-diagram.tsx`): bo mạch vẽ theo cấu hình (CPU, đúng số thanh RAM, card, ổ NVMe/SATA, nguồn); linh kiện xác thực đang dùng viền màu dữ liệu.
+- Font thứ hai Chakra Petch (có dấu tiếng Việt) chỉ cho tiêu đề trang và số lớn (điểm, hạng, top 3); bảng và chữ thường vẫn Inter.
+- Bảng xếp hạng: bục top 3 (điện thoại: dải thẻ cuộn ngang).
+
 ## Bản sắc riêng
 
 - **Thước khung hình kiểu OSD**: mỗi độ phân giải một thanh. Phần tô là FPS thực tế, vạch trắng là mức CPU nuôi được, nên người dùng *nhìn thấy* điểm nghẽn.

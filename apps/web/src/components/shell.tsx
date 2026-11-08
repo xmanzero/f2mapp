@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { SessionProvider, useSession } from "@/lib/session";
 import { Mark } from "./mark";
+import { ThemeToggle } from "./theme-toggle";
 
 const NAV = [
   { href: "/", label: "Máy của tôi", short: "Máy", icon: Cpu },
@@ -83,6 +84,7 @@ function Frame({ children }: { children: ReactNode }) {
             <label htmlFor="q" className="sr-only">Tìm linh kiện trong chợ</label>
             <input id="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tìm linh kiện: RTX 3060, i5-12400F…" />
           </form>
+          <ThemeToggle />
           <AccountControl />
         </header>
 
