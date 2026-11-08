@@ -40,7 +40,10 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 |---|---|
 | `POST /v1/auth/register`, `/login` | Đăng ký / đăng nhập bằng email + mật khẩu (scrypt; sai 5 lần khóa 15 phút) |
 | `POST /v1/auth/google` | Đăng nhập Google (ID token). Email trùng tài khoản mật khẩu thì gộp, xóa mật khẩu cũ chưa xác minh |
-| `POST /v1/me/password` | Đặt / đổi mật khẩu, đăng xuất các thiết bị khác |
+| `POST /v1/me/password` | Đặt / đổi mật khẩu, đăng xuất các thiết bị khác (gửi thư "Mật khẩu đã đổi") |
+| `POST /v1/auth/forgot`, `/reset` | Quên mật khẩu: gửi link 60 phút (luôn trả cùng một câu; 60 giây / 5 thư mỗi giờ mỗi tài khoản), đặt mật khẩu mới rồi đăng nhập, đăng xuất phiên cũ |
+| `POST /v1/auth/verify-email`, `/v1/me/verify-email` | Xác minh email bằng link 48 giờ (gửi kèm thư chào mừng); gửi lại thư xác minh |
+| `/v1/admin/email/templates[/:key[/preview\|/test]]`, `/v1/admin/email/log` | Quản trị: mẫu thư theo sự kiện (sửa, bật / tắt, xem trước, gửi thử, khôi phục mặc định), nhật ký gửi |
 | `GET/PATCH /v1/me` | Hồ sơ |
 | `GET/POST /v1/me/machines`, `PUT/DELETE /v1/me/machines/:id`, `POST /v1/me/machines/:id/primary` | Tối đa 2 máy, cấu hình chi tiết: CPU, card, mainboard, RAM (DDR, ECC/RDIMM, DIMM/SO-DIMM), ổ cứng (loại, dung lượng, sức khỏe), nguồn. Lưu theo so khớp: linh kiện đổi → "đã thay ra" |
 | `DELETE /v1/me/parts/:id` | Xóa linh kiện đã thay ra khỏi kho |

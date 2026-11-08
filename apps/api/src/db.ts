@@ -95,6 +95,15 @@ export interface Database {
     id: Generated<string>; admin_id: string | null; admin_handle: string; action: string; target: string | null;
     detail: unknown; created_at: Generated<Date>;
   };
+  email_templates: { key: string; subject: string; body: string; enabled: boolean; updated_at: Generated<Date>; updated_by: string | null };
+  email_log: {
+    id: Generated<string>; template: string; to_email: string; user_id: string | null; subject: string;
+    status: "sent" | "failed" | "skipped"; error: string | null; created_at: Generated<Date>;
+  };
+  email_tokens: {
+    token_hash: string; user_id: string; purpose: "verify" | "reset"; email: string; expires_at: Date; used_at: Date | null; created_at: Generated<Date>;
+  };
+  user_devices: { user_id: string; device: string; last_ip: string | null; first_seen: Generated<Date>; last_seen: Generated<Date> };
   scans: {
     id: Generated<string>;
     code: string;

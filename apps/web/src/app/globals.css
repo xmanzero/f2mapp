@@ -691,3 +691,48 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .nm-form .hint { font-size: 13px; }
 .nm-go { height: 48px; }
 @media (max-width: 520px) { .nm-pair { grid-template-columns: 1fr; } }
+
+/* Quản trị · Email: mẫu thư */
+.admin-sub { margin-bottom: var(--gap); width: max-content; max-width: 100%; overflow-x: auto; }
+.mail-grid { display: grid; grid-template-columns: minmax(220px, 3fr) minmax(0, 5fr) minmax(0, 4fr); gap: var(--gap); align-items: start; }
+@media (max-width: 1280px) { .mail-grid { grid-template-columns: minmax(220px, 4fr) minmax(0, 8fr); } .mail-preview { grid-column: 2; } }
+@media (max-width: 900px) { .mail-grid { grid-template-columns: minmax(0, 1fr); } .mail-preview { grid-column: auto; } }
+.mail-list { padding: 8px; }
+.mail-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.mail-list button { all: unset; box-sizing: border-box; display: grid; gap: 4px; width: 100%; padding: 12px 14px; border-radius: 12px; cursor: pointer; }
+.mail-list button:hover { background: var(--raised); }
+.mail-list button[aria-current="true"] { background: var(--active); }
+.mail-list button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.mail-name { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.mail-name .dot { background: var(--warning); }
+.mail-event { color: var(--muted); font-size: 13px; line-height: 18px; }
+.mail-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
+.mail-edit header { align-items: flex-start; }
+.mail-edit h2 { margin-bottom: 4px; }
+.mail-body { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 13.5px; line-height: 21px; min-height: 300px; }
+.mail-vars .chip { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 12px; font-size: 13px; }
+.mail-vars code { color: var(--text); font-size: 12.5px; }
+.mail-help { font-size: 13px; color: var(--muted); }
+.mail-help summary { cursor: pointer; width: max-content; }
+.mail-help ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+.mail-help code { color: var(--text); }
+.mail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.mail-subject { margin: 0 0 10px; font-weight: 500; display: grid; gap: 2px; }
+.mail-subject .faint { font-size: 12px; font-weight: 400; }
+.mail-frame { display: block; width: 100%; height: 560px; border: 0; border-radius: 12px; background: #f2f2ef; }
+.mail-test { display: flex; gap: 8px; margin-top: 12px; }
+.mail-test .input { flex: 1; min-width: 0; }
+.mail-log-subject { min-width: 220px; }
+.switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; white-space: nowrap; }
+.switch input { appearance: none; width: 40px; height: 24px; margin: 0; border-radius: 999px; background: var(--control); position: relative; cursor: pointer; transition: background-color var(--t-hover) ease; }
+.switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--text); transition: transform var(--t-hover) ease; }
+.switch input:checked { background: var(--accent); }
+.switch input:checked::after { transform: translateX(16px); background: var(--accent-ink); }
+.switch input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Quên mật khẩu, đặt lại, xác minh email; xác minh trong trang Tài khoản */
+.recover { max-width: 480px; display: grid; gap: 14px; }
+.recover-done { display: grid; gap: 12px; }
+.recover-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.verify-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: 14px; }
+.verify-box { display: grid; gap: 10px; justify-items: start; margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--raised); font-size: 14px; }

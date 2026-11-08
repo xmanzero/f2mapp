@@ -4,6 +4,7 @@ import rateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import type { GoogleVerifier } from "./auth/google.js";
 import type { DB } from "./db.js";
+import type { MailSender } from "./services/email.js";
 import { adminRoutes } from "./routes/admin.js";
 import { authRoutes } from "./routes/auth.js";
 import { listingRoutes } from "./routes/listings.js";
@@ -27,6 +28,8 @@ export interface AppDeps {
   webUrl?: string;
   /** Khóa mã hóa mật khẩu trong cấu hình hệ thống (SMTP…). Trống = không lưu được mật khẩu */
   settingsKey?: string;
+  /** Chỉ dùng khi test: thay việc gửi qua SMTP */
+  sendMail?: MailSender;
 }
 
 export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: AppDeps } = {}) {

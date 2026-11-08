@@ -8,13 +8,14 @@ import { PGliteDialect } from "kysely-pglite-dialect";
 import { buildApp } from "../src/app.js";
 import { createGoogleVerifier } from "../src/auth/google.js";
 import type { Database } from "../src/db.js";
+import type { MailSender } from "../src/services/email.js";
 import { syncParts } from "../src/services/machines.js";
 
 const MIGRATIONS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../db/migrations");
 export const GOOGLE_CLIENT = "test-client.apps.googleusercontent.com";
 
 /** Postgres thật (PGlite, trong bộ nhớ) + đủ migration + app có tài khoản */
-export async function setup(opts: { registerPerIpHour?: number; cookieSecure?: boolean | "auto"; settingsKey?: string } = {}) {
+export async function setup(opts: { registerPerIpHour?: number; cookieSecure?: boolean | "auto"; settingsKey?: string; sendMail?: MailSender } = {}) {
   const pg = new PGlite();
   for (const f of (await readdir(MIGRATIONS)).filter((x) => x.endsWith(".sql")).sort()) {
     // gen_random_uuid() có sẵn từ Postgres 13; PGlite không cần pgcrypto
@@ -34,7 +35,7 @@ export async function setup(opts: { registerPerIpHour?: number; cookieSecure?: b
     deps: {
       db, googleClientIds: [GOOGLE_CLIENT],
       googleVerifier: createGoogleVerifier([GOOGLE_CLIENT], createLocalJWKSet({ keys: [jwk] })),
-      settingsKey: opts.settingsKey, cookieSecure: opts.cookieSecure ?? false, registerPerIpHour: opts.registerPerIpHour ?? 1000, loginPerIp10Min: 1000,
+      settingsKey: opts.settingsKey, sendMail: opts.sendMail, webUrl: "https://pcdex.test", cookieSecure: opts.cookieSecure ?? false, registerPerIpHour: opts.registerPerIpHour ?? 1000, loginPerIp10Min: 1000,
     },
   });
   return { app, db, googleToken, close: async () => { await app.close(); await db.destroy(); } };

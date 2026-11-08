@@ -9,6 +9,7 @@ import { passwordField } from "./auth.js";
 import {
   deleteMachine, deleteStoredPart, leaderboard, publicMachine, loadMachines, loadPrimaryMachine, MachineError, saveSpec, savePrimaryMachine, setPrimary,
 } from "../services/machines.js";
+import { clientIp, deviceOf, issueToken, later, mailCtx, nowVn, recentTokens, sendToUser } from "../services/email.js";
 import { AuthError, changePassword, getProfile, HANDLE_RE } from "../services/users.js";
 
 const patchBody = z.object({
@@ -83,7 +84,26 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
       throw e;
     }
     await revokeOtherSessions(db, req, uid);
+    later(sendToUser(mailCtx(deps, req), "password_changed", uid, { thoi_gian: nowVn(), ip: clientIp(req), thiet_bi: deviceOf(req.headers["user-agent"]) }));
     return { ok: true, user: await publicProfile(uid) };
+  });
+
+  /** Gửi lại thư xác minh email: cách nhau 60 giây, tối đa 5 thư / giờ */
+  app.post("/me/verify-email", { config: { rateLimit: { max: 10, timeWindow: "10 minutes" } } }, async (req, reply) => {
+    const uid = await requireUser(req, reply);
+    if (!uid) return;
+    const u = await db.selectFrom("users").select(["email", "email_verified_at"]).where("id", "=", uid).executeTakeFirstOrThrow();
+    if (!u.email) return reply.code(400).send({ error: "no_email", message: "Tài khoản chưa có email." });
+    if (u.email_verified_at) return reply.code(409).send({ error: "verified", message: "Email đã được xác minh." });
+    const recent = await recentTokens(db, uid, "verify", 3600_000);
+    if (recent.last && Date.now() - recent.last.getTime() < 60_000)
+      return reply.code(429).send({ error: "too_soon", message: `Thư có link xác minh vừa được gửi tới ${u.email} (kể cả thư chào mừng khi đăng ký). Chờ 1 phút rồi gửi lại nếu chưa thấy.`, retryIn: 60 });
+    if (recent.count >= 5) return reply.code(429).send({ error: "too_many", message: "Đã gửi 5 thư trong 1 giờ. Thử lại sau." });
+    const mail = mailCtx(deps, req);
+    const t = await issueToken(db, uid, "verify", u.email);
+    const status = await sendToUser(mail, "verify_email", uid, { link: `${mail.webUrl}/xac-minh-email?t=${t}` });
+    if (status !== "sent") return reply.code(503).send({ error: "mail_off", message: "Chưa gửi được thư lúc này. Thử lại sau." });
+    return { ok: true, email: u.email };
   });
 
   // ---------- máy chi tiết (tối đa 2) ----------

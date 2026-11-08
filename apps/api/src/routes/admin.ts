@@ -5,6 +5,9 @@ import { userIdFromRequest } from "../auth/session.js";
 import {
   AdminError, deleteListing, deleteUser, isAdmin, listAllListings, listUsers, logAction, moderateListing, recentLog, setBanned, setRole, stats,
 } from "../services/admin.js";
+import {
+  checkTemplate, emailLog, isTemplateKey, later, logEmail, mailCtx, nowVn, render, resetTemplate, sampleVars, saveTemplate, sendToUser, listTemplates, templateInput,
+} from "../services/email.js";
 import { getSmtpPublic, mailer, saveSmtp, SettingsError, smtpInput } from "../services/settings.js";
 
 const uuid = z.string().uuid();
@@ -47,7 +50,10 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     const body = userPatch.safeParse(req.body);
     if (!id.success || !body.success) return bad(reply);
     try {
-      if (body.data.banned !== undefined) await setBanned(db, me, id.data, body.data.banned, body.data.reason);
+      if (body.data.banned !== undefined) {
+        await setBanned(db, me, id.data, body.data.banned, body.data.reason);
+        if (body.data.banned) later(sendToUser(mailCtx(deps, req), "account_banned", id.data, { thoi_gian: nowVn(), ly_do: body.data.reason?.trim() ?? "" }));
+      }
       if (body.data.role) await setRole(db, me, id.data, body.data.role);
       return { ok: true };
     } catch (e) { return fail(reply, e); }
@@ -75,7 +81,14 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     const id = idOf(req);
     const body = listingPatch.safeParse(req.body);
     if (!id.success || !body.success) return bad(reply);
-    try { await moderateListing(db, me, id.data, body.data.removed, body.data.reason); return { ok: true }; } catch (e) { return fail(reply, e); }
+    try {
+      await moderateListing(db, me, id.data, body.data.removed, body.data.reason);
+      if (body.data.removed) {
+        const l = await db.selectFrom("listings").select(["seller_id", "title", "removed_reason"]).where("id", "=", id.data).executeTakeFirst();
+        if (l) later(sendToUser(mailCtx(deps, req), "listing_removed", l.seller_id, { thoi_gian: nowVn(), tin: l.title, ly_do: body.data.reason?.trim() ?? "" }));
+      }
+      return { ok: true };
+    } catch (e) { return fail(reply, e); }
   });
 
   app.delete("/admin/listings/:id", async (req, reply) => {
@@ -122,12 +135,90 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
       ].join("\n");
       const info = await m.send(body.data.to, "pcdex: thư thử cấu hình SMTP", text);
       await logAction(db, me, "smtp.test", body.data.to, { ok: true });
+      await logEmail(db, { template: "smtp.test", to: body.data.to, userId: me.id, subject: "pcdex: thư thử cấu hình SMTP", status: "sent" });
       return { ok: true, messageId: info.messageId, accepted: info.accepted };
     } catch (e) {
       if (e instanceof SettingsError) return fail(reply, e);
       const msg = String((e as Error).message ?? e).slice(0, 300);
       await logAction(db, me, "smtp.test", body.data.to, { ok: false, error: msg });
+      await logEmail(db, { template: "smtp.test", to: body.data.to, userId: me.id, subject: "pcdex: thư thử cấu hình SMTP", status: "failed", error: msg });
       return reply.code(502).send({ error: "smtp_failed", message: `Gửi thử thất bại: ${msg}` });
     }
+  });
+
+  // ---------- mẫu thư ----------
+  app.get("/admin/email/templates", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    const smtp = await getSmtpPublic(db);
+    return { templates: await listTemplates(db), smtpReady: !!smtp?.enabled };
+  });
+
+  const keyOf = (req: FastifyRequest) => { const k = (req.params as { key: string }).key; return isTemplateKey(k) ? k : null; };
+
+  app.put("/admin/email/templates/:key", async (req, reply) => {
+    const me = await admin(req, reply);
+    if (!me) return;
+    const key = keyOf(req);
+    if (!key) return reply.code(404).send({ error: "not_found", message: "Không có mẫu này" });
+    const body = templateInput.safeParse(req.body);
+    if (!body.success) return bad(reply, body.error.issues[0]?.message);
+    const err = checkTemplate(key, body.data);
+    if (err) return bad(reply, err);
+    await saveTemplate(db, key, body.data, me.id);
+    await logAction(db, me, "email.template", key, { enabled: body.data.enabled });
+    return { templates: await listTemplates(db) };
+  });
+
+  app.delete("/admin/email/templates/:key", async (req, reply) => {
+    const me = await admin(req, reply);
+    if (!me) return;
+    const key = keyOf(req);
+    if (!key) return reply.code(404).send({ error: "not_found", message: "Không có mẫu này" });
+    await resetTemplate(db, key);
+    await logAction(db, me, "email.template.reset", key);
+    return { templates: await listTemplates(db) };
+  });
+
+  /** Xem trước bản đang soạn (chưa lưu) với dữ liệu mẫu */
+  app.post("/admin/email/templates/:key/preview", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    const key = keyOf(req);
+    if (!key) return reply.code(404).send({ error: "not_found", message: "Không có mẫu này" });
+    const body = templateInput.pick({ subject: true, body: true }).safeParse(req.body);
+    if (!body.success) return bad(reply, body.error.issues[0]?.message);
+    return { ...render(body.data, sampleVars(key, { link_app: mailCtx(deps, req).webUrl })), warning: checkTemplate(key, body.data) };
+  });
+
+  /** Gửi thử bản đang soạn tới một địa chỉ, với dữ liệu mẫu */
+  app.post("/admin/email/templates/:key/test", { config: { rateLimit: { max: 20, timeWindow: "10 minutes" } } }, async (req, reply) => {
+    const me = await admin(req, reply);
+    if (!me) return;
+    const key = keyOf(req);
+    if (!key) return reply.code(404).send({ error: "not_found", message: "Không có mẫu này" });
+    const body = templateInput.pick({ subject: true, body: true }).extend({ to: z.string().trim().email("Email nhận chưa đúng") }).safeParse(req.body);
+    if (!body.success) return bad(reply, body.error.issues[0]?.message);
+    const out = render(body.data, sampleVars(key, { link_app: mailCtx(deps, req).webUrl, email: body.data.to }));
+    const subject = `[Thử] ${out.subject}`;
+    try {
+      if (deps.sendMail) await deps.sendMail({ to: body.data.to, ...out, subject });
+      else {
+        const m = await mailer(db, deps.settingsKey);
+        if (!m) return reply.code(409).send({ error: "smtp_off", message: "Chưa cấu hình SMTP hoặc đang tắt." });
+        await m.send(body.data.to, subject, out.text, out.html);
+      }
+      await logEmail(db, { template: key, to: body.data.to, userId: me.id, subject, status: "sent" });
+      return { ok: true };
+    } catch (e) {
+      if (e instanceof SettingsError) return fail(reply, e);
+      const msg = String((e as Error).message ?? e).slice(0, 300);
+      await logEmail(db, { template: key, to: body.data.to, userId: me.id, subject, status: "failed", error: msg });
+      return reply.code(502).send({ error: "smtp_failed", message: `Gửi thử thất bại: ${msg}` });
+    }
+  });
+
+  app.get("/admin/email/log", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    const q = req.query as Record<string, string | undefined>;
+    return { items: await emailLog(db, { ...page(q), template: q.template, status: q.status }) };
   });
 };

@@ -2,6 +2,7 @@
 
 import { computeScores, resolveMachine } from "@f2m/shared";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { SAMPLE_MACHINES } from "@/data/sample";
@@ -156,7 +157,7 @@ export function Login({ initialMode = "login" }: { initialMode?: "login" | "regi
               {busy ? "Đang xử lý…" : mode === "login" ? "Đăng nhập" : "Tạo tài khoản"}
             </button>
             {mode === "login" && (
-              <p className="faint" style={{ fontSize: 13 }}>Quên mật khẩu? Tính năng lấy lại qua email sắp có. Nếu tài khoản có gắn Google, đăng nhập bằng Google rồi đặt mật khẩu mới trong trang Tài khoản.</p>
+              <p style={{ fontSize: 14 }}><Link href="/quen-mat-khau" className="card-link">Quên mật khẩu?</Link></p>
             )}
           </form>
 

@@ -139,6 +139,7 @@ export function Account() {
               {user.providers.includes("google") && <span className="pill pos">Đang dùng</span>}
             </li>
           </ul>
+          {user.email && <VerifyEmail email={user.email} verified={user.emailVerified} />}
           {user.email && <PasswordForm hasPassword={user.hasPassword} onDone={setUser} />}
           <button className="btn" style={{ marginTop: 16 }} onClick={async () => { await logout(); router.push("/"); }}>Đăng xuất</button>
         </section>
@@ -185,5 +186,25 @@ function DeleteAccount({ handle }: { handle: string }) {
         </div>
       )}
     </section>
+  );
+}
+
+/** Trạng thái xác minh email + gửi lại thư xác minh */
+function VerifyEmail({ email, verified }: { email: string; verified: boolean }) {
+  const [state, setState] = useState<{ busy: boolean; msg: string | null; ok: boolean }>({ busy: false, msg: null, ok: true });
+  if (verified) return <p className="verify-row"><span className="pill pos">Email đã xác minh</span><span className="muted">{email}</span></p>;
+  const send = async () => {
+    setState({ busy: true, msg: null, ok: true });
+    try {
+      await api("/v1/me/verify-email", { body: {} });
+      setState({ busy: false, ok: true, msg: `Đã gửi thư tới ${email}. Bấm link trong thư (hiệu lực 48 giờ); không thấy thì xem mục Spam.` });
+    } catch (e) { setState({ busy: false, ok: false, msg: (e as ApiError).message }); }
+  };
+  return (
+    <div className="verify-box">
+      <p><span className="pill warn">Email chưa xác minh</span> Xác minh để lấy lại được mật khẩu và giữ tài khoản an toàn.</p>
+      <button type="button" className="btn small" disabled={state.busy} onClick={send}>{state.busy ? "Đang gửi…" : "Gửi thư xác minh"}</button>
+      {state.msg && <p className={state.ok ? "ok-text" : "form-error"} role="status">{state.msg}</p>}
+    </div>
   );
 }

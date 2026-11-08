@@ -8,10 +8,11 @@ import { api, ApiError } from "@/lib/api";
 import { n0, vnd } from "@/lib/format";
 import { KIND_LABEL } from "@/lib/listings";
 import { useSession } from "@/lib/session";
+import { EmailLog, EmailTemplates } from "./admin-email";
 
 type Tab = "overview" | "users" | "listings" | "email";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "overview", label: "Tổng quan" }, { id: "users", label: "Người dùng" }, { id: "listings", label: "Tin rao" }, { id: "email", label: "Email (SMTP)" },
+  { id: "overview", label: "Tổng quan" }, { id: "users", label: "Người dùng" }, { id: "listings", label: "Tin rao" }, { id: "email", label: "Email" },
 ];
 const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString("vi-VN") : "—");
 const dayTime = (iso: string) => new Date(iso).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -60,6 +61,7 @@ interface LogRow { id: string; admin_handle: string; action: string; target: str
 const ACTION: Record<string, string> = {
   "user.ban": "khóa tài khoản", "user.unban": "mở khóa tài khoản", "user.role": "đổi quyền", "user.delete": "xóa tài khoản",
   "listing.remove": "gỡ tin", "listing.restore": "khôi phục tin", "listing.delete": "xóa tin", "smtp.update": "sửa cấu hình SMTP", "smtp.test": "gửi thư thử",
+  "email.template": "sửa mẫu thư", "email.template.reset": "khôi phục mẫu thư",
 };
 
 function Overview() {
@@ -294,7 +296,33 @@ const PRESETS: { label: string; host: string; port: number; security: Smtp["secu
   { label: "Resend", host: "smtp.resend.com", port: 465, security: "ssl" },
 ];
 
+const MAIL_NAMES: Record<string, string> = {
+  welcome: "Chào mừng", verify_email: "Xác minh email", password_reset: "Quên mật khẩu", password_changed: "Mật khẩu đã đổi",
+  new_login: "Thiết bị mới", account_banned: "Tài khoản bị khóa", listing_removed: "Tin bị gỡ",
+};
+type MailSub = "mau" | "smtp" | "nhat-ky";
+
+/** Email: mẫu thư theo sự kiện, máy chủ SMTP, nhật ký gửi */
 function Email({ defaultTo }: { defaultTo: string }) {
+  const router = useRouter();
+  const params = useSearchParams();
+  const sub = (["mau", "smtp", "nhat-ky"].includes(params.get("muc") ?? "") ? params.get("muc") : "mau") as MailSub;
+  return (
+    <>
+      <div className="segmented admin-sub" role="tablist" aria-label="Mục email">
+        {([["mau", "Mẫu thư"], ["smtp", "Máy chủ SMTP"], ["nhat-ky", "Nhật ký gửi"]] as const).map(([v, l]) => (
+          <button key={v} type="button" role="tab" aria-selected={sub === v} aria-pressed={sub === v}
+            onClick={() => router.replace(`/quan-tri?tab=email${v === "mau" ? "" : `&muc=${v}`}`, { scroll: false })}>{l}</button>
+        ))}
+      </div>
+      {sub === "mau" && <EmailTemplates defaultTo={defaultTo} />}
+      {sub === "smtp" && <SmtpSettings defaultTo={defaultTo} />}
+      {sub === "nhat-ky" && <EmailLog names={MAIL_NAMES} />}
+    </>
+  );
+}
+
+function SmtpSettings({ defaultTo }: { defaultTo: string }) {
   const [f, setF] = useState({ host: "", port: "587", security: "starttls" as Smtp["security"], user: "", password: "", fromName: "pcdex", fromEmail: "", enabled: true });
   const [hasPassword, setHasPassword] = useState(false);
   const [clearPassword, setClearPassword] = useState(false);
@@ -342,7 +370,7 @@ function Email({ defaultTo }: { defaultTo: string }) {
   return (
     <div className="grid">
       <section className="panel s7" aria-labelledby="h-smtp">
-        <header><h2 id="h-smtp">Máy chủ gửi thư (SMTP)</h2><span className="meta">Dùng cho quên mật khẩu, xác minh email</span></header>
+        <header><h2 id="h-smtp">Máy chủ gửi thư (SMTP)</h2><span className="meta">Dùng cho mọi thư tự động (xem mục Mẫu thư)</span></header>
         {!keyReady && <p className="notice">Máy chủ chưa có <b>SETTINGS_KEY</b> nên chưa lưu được mật khẩu SMTP.</p>}
         <form className="form" noValidate onSubmit={(e) => { e.preventDefault(); void save(); }}>
           <div className="field">
