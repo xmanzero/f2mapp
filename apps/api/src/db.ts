@@ -95,6 +95,7 @@ export interface Database {
     id: Generated<string>; admin_id: string | null; admin_handle: string; action: string; target: string | null;
     detail: unknown; created_at: Generated<Date>;
   };
+  brand_assets: { kind: "logo" | "logo_light" | "favicon"; mime: string; data: Buffer; width: number; height: number; updated_at: Generated<Date>; updated_by: string | null };
   email_templates: { key: string; subject: string; body: string; enabled: boolean; updated_at: Generated<Date>; updated_by: string | null };
   email_log: {
     id: Generated<string>; template: string; to_email: string; user_id: string | null; subject: string;

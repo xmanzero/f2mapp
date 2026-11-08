@@ -6,7 +6,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { SessionProvider, useSession } from "@/lib/session";
-import { Mark, Wordmark } from "./mark";
+import type { Branding } from "@/lib/branding-shared";
+import { BrandLogo, BrandMark } from "./brand-logo";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV = [
@@ -35,15 +36,15 @@ function AccountControl() {
   );
 }
 
-export function Shell({ children }: { children: ReactNode }) {
+export function Shell({ children, brand }: { children: ReactNode; brand: Branding }) {
   return (
     <SessionProvider>
-      <Frame>{children}</Frame>
+      <Frame brand={brand}>{children}</Frame>
     </SessionProvider>
   );
 }
 
-function Frame({ children }: { children: ReactNode }) {
+function Frame({ children, brand }: { children: ReactNode; brand: Branding }) {
   const path = usePathname();
   const { user } = useSession();
   const router = useRouter();
@@ -56,8 +57,9 @@ function Frame({ children }: { children: ReactNode }) {
   return (
     <div className="app">
       <aside className="sidebar" aria-label="Điều hướng">
-        <Link href="/" className="brand" aria-label="pcdex, mạng xã hội PC — trang chủ">
-          <Wordmark size={30} />
+        <Link href="/" className="brand" aria-label={`${brand.siteName}${brand.slogan ? `, ${brand.slogan}` : ""} — trang chủ`}>
+          <BrandLogo brand={brand} height={30} />
+          {brand.slogan && <small className="brand-slogan">{brand.slogan}</small>}
         </Link>
         <nav className="nav">
           {NAV.map(({ href, label, icon: Icon }) => (
@@ -79,8 +81,8 @@ function Frame({ children }: { children: ReactNode }) {
 
       <div className="main">
         <header className="topbar">
-          <Link href="/" className="brand-mobile" aria-label="pcdex, trang chủ">
-            <Mark size={30} />
+          <Link href="/" className="brand-mobile" aria-label={`${brand.siteName}, trang chủ`}>
+            <BrandMark brand={brand} size={30} />
           </Link>
           <form
             className="search"

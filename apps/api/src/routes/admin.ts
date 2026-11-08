@@ -8,6 +8,7 @@ import {
 import {
   checkTemplate, emailLog, isTemplateKey, later, logEmail, mailCtx, nowVn, render, resetTemplate, sampleVars, saveTemplate, sendToUser, listTemplates, templateInput,
 } from "../services/email.js";
+import { BrandingError, brandingInput, deleteAsset, getBranding, isBrandKind, MAX_BRAND_BYTES, prepareAsset, saveAsset, saveBrandingText } from "../services/branding.js";
 import { getSmtpPublic, mailer, saveSmtp, SettingsError, smtpInput } from "../services/settings.js";
 
 const uuid = z.string().uuid();
@@ -22,7 +23,7 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     return db.selectFrom("users").select(["id", "handle"]).where("id", "=", uid).executeTakeFirstOrThrow();
   };
   const fail = (reply: FastifyReply, e: unknown) => {
-    if (e instanceof AdminError || e instanceof SettingsError) return reply.code(e.status).send({ error: "admin", message: e.message });
+    if (e instanceof AdminError || e instanceof SettingsError || e instanceof BrandingError) return reply.code(e.status).send({ error: "admin", message: e.message });
     throw e;
   };
   const bad = (reply: FastifyReply, msg = "Dữ liệu chưa đúng") => reply.code(400).send({ error: "bad_request", message: msg });
@@ -220,5 +221,49 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
     if (!(await admin(req, reply))) return;
     const q = req.query as Record<string, string | undefined>;
     return { items: await emailLog(db, { ...page(q), template: q.template, status: q.status }) };
+  });
+
+  // ---------- thương hiệu ----------
+  // Thân yêu cầu là chính tệp ảnh (Content-Type: image/svg+xml | image/png | image/webp)
+  app.addContentTypeParser(/^image\/(svg\+xml|png|webp)$/, { parseAs: "buffer", bodyLimit: MAX_BRAND_BYTES + 1024 }, (_req, body, done) => done(null, body));
+
+  app.get("/admin/branding", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    return getBranding(db);
+  });
+
+  app.put("/admin/branding", async (req, reply) => {
+    const me = await admin(req, reply);
+    if (!me) return;
+    const body = brandingInput.safeParse(req.body);
+    if (!body.success) return bad(reply, body.error.issues[0]?.message);
+    await saveBrandingText(db, body.data, me.id);
+    await logAction(db, me, "branding.text", null, body.data);
+    return getBranding(db);
+  });
+
+  app.put("/admin/branding/:kind", { bodyLimit: MAX_BRAND_BYTES + 1024 }, async (req, reply) => {
+    const me = await admin(req, reply);
+    if (!me) return;
+    const { kind } = req.params as { kind: string };
+    if (!isBrandKind(kind)) return reply.code(404).send({ error: "not_found", message: "Không có mục này" });
+    const mime = String(req.headers["content-type"] ?? "").split(";")[0]!.trim();
+    if (!Buffer.isBuffer(req.body)) return bad(reply, "Gửi tệp SVG, PNG hoặc WebP.");
+    try {
+      const a = await prepareAsset(kind, mime, req.body);
+      await saveAsset(db, kind, a, me.id);
+      await logAction(db, me, "branding.asset", kind, { mime: a.mime, width: a.width, height: a.height, bytes: a.data.length });
+      return getBranding(db);
+    } catch (e) { return fail(reply, e); }
+  });
+
+  app.delete("/admin/branding/:kind", async (req, reply) => {
+    const me = await admin(req, reply);
+    if (!me) return;
+    const { kind } = req.params as { kind: string };
+    if (!isBrandKind(kind)) return reply.code(404).send({ error: "not_found", message: "Không có mục này" });
+    await deleteAsset(db, kind);
+    await logAction(db, me, "branding.reset", kind);
+    return getBranding(db);
   });
 };

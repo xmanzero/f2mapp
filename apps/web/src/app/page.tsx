@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LiveScore, PanelNotes, Platforms, Reveal, Showcase, Stages, TopLink, type Note, type Panel, type Platform, type Stage } from "@/components/landing";
 import { Mascot } from "@/components/mascot";
-import { Wordmark } from "@/components/mark";
+import { BrandLogo } from "@/components/brand-logo";
+import { getBranding } from "@/lib/branding";
 import "./landing.css";
 
 export const metadata: Metadata = {
@@ -65,14 +66,15 @@ const PLATFORMS: Platform[] = [
   ] },
 ];
 
-export default function Landing() {
+export default async function Landing() {
+  const brand = await getBranding();
   return (
     <div className="lp">
       <Reveal />
       {/* ---------- màn đầu ---------- */}
       <header className="lp-hero">
         <div className="lp-hero-l">
-          <Link href="/" className="lp-brand" aria-label="pcdex"><Wordmark size={34} /></Link>
+          <Link href="/" className="lp-brand" aria-label={brand.siteName}><BrandLogo brand={brand} height={34} /></Link>
           <div className="lp-hero-copy">
             <h1 className="lp-h1"><span className="lp-mask"><span>Máy bạn mạnh cỡ nào?</span></span></h1>
             <p className="lp-lede">pcdex chấm điểm PC từ cấu hình thật: sức mạnh, FPS theo màn hình, chỗ nghẽn và nên nâng gì trước. Miễn phí, không gắn với cửa hàng nào.</p>
@@ -132,7 +134,7 @@ export default function Landing() {
       </section>
 
       <footer className="lp-foot">
-        <span className="soft">pcdex · mạng xã hội PC</span>
+        <span className="soft">{brand.siteName}{brand.slogan ? ` · ${brand.slogan}` : ""}</span>
         <nav aria-label="Liên kết">
           <Link href="/may">Máy của tôi</Link>
           <Link href="/xep-hang">Xếp hạng</Link>

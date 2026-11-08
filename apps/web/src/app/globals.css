@@ -86,7 +86,20 @@ button, input, select { font: inherit; color: inherit; }
 /* ---------- khung: sidebar + top bar cùng nền, chia bằng đường 1px ---------- */
 .app { display: grid; grid-template-columns: var(--sidebar-width) minmax(0, 1fr); min-height: 100svh; }
 .sidebar { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; border-right: 1px solid var(--border); padding: 0 12px 16px; }
-.brand { display: flex; align-items: center; gap: 8px; height: var(--topbar); padding: 0 8px; }
+.brand { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 5px; height: var(--topbar); padding: 0 8px; }
+.brand-slogan { color: var(--faint); font-size: var(--fs-small); line-height: 1.2; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* logo tải lên: bản nền tối / nền sáng đổi theo chế độ */
+.brand-logo { display: inline-flex; align-items: center; }
+.brand-logo img { display: block; max-width: 190px; object-fit: contain; }
+.brand-logo .logo-on-light { display: none; }
+:root[data-theme="light"] .brand-logo .logo-on-dark { display: none; }
+:root[data-theme="light"] .brand-logo .logo-on-light { display: block; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .brand-logo .logo-on-dark { display: none; }
+  :root:not([data-theme="dark"]) .brand-logo .logo-on-light { display: block; }
+}
+.lp .brand-logo .logo-on-dark { display: block !important; }
+.lp .brand-logo .logo-on-light { display: none !important; }
 /* Logo ngang (PCDEX Brand Kit): chữ đậm nghiêng; "EX" gradient Tech Blue → Neon Purple — gradient chỉ dùng trong logo và nút chính */
 .wordmark { display: inline-flex; align-items: center; gap: 0.32em; line-height: 1; color: var(--text); }
 .wordmark-text { font-weight: 800; font-style: italic; letter-spacing: -0.045em; padding-right: 0.08em; }
@@ -754,3 +767,22 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .nm-hello h2 { margin: 0; }
 .scan-get .mascot { margin-bottom: 4px; }
 @media (max-width: 520px) { .empty-state { flex-direction: column; align-items: flex-start; } }
+
+/* Quản trị · Thương hiệu */
+.brand-admin { display: grid; gap: var(--gap); }
+.brand-slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+@media (max-width: 1100px) { .brand-slots { grid-template-columns: minmax(0, 1fr); } }
+.brand-slot { display: grid; gap: 12px; align-content: start; }
+.brand-slot header { margin-bottom: 0; }
+.brand-stage { display: grid; justify-items: start; gap: 6px; padding: 16px 18px; border-radius: 12px; margin-top: 12px; }
+.brand-stage.big { place-items: center; min-height: 112px; margin-top: 0; }
+.brand-stage small { font-size: 12px; }
+.brand-stage.dark { background: #080f24; color: #f8faff; --text: #f8faff; }
+.brand-stage.dark small { color: #8f99b3; }
+.brand-stage.light { background: #ffffff; color: #0b1530; --text: #0b1530; border: 1px solid var(--border); }
+.brand-stage.light small { color: #5c6681; }
+.brand-stage.dark .brand-logo .logo-on-dark, .brand-stage.light .brand-logo .logo-on-light { display: block !important; }
+.brand-stage.dark .brand-logo .logo-on-light, .brand-stage.light .brand-logo .logo-on-dark { display: none !important; }
+.brand-fav { display: flex; align-items: flex-end; gap: 18px; }
+.brand-tab { display: flex; align-items: center; gap: 8px; max-width: 280px; padding: 8px 12px; border-radius: 10px 10px 0 0; background: var(--raised); font-size: 13px; }
+.brand-tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

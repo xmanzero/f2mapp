@@ -44,6 +44,7 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 | `POST /v1/auth/forgot`, `/reset` | Quên mật khẩu: gửi link 60 phút (luôn trả cùng một câu; 60 giây / 5 thư mỗi giờ mỗi tài khoản), đặt mật khẩu mới rồi đăng nhập, đăng xuất phiên cũ |
 | `POST /v1/auth/verify-email`, `/v1/me/verify-email` | Xác minh email bằng link 48 giờ (gửi kèm thư chào mừng); gửi lại thư xác minh |
 | `/v1/admin/email/templates[/:key[/preview\|/test]]`, `/v1/admin/email/log` | Quản trị: mẫu thư theo sự kiện (sửa, bật / tắt, xem trước, gửi thử, khôi phục mặc định), nhật ký gửi |
+| `GET /v1/branding`, `/v1/branding/asset/:kind` · `/v1/admin/branding[/:kind]` | Thương hiệu: tên web, slogan, mô tả, logo, favicon (quản trị sửa; tải ảnh bằng thân yêu cầu là tệp SVG / PNG / WebP) |
 | `GET/PATCH /v1/me` | Hồ sơ |
 | `GET/POST /v1/me/machines`, `PUT/DELETE /v1/me/machines/:id`, `POST /v1/me/machines/:id/primary` | Tối đa 2 máy, cấu hình chi tiết: CPU, card, mainboard, RAM (DDR, ECC/RDIMM, DIMM/SO-DIMM), ổ cứng (loại, dung lượng, sức khỏe), nguồn. Lưu theo so khớp: linh kiện đổi → "đã thay ra" |
 | `DELETE /v1/me/parts/:id` | Xóa linh kiện đã thay ra khỏi kho |

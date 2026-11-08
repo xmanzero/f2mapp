@@ -7,6 +7,7 @@ import type { DB } from "./db.js";
 import type { MailSender } from "./services/email.js";
 import { adminRoutes } from "./routes/admin.js";
 import { authRoutes } from "./routes/auth.js";
+import { brandingRoutes } from "./routes/branding.js";
 import { listingRoutes } from "./routes/listings.js";
 import { machineRoutes } from "./routes/machines.js";
 import { meRoutes } from "./routes/me.js";
@@ -48,6 +49,7 @@ export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: A
     app.register(listingRoutes(opts.deps), { prefix: "/v1" });
     app.register(scanRoutes(opts.deps), { prefix: "/v1" });
     app.register(adminRoutes(opts.deps), { prefix: "/v1" });
+    app.register(brandingRoutes(opts.deps), { prefix: "/v1" });
   }
   return app;
 }
