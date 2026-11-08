@@ -90,3 +90,44 @@ describe("cấu hình chi tiết và 2 máy", () => {
     expect(after.parts.find((p) => p.kind === "psu" && p.status === "in_use")!.label).toBe(before);
   });
 });
+
+describe("máy khai từ trước khi có cấu hình chi tiết", () => {
+  it("mainboard, RAM, ổ cứng, nguồn được tạo thành linh kiện thật và bán được", async () => {
+    const tk = (await t.app.inject({ method: "POST", url: "/v1/auth/register", payload: { email: "cu@test.vn", password: "matkhau-dai-123", displayName: "Máy cũ" } })).json().token;
+    const auth = { authorization: `Bearer ${tk}` };
+    const me = (await t.app.inject({ method: "GET", url: "/v1/me", headers: auth })).json().user;
+    // giống dữ liệu cũ: chỉ có dòng CPU + card, phần còn lại nằm ở các cột tóm tắt
+    const m = await t.db.insertInto("machines").values({ owner_id: me.id, is_primary: true, ram_gb: 32, ram_channels: 2, storage: "nvme4", pcie_gen: 4, psu_w: 750, resolution: 1440, verified_at: null }).returning("id").executeTakeFirstOrThrow();
+    for (const [kind, name] of [["cpu", "Core i5-14600K"], ["gpu", "RX 9060 XT 8GB"]] as const) {
+      const p = await t.db.selectFrom("parts").select("id").where("kind", "=", kind).where("name", "=", name).executeTakeFirstOrThrow();
+      await t.db.insertInto("machine_parts").values({ machine_id: m.id, part_id: p.id, kind, label: name, verified_at: null, replaced_at: null }).execute();
+    }
+    const parts = (await t.app.inject({ method: "GET", url: "/v1/me/listings", headers: auth })).json().parts as { kind: string; label: string }[];
+    expect(parts.map((p) => p.kind).sort()).toEqual(["cpu", "gpu", "mainboard", "psu", "ram", "storage"]);
+    expect(parts.find((p) => p.kind === "ram")!.label).toBe("2×16 GB DDR4"); // LGA1700 nhận cả DDR4 và DDR5: mặc định DDR4, người dùng sửa được
+    expect(parts.find((p) => p.kind === "psu")!.label).toBe("Nguồn 750 W");
+    const ram = parts.find((p) => p.kind === "ram") as unknown as { id: string };
+    const r = await t.app.inject({ method: "POST", url: "/v1/listings", headers: auth,
+      payload: { machinePartId: ram.id, priceVnd: 2_000_000, condition: "used", contact: "0912345678" } });
+    expect(r.statusCode).toBe(201);
+  });
+});
+
+describe("nhãn xác thực", () => {
+  it("chỉ 'xác thực đang dùng' khi đã quét và linh kiện còn trong máy", async () => {
+    const tk = (await t.app.inject({ method: "POST", url: "/v1/auth/register", payload: { email: "xt@test.vn", password: "matkhau-dai-123", displayName: "XT" } })).json().token;
+    const auth = { authorization: `Bearer ${tk}` };
+    await t.app.inject({ method: "POST", url: "/v1/me/machines", headers: auth, payload: { spec: spec({ gpu: "RTX 3070" }) } });
+    const list = async () => (await t.app.inject({ method: "GET", url: "/v1/me/listings", headers: auth })).json().parts as { id: string; label: string; verified: boolean; inUse: boolean }[];
+    const gpu = (await list()).find((p) => p.label === "RTX 3070")!;
+    // giả lập phần mềm quét đã thấy card
+    await t.db.updateTable("machine_parts").set({ verified_at: new Date() }).where("id", "=", gpu.id).execute();
+    expect((await list()).find((p) => p.id === gpu.id)!.verified).toBe(true);
+    // thay card: card cũ không còn "đang dùng" → không còn nhãn xác thực
+    await ageParts(t.db);
+    const mid = (await t.app.inject({ method: "GET", url: "/v1/me/machines", headers: auth })).json().machines[0].id;
+    await t.app.inject({ method: "PUT", url: `/v1/me/machines/${mid}`, headers: auth, payload: { spec: spec({ gpu: "RTX 4070" }) } });
+    const old = (await list()).find((p) => p.id === gpu.id)!;
+    expect(old).toMatchObject({ inUse: false, verified: false });
+  });
+});

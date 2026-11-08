@@ -137,7 +137,7 @@ export function Market() {
                       </div>
                       <div className="faint" style={{ fontSize: 13, marginTop: 2 }}>
                         {[r.province, r.seller, daysLabel(r.daysAgo), r.warrantyMonths ? `bảo hành ${r.warrantyMonths} tháng` : null, r.sample ? "tin mẫu" : r.inUse ? "đang dùng trong máy" : null].filter(Boolean).join(" · ")}
-                        {r.verified !== null && <span className={`verify${r.verified ? " ok" : ""}`}>{r.verified ? "Đã xác thực" : "Chưa xác thực"}</span>}
+                        {r.verified !== null && <span className={`verify${r.verified ? " ok" : ""}`}>{r.verified ? "Xác thực đang dùng" : "Chưa xác thực"}</span>}
                       </div>
                     </td>
                     <td className="r num" style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{vnd(r.priceVnd)}</td>

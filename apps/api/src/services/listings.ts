@@ -73,7 +73,8 @@ function shape(r: Raw, viewerId: string | null, headlines: Map<string, string>) 
     /** Linh kiện này trong máy người bán */
     source: r.machine_id ? {
       machineName: r.machine_name, machine: headlines.get(r.machine_id) ?? "", tier: r.machine_tier, power: r.machine_power,
-      inUse: r.part_was_in_use, installedAt: r.part_added_at, verified: !!r.part_verified_at, verifiedAt: r.part_verified_at,
+      inUse: r.part_was_in_use, installedAt: r.part_added_at,
+      verified: !!r.part_verified_at && r.part_status === "in_use", verifiedAt: r.part_verified_at,
       details: r.part_details,
     } : null,
     mine: viewerId === r.seller_id,
@@ -119,7 +120,9 @@ export async function sellableParts(db: DB, userId: string) {
     .where("m.owner_id", "=", userId).where("mp.status", "in", ["in_use", "replaced", "for_sale"])
     .orderBy("m.is_primary", "desc").orderBy("mp.added_at").execute();
   return rows.map((r) => ({
-    id: r.id, kind: r.kind, label: r.label, details: r.details, inUse: r.status === "in_use", verified: !!r.verified_at,
+    id: r.id, kind: r.kind, label: r.label, details: r.details, inUse: r.status === "in_use",
+    // "xác thực đang dùng": phần mềm quét đã thấy và linh kiện vẫn còn trong máy
+    verified: !!r.verified_at && r.status === "in_use",
     addedAt: r.added_at, replacedAt: r.replaced_at, machineId: r.machine_id, machineName: r.machine_name, isPrimary: r.is_primary,
     listingId: r.listing_id,
   }));

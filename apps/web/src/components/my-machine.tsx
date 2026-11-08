@@ -212,7 +212,7 @@ function ScoreCard({ r, verified, isAccount }: { r: Result; verified: boolean; i
       <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <span className="answer num">{n0(s.power)}</span>
         <span className="pill">Hạng {r.tier.name}</span>
-        {isAccount && <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm quét máy đã xác nhận cấu hình" : "Cấu hình tự khai, chưa được phần mềm quét máy xác nhận"}>{verified ? "Đã xác thực" : "Chưa xác thực"}</span>}
+        {isAccount && <span className={`pill ${verified ? "pos" : ""}`} title={verified ? "Phần mềm benchmark đã quét và xác nhận các linh kiện đang dùng" : "Cấu hình tự khai, chưa chạy phần mềm benchmark"}>{verified ? "Xác thực đang dùng" : "Chưa xác thực"}</span>}
       </div>
       <p className="muted" style={{ marginTop: 6 }}>Gấp <span className="num">{ratio(s.power / 10000)}</span> lần máy mốc (i5-12400F + RTX 3060 = 10.000)</p>
       <TierProgress power={s.power} />

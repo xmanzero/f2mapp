@@ -47,8 +47,8 @@ function PartStatus({ part, canSell }: { part?: PartView; canSell: boolean }) {
   if (!part || !part.id) return null;
   return (
     <span className="part-status">
-      <span className={`pill ${part.verified ? "pos" : ""}`} title={part.verified ? "Phần mềm quét máy đã thấy linh kiện này" : "Tự khai, chưa được phần mềm quét máy xác nhận"}>
-        {part.verified ? "Đã xác thực" : "Chưa xác thực"}
+      <span className={`pill ${part.verified ? "pos" : ""}`} title={part.verified ? "Phần mềm benchmark đã quét thấy linh kiện này đang dùng trong máy" : "Tự khai, chưa chạy phần mềm benchmark để xác nhận"}>
+        {part.verified ? "Xác thực đang dùng" : "Chưa xác thực"}
       </span>
       {canSell && part.id && (part.listingId
         ? <Link href={`/cho/tin?id=${part.listingId}`} className="card-link">Đang bán</Link>
@@ -101,7 +101,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         </Select>
       </Section>
 
-      <Section title="Mainboard" sub="Phần mềm quét đọc được hãng, model, chipset" part={inUse("mainboard")[0]} canSell={canSell}>
+      <Section title="Mainboard" sub="Phần mềm benchmark đọc được hãng, model, chipset" part={inUse("mainboard")[0]} canSell={canSell}>
         <TextField label="Model mainboard" value={spec.mainboard.model ?? ""} placeholder="VD: MSI PRO B660M-A" disabled={locked}
           onCommit={(v) => set({ mainboard: { ...spec.mainboard, model: v || null } })} />
         <TextField label="Chipset" value={spec.mainboard.chipset ?? ""} placeholder="B660" disabled={locked} width={88}
@@ -165,7 +165,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         </button>
       )}
 
-      <Section title="Nguồn" sub={`Cần từ ${psuNeeded(cfg)} W · phần mềm quét không đọc được nguồn`} part={inUse("psu")[0]} canSell={canSell}>
+      <Section title="Nguồn" sub={`Cần từ ${psuNeeded(cfg)} W · phần mềm benchmark không đọc được nguồn`} part={inUse("psu")[0]} canSell={canSell}>
         <Select label="Công suất nguồn" value={spec.psu.wattage} disabled={locked} onChange={(v) => set({ psu: { ...spec.psu, wattage: Number(v) } })}>
           {[...new Set([...PSU_OPTIONS, spec.psu.wattage])].sort((a, b) => a - b).map((w) => <option key={w} value={w}>{w} W</option>)}
         </Select>

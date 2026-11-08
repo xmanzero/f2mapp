@@ -6,7 +6,7 @@ Mạng xã hội máy tính: người dùng khai báo cấu hình PC, xem điể
 - Trao đổi với chủ dự án bằng **tiếng Việt** (kể cả phần tóm tắt cuối mỗi lượt).
 - App **độc lập, trung lập**: không gắn với cửa hàng hay thương hiệu nào (kể cả cửa hàng của chủ dự án). Giá, danh mục, gợi ý không ưu tiên người bán nào.
 - **Đăng nhập**: email + mật khẩu, hoặc Google (chốt 08/11/2026). Không dùng số điện thoại / OTP. Chưa có: xác minh email, quên mật khẩu (chờ dịch vụ gửi email).
-- **Chợ** (chốt 08/11/2026): chỉ đăng bán linh kiện mình sở hữu (trong máy, đang lắp hoặc đã thay ra), 5 tin / ngày, tối đa 2 máy / người. Nhãn "Đã xác thực" chỉ do phần mềm quét máy đặt; tự khai = "Chưa xác thực". Nguồn không quét được.
+- **Chợ** (chốt 08/11/2026): chỉ đăng bán linh kiện mình sở hữu (trong máy, đang lắp hoặc đã thay ra), 5 tin / ngày, tối đa 2 máy / người. Cả 6 loại (CPU, card, mainboard, RAM, ổ cứng, nguồn) đều bán được. Nhãn: "Xác thực đang dùng" khi phần mềm benchmark đã quét thấy linh kiện còn trong máy; còn lại "Chưa xác thực" (tự khai, chưa chạy benchmark, hoặc đã thay ra). Nguồn không quét được.
 - **Giao diện** (website, app): thiết kế theo skill `ui-ux-pro-max:ui-ux-pro-max` và `taste-skill:design-taste-frontend`. Gọi cả hai skill trước khi dựng màn hình.
 
 ## Việc để sau (chủ dự án dặn nhắc lại khi xong chức năng chính)

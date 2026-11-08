@@ -111,7 +111,7 @@ export function PostListing() {
                           <span className="pick-name">{p.label}</span>
                           <span className="line2">{KIND_LABEL[p.kind]} · {p.listingId ? "đang có tin bán" : p.inUse ? "đang lắp trong máy" : "đã thay ra"}</span>
                         </span>
-                        <span className={`pill ${p.verified ? "pos" : ""}`}>{p.verified ? "Đã xác thực" : "Chưa xác thực"}</span>
+                        <span className={`pill ${p.verified ? "pos" : ""}`}>{p.verified ? "Xác thực đang dùng" : "Chưa xác thực"}</span>
                       </label>
                     ))}
                   </div>
@@ -174,7 +174,7 @@ export function PostListing() {
             <div className="faint" style={{ fontSize: 13, marginTop: 4 }}>
               {[f.province || null, `@${user.handle}`, "hôm nay", Number(f.warranty) ? `bảo hành ${f.warranty} tháng` : null].filter(Boolean).join(" · ")}
             </div>
-            {part && <div className="faint" style={{ fontSize: 13, marginTop: 4 }}>Từ máy “{part.machineName}” · {part.inUse ? "đang dùng" : "đã thay ra"} · <span style={{ color: part.verified ? "var(--positive)" : undefined }}>{part.verified ? "đã xác thực" : "chưa xác thực"}</span></div>}
+            {part && <div className="faint" style={{ fontSize: 13, marginTop: 4 }}>Từ máy “{part.machineName}” · {part.inUse ? "đang dùng" : "đã thay ra"} · <span style={{ color: part.verified ? "var(--positive)" : undefined }}>{part.verified ? "xác thực đang dùng" : "chưa xác thực"}</span></div>}
             <div className="answer num" style={{ marginTop: 12 }}>{price ? vnd(price) : "— ₫"}</div>
           </div>
           <ul className="rows" style={{ marginTop: 8 }}>
@@ -191,8 +191,8 @@ export function PostListing() {
               })()}
             </li>
             <li className="row">
-              <div className="grow"><div style={{ fontWeight: 500 }}>Muốn có nhãn “Đã xác thực”?</div>
-                <div className="line2">Chạy phần mềm quét máy của f2m: linh kiện nào phần mềm thấy trong máy sẽ được xác thực (sắp có).</div></div>
+              <div className="grow"><div style={{ fontWeight: 500 }}>Muốn có nhãn “Xác thực đang dùng”?</div>
+                <div className="line2">Chạy phần mềm benchmark của f2m trên máy: linh kiện nào phần mềm quét thấy đang dùng sẽ có nhãn này (sắp có).</div></div>
             </li>
           </ul>
         </section>

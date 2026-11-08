@@ -2,6 +2,7 @@ import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { AppDeps } from "../app.js";
 import { userIdFromRequest } from "../auth/session.js";
+import { loadMachines } from "../services/machines.js";
 import {
   createListing, createListingSchema, getListing, listListings, ListingError, myListings, sellableParts, updateListing, updateListingSchema,
 } from "../services/listings.js";
@@ -66,6 +67,7 @@ export const listingRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) 
   app.get("/me/listings", async (req, reply) => {
     const uid = await requireUser(req, reply);
     if (!uid) return;
+    await loadMachines(db, uid); // tạo linh kiện còn thiếu của máy khai kiểu cũ
     return { items: await myListings(db, uid), parts: await sellableParts(db, uid) };
   });
 };

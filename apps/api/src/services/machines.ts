@@ -102,6 +102,20 @@ function buildSpec(m: MachineRow, parts: Awaited<ReturnType<typeof partsOf>>) {
   return { spec, missing };
 }
 
+/**
+ * Máy khai từ trước khi có cấu hình chi tiết chỉ có dòng CPU + card; mainboard, RAM, ổ, nguồn nằm ở cột tóm tắt.
+ * Tạo các dòng còn thiếu thành linh kiện thật (để bán được). Trả về true nếu có tạo.
+ */
+async function materializeLegacy(db: DB, machineId: string, spec: MachineSpec, parts: Awaited<ReturnType<typeof partsOf>>) {
+  const has = (k: PartKind) => parts.some((p) => p.kind === k && p.status !== "replaced");
+  const wants = explode(spec).filter((w) => !has(w.kind));
+  for (const w of wants)
+    await db.insertInto("machine_parts").values({
+      machine_id: machineId, kind: w.kind, label: w.label, details: JSON.stringify(w.details), verified_at: null, replaced_at: null, part_id: null,
+    }).execute();
+  return wants.length > 0;
+}
+
 const machineCols = ["id", "name", "is_primary", "ram_gb", "ram_channels", "storage", "pcie_gen", "psu_w", "resolution", "last_scan_at"] as const;
 
 /** Các máy của người dùng (tối đa 2), kèm linh kiện, trạng thái xác thực và điểm */
@@ -110,14 +124,16 @@ export async function loadMachines(db: DB, userId: string) {
     .orderBy("is_primary", "desc").orderBy("created_at").execute();
   const out = [];
   for (const m of ms) {
-    const parts = await partsOf(db, m.id);
+    let parts = await partsOf(db, m.id);
     const built = buildSpec(m, parts);
     if (!built) continue;
+    if (await materializeLegacy(db, m.id, built.spec, parts)) parts = await partsOf(db, m.id);
     const listed = await db.selectFrom("listings").select(["id", "machine_part_id"]).where("seller_id", "=", userId)
       .where("status", "in", ["active", "reserved"]).where("machine_part_id", "in", parts.length ? parts.map((p) => p.id) : ["00000000-0000-0000-0000-000000000000"]).execute();
     const view = parts.filter((p) => p.status !== "sold" || built.missing.includes(p.kind)).map((p) => ({
       id: p.id, kind: p.kind, label: p.label, details: p.details, status: p.status,
-      verified: !!p.verified_at, verifiedAt: p.verified_at, addedAt: p.added_at, replacedAt: p.replaced_at,
+      // "xác thực đang dùng": phần mềm quét đã thấy và linh kiện vẫn còn trong máy
+      verified: !!p.verified_at && p.status === "in_use", verifiedAt: p.verified_at, addedAt: p.added_at, replacedAt: p.replaced_at,
       listingId: listed.find((l) => l.machine_part_id === p.id)?.id ?? null,
     }));
     const verifiable = view.filter((p) => p.status === "in_use" && VERIFIABLE_KINDS.includes(p.kind));
