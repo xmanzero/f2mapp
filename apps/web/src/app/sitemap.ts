@@ -10,7 +10,8 @@ const alternates = (path: string) => ({ languages: Object.fromEntries(LOCALES.ma
 /** Tin rao đang bán (tin thật, không có tin mẫu) */
 async function activeListings(): Promise<{ id: string; name: string; province: string | null; createdAt: string; updatedAt?: string }[]> {
   "use cache";
-  cacheLife("hours");
+  // vài phút: sau mỗi lần deploy (lúc build chưa gọi được API) tin rao vào sitemap gần như ngay
+  cacheLife("minutes");
   try {
     const r = await fetch(`${process.env.API_URL ?? "http://localhost:8140"}/v1/listings?limit=500`, { signal: AbortSignal.timeout(3000) });
     if (!r.ok) return [];
