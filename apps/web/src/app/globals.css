@@ -160,7 +160,9 @@ button, input, select { font: inherit; color: inherit; }
 
 .segmented { display: inline-flex; padding: 2px; border-radius: 999px; background: var(--surface); }
 .segmented button { height: 30px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; transition: color var(--t-hover) ease; }
-.segmented button[aria-pressed="true"] { background: var(--raised); color: var(--text); }
+.segmented button:hover { color: var(--text); }
+/* lựa chọn đang bật: viên đảo màu (đen chữ trắng ở Ngày, trắng chữ đen ở Đêm) cho dễ thấy */
+.segmented button[aria-pressed="true"] { background: var(--primary); color: var(--primary-ink); font-weight: 600; }
 
 /* thẻ đếm dùng làm bộ lọc */
 .counts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin-bottom: var(--gap); }
