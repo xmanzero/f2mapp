@@ -23,7 +23,7 @@ export async function api<T>(path: string, init: { method?: string; body?: unkno
 }
 
 export interface Profile {
-  id: string; handle: string; displayName: string; province: string | null;
+  id: string; handle: string; displayName: string; province: string | null; role: "user" | "admin";
   /** khu vực lọc chợ đã lưu: tên tỉnh, "all" = toàn quốc, null = chưa chọn */
   marketRegion: string | null; lastListingProvince: string | null;
   email: string | null; emailVerified: boolean; hasPassword: boolean; providers: ("password" | "google")[];

@@ -285,7 +285,7 @@ export async function leaderboard(db: DB, limit = 100) {
     .innerJoin("users as u", "u.id", "m.owner_id")
     .innerJoin("machine_scores as s", (j) => j.onRef("s.machine_id", "=", "m.id").on("s.scale_version", "=", SCALE_VERSION))
     .select(["u.id as userId", "u.handle", "u.display_name", "u.province", "m.id as machineId", "m.ram_gb", "m.resolution", "s.power", "s.tier"])
-    .where("m.is_primary", "=", true).orderBy("s.power", "desc").limit(limit).execute();
+    .where("m.is_primary", "=", true).where("u.banned_at", "is", null).orderBy("s.power", "desc").limit(limit).execute();
   const parts = rows.length === 0 ? [] : await db.selectFrom("machine_parts")
     .select(["machine_id", "kind", "label", "verified_at"]).where("status", "=", "in_use").where("kind", "in", ["cpu", "gpu"])
     .where("machine_id", "in", rows.map((r) => r.machineId)).execute();
@@ -307,7 +307,7 @@ export async function leaderboard(db: DB, limit = 100) {
 export async function publicMachine(db: DB, userId: string) {
   const row = await db.selectFrom("machines as m").innerJoin("users as u", "u.id", "m.owner_id")
     .select([...machineCols.map((c) => `m.${c}` as const), "u.handle", "u.display_name", "u.province"])
-    .where("m.owner_id", "=", userId).where("m.is_primary", "=", true).executeTakeFirst();
+    .where("m.owner_id", "=", userId).where("m.is_primary", "=", true).where("u.banned_at", "is", null).executeTakeFirst();
   if (!row) return null;
   const m = row as unknown as MachineRow;
   const parts = await partsOf(db, m.id);

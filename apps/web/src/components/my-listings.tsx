@@ -73,7 +73,9 @@ export function MyListings() {
                       {l.status === "expired" ? " · mở tin để đăng lại" : ""}
                     </div>
                   </div>
-                  <span className={`pill ${STATUS_CLASS[l.status]}`}>{STATUS_LABEL[l.status]}</span>
+                  {l.removedReason
+                    ? <span className="pill neg" title={`Quản trị viên đã gỡ tin: ${l.removedReason}`}>Bị gỡ: {l.removedReason}</span>
+                    : <span className={`pill ${STATUS_CLASS[l.status]}`}>{STATUS_LABEL[l.status]}</span>}
                   <span className="num" style={{ fontWeight: 600, minWidth: 110, textAlign: "right" }}>{vnd(l.priceVnd)}</span>
                 </li>
               ))}

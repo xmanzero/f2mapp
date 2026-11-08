@@ -1,7 +1,7 @@
 "use client";
 
 import { SCALE_VERSION } from "@f2m/shared";
-import { Cpu, Search, Store, Trophy } from "lucide-react";
+import { Cpu, Search, ShieldCheck, Store, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -45,6 +45,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
 function Frame({ children }: { children: ReactNode }) {
   const path = usePathname();
+  const { user } = useSession();
   const router = useRouter();
   const [q, setQ] = useState("");
   const current = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
@@ -61,6 +62,11 @@ function Frame({ children }: { children: ReactNode }) {
               <Icon aria-hidden="true" /> {label}
             </Link>
           ))}
+          {user?.role === "admin" && (
+            <Link href="/quan-tri" aria-current={current("/quan-tri") ? "page" : undefined}>
+              <ShieldCheck aria-hidden="true" /> Quản trị
+            </Link>
+          )}
         </nav>
         <p className="foot">
           Thang điểm v{SCALE_VERSION}. Mốc 10.000: Core i5-12400F + RTX 3060 12GB.
@@ -99,6 +105,12 @@ function Frame({ children }: { children: ReactNode }) {
             {short}
           </Link>
         ))}
+        {user?.role === "admin" && (
+          <Link href="/quan-tri" aria-current={current("/quan-tri") ? "page" : undefined}>
+            <ShieldCheck aria-hidden="true" />
+            Quản trị
+          </Link>
+        )}
       </nav>
     </div>
   );

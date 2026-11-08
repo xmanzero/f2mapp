@@ -26,8 +26,9 @@ export function tokenFrom(req: FastifyRequest): string | null {
 export async function userIdFromRequest(db: DB, req: FastifyRequest): Promise<string | null> {
   const token = tokenFrom(req);
   if (!token) return null;
-  const row = await db.selectFrom("sessions").select(["user_id", "last_seen_at"])
-    .where("token_hash", "=", hash(token)).where("expires_at", ">", new Date()).executeTakeFirst();
+  // tài khoản bị khóa: phiên không còn giá trị (khi khóa đã xóa phiên, đây là chốt chặn thứ hai)
+  const row = await db.selectFrom("sessions as s").innerJoin("users as u", "u.id", "s.user_id").select(["s.user_id", "s.last_seen_at"])
+    .where("s.token_hash", "=", hash(token)).where("s.expires_at", ">", new Date()).where("u.banned_at", "is", null).executeTakeFirst();
   if (!row) return null;
   // cập nhật lần dùng cuối tối đa mỗi giờ một lần
   if (Date.now() - new Date(row.last_seen_at).getTime() > 3600_000)

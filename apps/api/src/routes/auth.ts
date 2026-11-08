@@ -25,6 +25,9 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
   const google = deps.googleClientIds.length ? (deps.googleVerifier ?? createGoogleVerifier(deps.googleClientIds)) : null;
 
   const signIn = async (req: FastifyRequest, reply: FastifyReply, userId: string, created: boolean) => {
+    const ban = await db.selectFrom("users").select(["banned_at", "ban_reason"]).where("id", "=", userId).executeTakeFirst();
+    if (ban?.banned_at)
+      return reply.code(403).send({ error: "banned", message: `Tài khoản đã bị khóa${ban.ban_reason ? `: ${ban.ban_reason}` : ""}. Liên hệ lienhe@pcdex.app nếu cần.` });
     const token = await createSession(db, userId, req.headers["user-agent"]);
     setSessionCookie(reply, token, cookieSecureFor(req, deps.cookieSecure));
     return reply.code(created ? 201 : 200).send({ token, created, user: await getProfile(db, userId) });

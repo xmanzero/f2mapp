@@ -40,6 +40,8 @@ services:
       GOOGLE_CLIENT_IDS: ${GOOGLE_CLIENT_IDS:-}
       # auto: cookie Secure khi vào bằng HTTPS (https://pcdex.app qua Cloudflare), vẫn đăng nhập được qua LAN http
       COOKIE_SECURE: ${COOKIE_SECURE:-auto}
+      # Khóa mã hóa mật khẩu trong cấu hình hệ thống (SMTP…): sinh ngẫu nhiên trong ~/f2mapp/.env, đổi khóa = phải nhập lại mật khẩu SMTP
+      SETTINGS_KEY: ${SETTINGS_KEY:-}
     ports: ["8140:8140"]
     depends_on:
       db: { condition: service_healthy }

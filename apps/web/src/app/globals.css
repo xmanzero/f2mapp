@@ -231,7 +231,7 @@ table.data tr.me td:first-child { border-radius: 12px 0 0 12px; } table.data tr.
   .topbar .brand-mobile { display: flex; }
   .topbar .scope { display: none; }
   .canvas { padding: 16px 16px calc(88px + env(safe-area-inset-bottom, 0px)); }
-  .bottombar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); position: fixed; inset: auto 0 0 0; z-index: 20; height: calc(64px + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--ground); border-top: 1px solid var(--border); }
+  .bottombar { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); position: fixed; inset: auto 0 0 0; z-index: 20; height: calc(64px + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--ground); border-top: 1px solid var(--border); }
   .bottombar a { display: grid; place-items: center; align-content: center; gap: 4px; min-height: 48px; color: var(--nav); font-size: var(--fs-small); }
   .bottombar a svg { width: 20px; height: 20px; stroke-width: 1.5; }
   .bottombar a[aria-current="page"] { color: var(--text); }
@@ -649,3 +649,28 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 /* khung nhúng của Google: giữ nền trong suốt trên trang tối */
 .google-box iframe { color-scheme: normal; }
 .segmented button { white-space: nowrap; }
+
+/* ---------- trang quản trị ---------- */
+.admin-tabs { margin-bottom: var(--gap); width: max-content; max-width: 100%; overflow-x: auto; }
+.admin-tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.admin-tiles > div { display: grid; gap: 4px; padding: 4px 14px; }
+.admin-tiles > div + div { border-left: 1px solid var(--rule); }
+.admin-tiles .label { color: var(--muted); font-size: var(--fs-small); }
+.admin-tiles .value { font-size: var(--fs-kpi); font-weight: 500; line-height: 1.15; }
+@media (max-width: 1100px) { .admin-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; } .admin-tiles > div:nth-child(4) { border-left: 0; } }
+@media (max-width: 640px) { .admin-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-tiles > div:nth-child(odd) { border-left: 0; } .admin-tiles > div:nth-child(4) { border-left: 1px solid var(--rule); } }
+.admin-log { list-style: none; margin: 0; padding: 0; display: grid; }
+.admin-log li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-top: 1px solid var(--rule); font-size: 14px; }
+.admin-log li:first-child { border-top: 0; }
+.admin-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 14px; }
+.admin-search { flex: 1 1 260px; max-width: 420px; }
+.admin-table .cell-name { display: grid; gap: 2px; min-width: 200px; }
+.admin-table .tags { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.admin-table .pill { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+.row-actions { display: inline-flex; gap: 14px; white-space: nowrap; }
+.row-confirm { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.input.mini { height: 30px; width: 220px; font-size: 13px; }
+.danger-text { color: var(--negative) !important; }
+.ok-text { color: var(--positive); }
+.check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.check input { accent-color: var(--accent); width: 16px; height: 16px; }

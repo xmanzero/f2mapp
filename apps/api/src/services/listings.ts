@@ -51,7 +51,7 @@ const baseQuery = (db: DB) => db.selectFrom("listings as l")
   .leftJoin("machine_scores as sc", (j) => j.onRef("sc.machine_id", "=", "m.id").on("sc.scale_version", "=", SCALE_VERSION))
   .select([
     "l.id", "l.kind", "l.title", "l.price_vnd", "l.condition", "l.warranty_months", "l.province", "l.description",
-    "l.status", "l.created_at", "l.updated_at", "l.sold_at", "l.expires_at", "l.contact", "l.seller_id", "l.part_was_in_use",
+    "l.status", "l.created_at", "l.updated_at", "l.sold_at", "l.expires_at", "l.contact", "l.seller_id", "l.part_was_in_use", "l.removed_reason",
     "u.handle as seller_handle", "u.display_name as seller_name", "p.name as part_name",
     "mp.status as part_status", "mp.verified_at as part_verified_at", "mp.added_at as part_added_at", "mp.details as part_details",
     "m.id as machine_id", "m.name as machine_name", "sc.tier as machine_tier", "sc.power as machine_power",
@@ -77,6 +77,8 @@ function shape(r: Raw, viewerId: string | null, headlines: Map<string, string>, 
     id: r.id, kind: r.kind, name: r.title ?? r.part_name ?? "", partName: r.part_name, inCatalog: !!r.part_name,
     priceVnd: Number(r.price_vnd), condition: r.condition, warrantyMonths: r.warranty_months,
     province: r.province, description: r.description, status: r.status,
+    /** quản trị viên đã gỡ tin (kèm lý do); người bán không tự mở lại được */
+    removedReason: r.removed_reason,
     createdAt: r.created_at, updatedAt: r.updated_at, soldAt: r.sold_at, expiresAt: r.expires_at,
     seller: { id: r.seller_id, handle: r.seller_handle, displayName: r.seller_name },
     /** Linh kiện này trong máy người bán */
@@ -116,7 +118,8 @@ export async function expireListings(db: DB) {
 
 export async function listListings(db: DB, opts: { kind?: string; q?: string; limit?: number; viewerId: string | null }) {
   await expireListings(db);
-  let q = baseQuery(db).where("l.status", "=", "active").where("l.expires_at", ">", new Date());
+  let q = baseQuery(db).where("l.status", "=", "active").where("l.expires_at", ">", new Date())
+    .where("l.removed_at", "is", null).where("u.banned_at", "is", null);
   if (opts.kind && (LISTING_KINDS as readonly string[]).includes(opts.kind)) q = q.where("l.kind", "=", opts.kind as (typeof LISTING_KINDS)[number]);
   if (opts.q) {
     const like = `%${opts.q.trim().toLowerCase().replace(/[%_\\]/g, "")}%`;
@@ -129,7 +132,7 @@ export async function getListing(db: DB, id: string, viewerId: string | null) {
   await expireListings(db);
   const r = await baseQuery(db).where("l.id", "=", id).executeTakeFirst();
   // tin đã ẩn / hết hạn chỉ người bán thấy
-  if (!r || ((r.status === "hidden" || r.status === "expired") && r.seller_id !== viewerId)) return null;
+  if (!r || ((r.status === "hidden" || r.status === "expired" || r.removed_reason) && r.seller_id !== viewerId)) return null;
   return (await shapeAll(db, [r], viewerId))[0]!;
 }
 
@@ -191,9 +194,10 @@ export async function createListing(db: DB, userId: string, input: CreateListing
 
 export async function updateListing(db: DB, userId: string, id: string, patch: z.infer<typeof updateListingSchema>) {
   await expireListings(db);
-  const l = await db.selectFrom("listings").select(["seller_id", "machine_part_id", "status", "part_was_in_use", "expires_at"]).where("id", "=", id).executeTakeFirst();
+  const l = await db.selectFrom("listings").select(["seller_id", "machine_part_id", "status", "part_was_in_use", "expires_at", "removed_at", "removed_reason"]).where("id", "=", id).executeTakeFirst();
   if (!l) throw new ListingError(404, "Không tìm thấy tin");
   if (l.seller_id !== userId) throw new ListingError(403, "Đây không phải tin của bạn");
+  if (l.removed_at) throw new ListingError(403, `Tin đã bị quản trị viên gỡ${l.removed_reason ? `: ${l.removed_reason}` : ""}. Không mở lại được.`);
   const goingLive = patch.status === "active" || patch.status === "reserved";
   const reopening = goingLive && (l.status === "expired" || l.status === "hidden" || l.status === "sold");
   // mở lại tin đã quá hạn (hết hạn, hoặc hết hạn trong lúc ẩn / đã bán) phải chọn thời gian bán mới

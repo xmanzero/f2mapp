@@ -11,6 +11,9 @@ export interface Database {
     email: string | null;
     province: string | null;
     market_region: Generated<string | null>;
+    role: Generated<"user" | "admin">;
+    banned_at: Generated<Date | null>;
+    ban_reason: Generated<string | null>;
     password_hash: string | null;
     email_verified_at: Date | null;
     failed_logins: Generated<number>;
@@ -83,7 +86,14 @@ export interface Database {
     updated_at: Generated<Date>;
     sold_at: Date | null;
     expires_at: Date;
+    removed_at: Generated<Date | null>;
+    removed_reason: Generated<string | null>;
     part_was_in_use: Generated<boolean>;
+  };
+  app_settings: { key: string; value: unknown; updated_at: Generated<Date>; updated_by: string | null };
+  admin_log: {
+    id: Generated<string>; admin_id: string | null; admin_handle: string; action: string; target: string | null;
+    detail: unknown; created_at: Generated<Date>;
   };
   scans: {
     id: Generated<string>;

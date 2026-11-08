@@ -9,6 +9,8 @@ export interface Listing {
   id: string; kind: ListingKind; name: string; partName: string | null; inCatalog: boolean;
   priceVnd: number; condition: Condition; warrantyMonths: number | null; province: string | null;
   description: string | null; status: ListingStatus; createdAt: string; updatedAt: string; soldAt: string | null; expiresAt: string;
+  /** quản trị viên đã gỡ tin (kèm lý do); người bán không tự mở lại được */
+  removedReason?: string | null;
   seller: { id: string; handle: string; displayName: string };
   /** Linh kiện này trong máy người bán */
   source: { machineName: string; machine: string; tier: string | null; power: number | null; inUse: boolean; installedAt: string; verified: boolean; verifiedAt: string | null } | null;

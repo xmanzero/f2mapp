@@ -4,6 +4,7 @@ import rateLimit from "@fastify/rate-limit";
 import Fastify from "fastify";
 import type { GoogleVerifier } from "./auth/google.js";
 import type { DB } from "./db.js";
+import { adminRoutes } from "./routes/admin.js";
 import { authRoutes } from "./routes/auth.js";
 import { listingRoutes } from "./routes/listings.js";
 import { machineRoutes } from "./routes/machines.js";
@@ -24,6 +25,8 @@ export interface AppDeps {
   loginPerIp10Min?: number;
   /** Địa chỉ web (QR của phần mềm quét trỏ tới WEB_URL/quet). Trống = lấy theo yêu cầu */
   webUrl?: string;
+  /** Khóa mã hóa mật khẩu trong cấu hình hệ thống (SMTP…). Trống = không lưu được mật khẩu */
+  settingsKey?: string;
 }
 
 export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: AppDeps } = {}) {
@@ -41,6 +44,7 @@ export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: A
     app.register(meRoutes(opts.deps), { prefix: "/v1" });
     app.register(listingRoutes(opts.deps), { prefix: "/v1" });
     app.register(scanRoutes(opts.deps), { prefix: "/v1" });
+    app.register(adminRoutes(opts.deps), { prefix: "/v1" });
   }
   return app;
 }

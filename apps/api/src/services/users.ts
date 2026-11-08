@@ -116,7 +116,7 @@ export async function changePassword(db: DB, userId: string, current: string | u
 }
 
 export async function getProfile(db: DB, userId: string) {
-  const u = await db.selectFrom("users").select(["id", "handle", "display_name", "email", "province", "market_region", "password_hash", "email_verified_at"])
+  const u = await db.selectFrom("users").select(["id", "handle", "display_name", "email", "province", "market_region", "password_hash", "email_verified_at", "role"])
     .where("id", "=", userId).executeTakeFirst();
   if (!u) return null;
   const ids = await db.selectFrom("user_identities").select("provider").where("user_id", "=", userId).execute();
@@ -124,7 +124,7 @@ export async function getProfile(db: DB, userId: string) {
   const last = await db.selectFrom("listings").select("province").where("seller_id", "=", userId).where("province", "is not", null)
     .orderBy("created_at", "desc").limit(1).executeTakeFirst();
   return {
-    id: u.id, handle: u.handle, displayName: u.display_name, province: u.province, email: u.email,
+    id: u.id, handle: u.handle, displayName: u.display_name, province: u.province, email: u.email, role: u.role,
     emailVerified: !!u.email_verified_at, hasPassword: !!u.password_hash,
     /** khu vực lọc chợ đã lưu: tên tỉnh, "all" = toàn quốc, null = chưa chọn */
     marketRegion: u.market_region, lastListingProvince: last?.province ?? null,
