@@ -495,7 +495,7 @@ table.data tr.life-ending td:first-child { border-left: 3px solid var(--warning)
 .podium-name.row-open { font-weight: 600; font-size: 16px; }
 .podium-card, table.data tr.clickable { cursor: pointer; }
 table.data tr.clickable:hover td { background: var(--raised); }
-.sheet { margin: auto; width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 0; border-radius: var(--radius-card); background: var(--surface); color: var(--text); overflow: auto; }
+.sheet { position: fixed; inset: auto; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 0; border-radius: var(--radius-card); background: var(--surface); color: var(--text); overflow: auto; }
 .sheet::backdrop { background: rgb(0 0 0 / 0.55); }
 .sheet-body { padding: var(--card-pad); display: grid; gap: 14px; }
 .sheet-head { display: flex; align-items: center; gap: 12px; }
@@ -517,7 +517,7 @@ table.data tr.clickable:hover td { background: var(--raised); }
 .detail-spec dt { color: var(--muted); font-size: 13px; }
 .detail-spec dd { margin: 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-weight: 500; }
 @media (max-width: 640px) {
-  .sheet { width: 100vw; max-width: 100vw; max-height: 92dvh; margin: auto 0 0; border-radius: var(--radius-card) var(--radius-card) 0 0; }
+  .sheet { width: 100vw; max-width: 100vw; max-height: 92dvh; top: auto; bottom: 0; left: 0; transform: none; border-radius: var(--radius-card) var(--radius-card) 0 0; }
   .detail-split { grid-template-columns: minmax(0, 1fr); }
   .detail-tags { margin-left: 0; align-items: flex-start; }
   .detail-fps li b { font-size: 17px; }
