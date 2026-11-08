@@ -1,6 +1,6 @@
 "use client";
 
-import { computeScores, resolveMachine, SCALE_VERSION, tierOf, TIERS } from "@f2m/shared";
+import { computeScores, type MachineInput, resolveMachine, SCALE_VERSION, tierOf, TIERS } from "@f2m/shared";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_MACHINES, personTint } from "@/data/sample";
@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { n0 } from "@/lib/format";
 import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
+import { MachineDetail, type DetailTarget } from "./machine-detail";
 import { TierEmblem, tierVars } from "./tier";
 
 type Filter = "all" | "legend" | "diamond" | "platinum" | "gold_down";
@@ -28,6 +29,7 @@ interface ApiRow {
 interface Row {
   key: string; name: string; sub: string; cpu: string; gpu: string; ramGb: number; resolution: number;
   power: number; tierCode: string; tierName: string; me: boolean; sample: boolean; initial: string;
+  userId: string | null; machine: MachineInput | null;
 }
 
 const tierName = (code: string) => TIERS.find((t) => t.code === code)?.name ?? code;
@@ -39,6 +41,7 @@ export function Leaderboard() {
   const [real, setReal] = useState<ApiRow[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
+  const [open, setOpen] = useState<DetailTarget | null>(null);
 
   useEffect(() => {
     api<{ items: ApiRow[] }>("/v1/leaderboard").then((r) => setReal(r.items)).catch(() => { setReal([]); setFailed(true); });
@@ -49,20 +52,21 @@ export function Leaderboard() {
       key: r.userId, name: r.displayName, sub: [`@${r.handle}`, r.province].filter(Boolean).join(" · "),
       cpu: r.cpu!, gpu: r.gpu!, ramGb: r.ramGb, resolution: r.resolution, power: r.power,
       tierCode: r.tier, tierName: tierName(r.tier), me: !!user && r.userId === user.id, sample: false,
-      initial: r.displayName.trim()[0]?.toUpperCase() ?? "?",
+      initial: r.displayName.trim()[0]?.toUpperCase() ?? "?", userId: r.userId, machine: null,
     }));
     // khách đã khai báo máy trên trình duyệt: hiện tạm để thấy vị trí
     if (user === null && ready && !isSample) {
       const p = computeScores(resolveMachine(machine)).power;
       list.push({ key: "local", name: "Máy của bạn", sub: "Chưa đăng nhập, chỉ bạn thấy", cpu: machine.cpu, gpu: machine.gpu,
-        ramGb: machine.ramGb, resolution: machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tierOf(p).name, me: true, sample: false, initial: "B" });
+        ramGb: machine.ramGb, resolution: machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tierOf(p).name, me: true, sample: false, initial: "B",
+        userId: null, machine });
     }
     if ((real?.length ?? 0) < MIN_REAL) {
       for (const s of SAMPLE_MACHINES) {
         const p = computeScores(resolveMachine(s.machine)).power;
         list.push({ key: `s-${s.handle}`, name: s.handle, sub: `${s.province} · máy mẫu`, cpu: s.machine.cpu, gpu: s.machine.gpu,
           ramGb: s.machine.ramGb, resolution: s.machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tierOf(p).name,
-          me: false, sample: true, initial: s.handle[0]!.toUpperCase() });
+          me: false, sample: true, initial: s.handle[0]!.toUpperCase(), userId: null, machine: s.machine });
       }
     }
     return list.sort((a, b) => b.power - a.power);
@@ -73,6 +77,8 @@ export function Leaderboard() {
   const realCount = real?.length ?? 0;
   const test = FILTERS.find((f) => f[0] === filter)![2];
   const shown = ranked.filter((r) => test(r.tierCode));
+  const tint = (r: Row) => (r.me ? "var(--accent)" : personTint(r.name));
+  const show = (r: Row & { rank: number }) => setOpen({ name: r.name, sub: r.sub, initial: r.initial, tint: tint(r), rank: r.rank, me: r.me, userId: r.userId, machine: r.machine });
 
   return (
     <>
@@ -94,12 +100,12 @@ export function Leaderboard() {
       {real !== null && ranked.length >= 3 && (
         <ol className="podium" aria-label="Ba máy mạnh nhất">
           {ranked.slice(0, 3).map((r) => (
-            <li key={r.key} className={`podium-card p${r.rank}${r.me ? " me" : ""}`} style={tierVars(r.tierCode)}>
+            <li key={r.key} className={`podium-card p${r.rank}${r.me ? " me" : ""}`} style={tierVars(r.tierCode)} onClick={() => show(r)}>
               <div className="podium-top">
                 <span className="podium-rank num">#{r.rank}</span>
                 <TierEmblem code={r.tierCode} label={r.tierName} size={44} />
               </div>
-              <div className="podium-name">{r.name}</div>
+              <button className="podium-name row-open" onClick={(e) => { e.stopPropagation(); show(r); }}>{r.name}</button>
               <div className="faint" style={{ fontSize: 13 }}>{r.sub}</div>
               <div className="podium-score num tier-ink">{n0(r.power)}</div>
               <div className="faint" style={{ fontSize: 13 }}><span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></div>
@@ -140,13 +146,13 @@ export function Leaderboard() {
               </thead>
               <tbody>
                 {shown.map((r) => (
-                  <tr key={r.key} className={r.me ? "me" : undefined}>
+                  <tr key={r.key} className={`clickable${r.me ? " me" : ""}`} onClick={() => show(r)}>
                     <td className="r num faint">{r.rank}</td>
                     <td>
                       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <span className="avatar" style={{ background: r.me ? "var(--accent)" : personTint(r.name) }} aria-hidden="true">{r.initial}</span>
+                        <span className="avatar" style={{ background: tint(r) }} aria-hidden="true">{r.initial}</span>
                         <div style={{ minWidth: 0 }}>
-                          <div style={{ fontWeight: 500 }}>{r.name}</div>
+                          <button className="row-open" onClick={(e) => { e.stopPropagation(); show(r); }} aria-label={`Xem máy của ${r.name}`}>{r.name}</button>
                           <div className="faint" style={{ fontSize: 13 }}>
                             {r.sub}<span className="show-sm"> · <span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></span>
                           </div>
@@ -169,6 +175,7 @@ export function Leaderboard() {
           </div>
         )}
       </section>
+      <MachineDetail target={open} myPower={me?.power ?? null} onClose={() => setOpen(null)} />
     </>
   );
 }

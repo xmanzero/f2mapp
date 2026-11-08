@@ -81,6 +81,13 @@ describe("tài khoản và máy", () => {
     const row = (await req("GET", "/v1/leaderboard")).json().items.find((x: { userId: string }) => x.userId === user.id);
     const expected = computeScores(resolveMachine({ ...machine, gpu: "RTX 4070 Super" } as MachineInput)).power;
     expect(row).toMatchObject({ gpu: "RTX 4070 Super", power: Math.round(expected), tier: tierOf(expected).code });
+    // chi tiết máy xem công khai: không cần đăng nhập, có cấu hình đủ, không lộ id linh kiện
+    const d = (await req("GET", `/v1/leaderboard/${user.id}`)).json();
+    expect(d.spec).toMatchObject({ gpu: "RTX 4070 Super", cpu: machine.cpu });
+    expect(d.parts.map((p: { kind: string }) => p.kind)).toEqual(expect.arrayContaining(["cpu", "gpu"]));
+    expect(d.parts.every((p: Record<string, unknown>) => !("id" in p))).toBe(true);
+    expect((await req("GET", "/v1/leaderboard/00000000-0000-0000-0000-000000000000")).statusCode).toBe(404);
+    expect((await req("GET", "/v1/leaderboard/abc")).statusCode).toBe(404);
   });
 
   it("đổi tên tài khoản: trùng thì 409, sai định dạng thì 400", async () => {

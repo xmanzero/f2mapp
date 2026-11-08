@@ -46,6 +46,7 @@ Database: đặt `DATABASE_URL` rồi `npm run migrate -w @f2m/api`. Khi có dat
 | `DELETE /v1/me/parts/:id` | Xóa linh kiện đã thay ra khỏi kho |
 | `GET/PUT /v1/me/machine` | API cũ: máy chính dạng tóm tắt |
 | `GET /v1/leaderboard` | Bảng xếp hạng máy chính của mọi người |
+| `GET /v1/leaderboard/:userId` | Chi tiết máy chính của một người (cấu hình đầy đủ, linh kiện đã xác thực); ai cũng xem được |
 | `GET /v1/listings`, `/v1/listings/:id` | Tin rao đang bán (lọc `kind`, tìm `q`); số liên hệ chỉ trả cho người đã đăng nhập |
 | `POST /v1/listings`, `PATCH /v1/listings/:id` | Đăng tin **chỉ từ linh kiện trong máy mình** (đang lắp hoặc đã thay ra), tối đa 5 tin / 24 giờ, mỗi linh kiện một tin, thời hạn 1–30 ngày (hết hạn tự hủy, quét mỗi phút); đổi giá, đã hẹn / đã bán / ẩn, gia hạn / đăng lại (`durationDays`) |
 | `GET /v1/me/listings` | Tin của tôi + linh kiện bán được |

@@ -285,6 +285,28 @@ export async function leaderboard(db: DB, limit = 100) {
   });
 }
 
+/**
+ * Máy chính của một người trên bảng xếp hạng (xem công khai): cấu hình chi tiết + linh kiện nào đã xác thực.
+ * Chỉ đọc, không lộ id linh kiện / tin rao.
+ */
+export async function publicMachine(db: DB, userId: string) {
+  const row = await db.selectFrom("machines as m").innerJoin("users as u", "u.id", "m.owner_id")
+    .select([...machineCols.map((c) => `m.${c}` as const), "u.handle", "u.display_name", "u.province"])
+    .where("m.owner_id", "=", userId).where("m.is_primary", "=", true).executeTakeFirst();
+  if (!row) return null;
+  const m = row as unknown as MachineRow;
+  const parts = await partsOf(db, m.id);
+  const built = buildSpec(m, parts);
+  if (!built) return null;
+  return {
+    userId, handle: row.handle, displayName: row.display_name, province: row.province,
+    spec: built.spec, lastScanAt: m.last_scan_at,
+    parts: parts.filter((p) => p.status === "in_use" || p.status === "for_sale").map((p) => ({
+      kind: p.kind, label: p.label, verified: !!p.verified_at && p.status === "in_use",
+    })),
+  };
+}
+
 /** Xóa linh kiện đã thay ra khỏi kho (khai nhầm, đã vứt, đã cho…). Không xóa linh kiện đang lắp / đang có tin bán. */
 export async function deleteStoredPart(db: DB, userId: string, partId: string) {
   const p = await db.selectFrom("machine_parts as mp").innerJoin("machines as m", "m.id", "mp.machine_id")

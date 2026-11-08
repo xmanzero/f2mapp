@@ -7,7 +7,7 @@ import type { AppDeps } from "../app.js";
 import { revokeOtherSessions, userIdFromRequest } from "../auth/session.js";
 import { passwordField } from "./auth.js";
 import {
-  deleteMachine, deleteStoredPart, leaderboard, loadMachines, loadPrimaryMachine, MachineError, saveSpec, savePrimaryMachine, setPrimary,
+  deleteMachine, deleteStoredPart, leaderboard, publicMachine, loadMachines, loadPrimaryMachine, MachineError, saveSpec, savePrimaryMachine, setPrimary,
 } from "../services/machines.js";
 import { AuthError, changePassword, getProfile, HANDLE_RE } from "../services/users.js";
 
@@ -160,5 +160,14 @@ export const meRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
     const limit = Math.min(Number((req.query as { limit?: string }).limit) || 100, 200);
     const uid = await userIdFromRequest(db, req);
     return { scaleVersion: SCALE_VERSION, me: uid, items: await leaderboard(db, limit) };
+  });
+
+  // chi tiết máy chính của một người trên bảng xếp hạng (ai cũng xem được)
+  app.get("/leaderboard/:userId", async (req, reply) => {
+    const { userId } = req.params as { userId: string };
+    if (!/^[0-9a-f-]{36}$/i.test(userId)) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy máy" });
+    const m = await publicMachine(db, userId);
+    if (!m) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy máy" });
+    return { scaleVersion: SCALE_VERSION, ...m };
   });
 };
