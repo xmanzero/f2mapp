@@ -1,5 +1,6 @@
 "use client";
 
+import { listingPath } from "@/lib/listing-url";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -251,7 +252,7 @@ function Listings() {
             <tbody>
               {items.map((l) => (
                 <tr key={l.id}>
-                  <td><div className="cell-name"><Link href={`/cho/tin?id=${l.id}`} className="card-link" target="_blank">{l.name}</Link>
+                  <td><div className="cell-name"><Link href={listingPath({ id: l.id, name: l.name, province: l.province })} className="card-link" target="_blank">{l.name}</Link>
                     <span className="faint small">{KIND_LABEL[l.kind as keyof typeof KIND_LABEL] ?? l.kind}{l.province ? ` · ${l.province}` : ""}{l.description ? ` · ${l.description.slice(0, 60)}` : ""}</span></div></td>
                   <td className="nw">@{l.seller.handle}{l.seller.banned && <span className="pill neg" style={{ marginLeft: 6 }}>Bị khóa</span>}</td>
                   <td className="r num nw">{vnd(l.priceVnd)}</td>

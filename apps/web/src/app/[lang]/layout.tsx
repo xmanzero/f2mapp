@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, Inter } from "next/font/google";
-import { Shell } from "@/components/shell";
+import { SessionProvider } from "@/lib/session";
 import { brandFor, getBranding } from "@/lib/branding";
 import { I18nProvider } from "@/i18n/client";
 import { LOCALES, localePath } from "@/i18n/config";
@@ -46,7 +46,6 @@ const THEME_SCRIPT = `(function(){try{var q=new URLSearchParams(location.search)
 
 export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const locale = await getLocale();
-  const brand = brandFor(await getBranding(), locale);
   return (
     <html lang={locale} className={`${inter.variable} ${chakra.variable}`} suppressHydrationWarning>
       <head>
@@ -54,7 +53,8 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
       </head>
       <body>
         <I18nProvider locale={locale}>
-          <Shell brand={brand}>{children}</Shell>
+          {/* khung app (thanh bên, thanh trên) nằm ở (app)/layout.tsx; trang chủ không có khung */}
+          <SessionProvider>{children}</SessionProvider>
         </I18nProvider>
       </body>
     </html>

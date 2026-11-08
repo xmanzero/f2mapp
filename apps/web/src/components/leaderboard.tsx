@@ -23,7 +23,7 @@ const FILTERS: [Filter, (code: string) => boolean][] = [
 /** Dưới số máy thật này thì ghép thêm máy mẫu (có nhãn "mẫu") để bảng không trống */
 const MIN_REAL = 10;
 
-interface ApiRow {
+export interface ApiRow {
   userId: string; handle: string; displayName: string; province: string | null;
   cpu: string | null; gpu: string | null; ramGb: number; resolution: number; power: number; tier: string;
 }
@@ -35,13 +35,14 @@ interface Row {
 
 const res = (r: number) => (r === 2160 ? "4K" : `${r}p`);
 
-export function Leaderboard() {
+/** `initial`: bảng đã tải trên máy chủ (HTML có danh sách thật); trình duyệt vẫn tải lại bản mới */
+export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
   const { user } = useSession();
   const { t, p: lp, n0, locale } = useI18n();
   const T = t.board;
   const tierName = (code: string) => ((x) => (x ? tn(x, locale) : code))(TIERS.find((x) => x.code === code));
   const { machine, isSample, ready } = useMachine();
-  const [real, setReal] = useState<ApiRow[] | null>(null);
+  const [real, setReal] = useState<ApiRow[] | null>(initial?.length ? initial : null);
   const [failed, setFailed] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<DetailTarget | null>(null);

@@ -1,5 +1,6 @@
 "use client";
 
+import { listingPath } from "@/lib/listing-url";
 import { localizePartLabel } from "@f2m/shared";
 import { useI18n } from "@/i18n/client";
 import { machineName } from "@/lib/use-machine";
@@ -71,7 +72,7 @@ export function MyListings() {
               {items.map((l) => (
                 <li key={l.id} className="row">
                   <div className="grow">
-                    <Link href={`${lp("/cho/tin")}?id=${l.id}`} className="card-link">{label(l.name)}</Link>
+                    <Link href={lp(listingPath(l))} className="card-link">{label(l.name)}</Link>
                     <div className="line2">
                       {T.postedAgo(L.daysAgo(daysSince(l.createdAt)))}
                       {l.soldAt ? T.soldAgo(L.daysAgo(daysSince(l.soldAt))) : ""}

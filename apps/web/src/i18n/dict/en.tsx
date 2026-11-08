@@ -578,6 +578,7 @@ export const en: typeof vi = {
     market: "Used PC parts market: graphics cards, CPUs, RAM, drives and PSUs. Every listing shows how many points it adds to your PC and whether it's good value.",
     scan: "pcdex-scan for Windows reads your real build (CPU, graphics card, motherboard, RAM, drives) in seconds and links it to your account with a QR code.",
     listing: "A used PC part listing on the pcdex market, with its power score and the gain in your PC.",
+    listingDesc: (name: string, cond: string, price: string, province: string | null) => `${name}, ${cond.toLowerCase()}, ${price}${province ? ` in ${province}, Vietnam` : ""}. See its power score and the gain in your PC on the pcdex market.`,
     login: "Sign in to pcdex with email or Google to save your PC, join the leaderboard and sell parts.",
     privacy: "What data pcdex collects, how it's used and your rights over your data.",
     terms: "pcdex terms of use: accounts, scores, the parts market and the content you post.",

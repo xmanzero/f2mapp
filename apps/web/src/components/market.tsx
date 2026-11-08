@@ -38,7 +38,8 @@ const KINDS: (ListingKind | "all")[] = ["all", "gpu", "cpu", "mainboard", "ram",
 type Sort = "new" | "ending" | "value" | "gain";
 const KIND_ORDER: Record<ListingKind, number> = { gpu: 0, cpu: 1, mainboard: 2, ram: 3, storage: 4, psu: 5 };
 
-export function Market() {
+/** `initial`: tin đang bán đã tải trên máy chủ (HTML có danh sách thật); trình duyệt vẫn tải lại bản mới */
+export function Market({ initial }: { initial?: Listing[] } = {}) {
   const router = useRouter();
   const params = useSearchParams();
   const { user } = useSession();
@@ -49,7 +50,7 @@ export function Market() {
   const [q, setQ] = useState(params.get("q") ?? "");
   const [kind, setKind] = useState<ListingKind | "all">("all");
   const [sort, setSort] = useState<Sort>("new");
-  const [real, setReal] = useState<MarketRow[] | null>(null);
+  const [real, setReal] = useState<MarketRow[] | null>(initial?.length ? initial.map(toRow) : null);
   const { machine, isSample, ready } = useMachine();
   const now = useNow();
   const { region, setRegion, source } = useMarketRegion();

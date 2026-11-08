@@ -19,11 +19,16 @@ import { useNow } from "@/lib/use-now";
 import { LifeBar } from "./life-bar";
 import { Gallery, PhotoPicker } from "./photos";
 
-export function ListingDetail() {
+/**
+ * Trang tin rao. Trang /cho/<tên>-<id> truyền sẵn tin đã tải trên máy chủ (`initial`) để HTML có nội dung ngay;
+ * trình duyệt tải lại để có phần riêng của người xem (số liên hệ khi đã đăng nhập, công cụ của người bán).
+ * Trang /cho/tin?id=… (tin mẫu) đọc id trên địa chỉ.
+ */
+export function ListingDetail({ initial }: { initial?: Listing } = {}) {
   const params = useSearchParams();
-  const id = params.get("id") ?? "";
+  const id = initial?.id ?? params.get("id") ?? "";
   const photoFails = Number(params.get("loi-anh")) || 0;
-  const [item, setItem] = useState<Listing | null | undefined>(undefined);
+  const [item, setItem] = useState<Listing | null | undefined>(initial);
   const [error, setError] = useState<string | null>(null);
   const [others, setOthers] = useState<MarketRow[]>([]);
   const { machine, isSample, ready } = useMachine();

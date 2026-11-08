@@ -1,3 +1,4 @@
+import { listingPath } from "./listing-url";
 import { computeScores, estimateFps, findCpu, findGpu, type MachineConfig } from "@f2m/shared";
 import { SAMPLE_LISTINGS } from "@/data/sample";
 
@@ -49,7 +50,7 @@ export function toRow(l: Listing): MarketRow {
   return {
     id: l.id, kind: l.kind, name: l.name, partName: l.partName, priceVnd: l.priceVnd, condition: l.condition,
     warrantyMonths: l.warrantyMonths, province: l.province, seller: l.seller.handle, daysAgo: daysSince(l.createdAt),
-    sample: false, href: `/cho/tin?id=${l.id}`, verified: l.source?.verified ?? false, inUse: l.source?.inUse ?? false,
+    sample: false, href: listingPath(l), verified: l.source?.verified ?? false, inUse: l.source?.inUse ?? false,
     createdAt: l.createdAt, expiresAt: l.expiresAt, sampleDays: 0, photo: l.photos[0] ?? null, photoCount: l.photos.length,
   };
 }

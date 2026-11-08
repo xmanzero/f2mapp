@@ -28,6 +28,7 @@ export function pageLocale(): Locale {
 /** Bỏ tiền tố ngôn ngữ khỏi địa chỉ trình duyệt: "/en/may" → { locale: "en", path: "/may" } */
 export function splitLocale(pathname: string): { locale: Locale; path: string } {
   const m = /^\/([a-z]{2})(?=\/|$)(.*)$/.exec(pathname);
-  if (m && isLocale(m[1]) && m[1] !== DEFAULT_LOCALE) return { locale: m[1], path: m[2] || "/" };
+  // cả "/vi/…": địa chỉ nội bộ sau khi proxy viết lại (thấy được lúc máy chủ dựng sẵn trang)
+  if (m && isLocale(m[1])) return { locale: m[1], path: m[2] || "/" };
   return { locale: DEFAULT_LOCALE, path: pathname || "/" };
 }

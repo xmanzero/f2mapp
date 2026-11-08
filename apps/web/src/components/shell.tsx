@@ -4,8 +4,8 @@ import { SCALE_VERSION } from "@f2m/shared";
 import { Cpu, Search, ShieldCheck, Store, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
-import { SessionProvider, useSession } from "@/lib/session";
+import { Suspense, useState, type ReactNode } from "react";
+import { useSession } from "@/lib/session";
 import type { Branding } from "@/lib/branding-shared";
 import { splitLocale } from "@/i18n/config";
 import { useI18n } from "@/i18n/client";
@@ -19,7 +19,14 @@ const NAV = [
   { href: "/cho", key: "market", short: "marketShort", icon: Store },
 ] as const;
 
-function AccountControl({ path }: { path: string }) {
+/**
+ * Đọc địa chỉ đang mở. Chỉ các phần nhỏ (đánh dấu menu, nút đăng nhập) dùng, và luôn nằm trong <Suspense>:
+ * với trang có tham số động (tin rao /cho/<tên>-<id>) địa chỉ chưa biết lúc dựng sẵn, phần còn lại của khung vẫn dựng sẵn được.
+ */
+const usePath = () => splitLocale(usePathname()).path;
+
+function AccountInner() {
+  const path = usePath();
   const { user } = useSession();
   const { t, p } = useI18n();
   if (user === undefined) return <div className="account" aria-hidden="true"><span className="skeleton" style={{ width: 32, height: 32, borderRadius: 999 }} /></div>;
@@ -38,25 +45,44 @@ function AccountControl({ path }: { path: string }) {
     </div>
   );
 }
+const AccountControl = () => (
+  <Suspense fallback={<div className="account" aria-hidden="true"><span className="skeleton" style={{ width: 32, height: 32, borderRadius: 999 }} /></div>}>
+    <AccountInner />
+  </Suspense>
+);
 
-export function Shell({ children, brand }: { children: ReactNode; brand: Branding }) {
+/** Các mục menu; `path` = null khi chưa biết địa chỉ (bản dựng sẵn) thì chưa đánh dấu mục nào */
+function NavItems({ path, short }: { path: string | null; short?: boolean }) {
+  const { user } = useSession();
+  const { t, p } = useI18n();
+  const current = (href: string) => (path?.startsWith(href) ? "page" as const : undefined);
   return (
-    <SessionProvider>
-      <Frame brand={brand}>{children}</Frame>
-    </SessionProvider>
+    <>
+      {NAV.map(({ href, key, short: s, icon: Icon }) => (
+        <Link key={href} href={p(href)} aria-current={current(href)}>
+          <Icon aria-hidden="true" />{short ? t.nav[s] : <> {t.nav[key]}</>}
+        </Link>
+      ))}
+      {user?.role === "admin" && (
+        <Link href={p("/quan-tri")} aria-current={current("/quan-tri")}>
+          <ShieldCheck aria-hidden="true" />{short ? t.nav.admin : <> {t.nav.admin}</>}
+        </Link>
+      )}
+    </>
   );
 }
+function CurrentNav({ short }: { short?: boolean }) {
+  return <NavItems path={usePath()} short={short} />;
+}
+const Nav = ({ short }: { short?: boolean }) => (
+  <Suspense fallback={<NavItems path={null} short={short} />}><CurrentNav short={short} /></Suspense>
+);
 
-function Frame({ children, brand }: { children: ReactNode; brand: Branding }) {
-  const { path } = splitLocale(usePathname());
-  const { user } = useSession();
+/** Khung app: thanh bên, thanh trên (tìm kiếm, ngôn ngữ, Ngày / Đêm, tài khoản), thanh dưới trên điện thoại */
+export function Shell({ children, brand }: { children: ReactNode; brand: Branding }) {
   const { t, p } = useI18n();
   const router = useRouter();
   const [q, setQ] = useState("");
-  const current = (href: string) => path.startsWith(href);
-
-  // Trang chủ (landing) chiếm toàn trang, không có thanh bên / thanh trên của app
-  if (path === "/") return <>{children}</>;
 
   return (
     <div className="app">
@@ -65,18 +91,7 @@ function Frame({ children, brand }: { children: ReactNode; brand: Branding }) {
           <BrandLogo brand={brand} height={30} />
           {brand.slogan && <small className="brand-slogan">{brand.slogan}</small>}
         </Link>
-        <nav className="nav">
-          {NAV.map(({ href, key, icon: Icon }) => (
-            <Link key={href} href={p(href)} aria-current={current(href) ? "page" : undefined}>
-              <Icon aria-hidden="true" /> {t.nav[key]}
-            </Link>
-          ))}
-          {user?.role === "admin" && (
-            <Link href={p("/quan-tri")} aria-current={current("/quan-tri") ? "page" : undefined}>
-              <ShieldCheck aria-hidden="true" /> {t.nav.admin}
-            </Link>
-          )}
-        </nav>
+        <nav className="nav"><Nav /></nav>
         <p className="foot">
           {t.nav.scaleNote(SCALE_VERSION)}
           <br /><Link href={p("/chinh-sach-quyen-rieng-tu")}>{t.nav.privacy}</Link> · <Link href={p("/dieu-khoan")}>{t.nav.terms}</Link>
@@ -102,26 +117,13 @@ function Frame({ children, brand }: { children: ReactNode; brand: Branding }) {
           </form>
           <LangSwitch />
           <ThemeToggle />
-          <AccountControl path={path} />
+          <AccountControl />
         </header>
 
         <main className="canvas">{children}</main>
       </div>
 
-      <nav className="bottombar" aria-label={t.nav.mainLabel}>
-        {NAV.map(({ href, short, icon: Icon }) => (
-          <Link key={href} href={p(href)} aria-current={current(href) ? "page" : undefined}>
-            <Icon aria-hidden="true" />
-            {t.nav[short]}
-          </Link>
-        ))}
-        {user?.role === "admin" && (
-          <Link href={p("/quan-tri")} aria-current={current("/quan-tri") ? "page" : undefined}>
-            <ShieldCheck aria-hidden="true" />
-            {t.nav.admin}
-          </Link>
-        )}
-      </nav>
+      <nav className="bottombar" aria-label={t.nav.mainLabel}><Nav short /></nav>
     </div>
   );
 }

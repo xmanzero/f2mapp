@@ -578,6 +578,7 @@ export const vi = {
     market: "Chợ linh kiện PC cũ: card đồ họa, CPU, RAM, ổ cứng, nguồn. Mỗi tin cho biết lắp vào máy bạn tăng bao nhiêu điểm và có đáng tiền không.",
     scan: "Phần mềm pcdex-scan cho Windows đọc cấu hình thật (CPU, card, mainboard, RAM, ổ cứng) trong vài giây và gắn vào tài khoản bằng mã QR.",
     listing: "Tin rao linh kiện PC cũ trên chợ pcdex, kèm điểm sức mạnh và mức tăng khi lắp vào máy của bạn.",
+    listingDesc: (name: string, cond: string, price: string, province: string | null) => `${name}, ${cond.toLowerCase()}, giá ${price}${province ? ` tại ${province}` : ""}. Xem điểm sức mạnh và mức tăng khi lắp vào máy của bạn trên chợ pcdex.`,
     login: "Đăng nhập pcdex bằng email hoặc Google để lưu máy, lên bảng xếp hạng và đăng bán linh kiện.",
     privacy: "pcdex thu thập dữ liệu gì, dùng vào việc gì và quyền của bạn với dữ liệu của mình.",
     terms: "Điều khoản sử dụng pcdex: tài khoản, điểm số, chợ linh kiện và nội dung bạn đăng.",

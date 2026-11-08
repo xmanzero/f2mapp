@@ -1,5 +1,6 @@
 "use client";
 
+import { listingPath } from "@/lib/listing-url";
 import { localizePartLabel } from "@f2m/shared";
 import { useI18n } from "@/i18n/client";
 import { machineName } from "@/lib/use-machine";
@@ -122,7 +123,7 @@ export function PostListing() {
         setStep(T.uploading(i + 1, pics.length));
         try { await uploadPhoto(r.item.id, p.blob); } catch { failed++; }
       }
-      router.push(`${lp("/cho/tin")}?id=${r.item.id}${failed ? `&loi-anh=${failed}` : ""}`);
+      router.push(`${lp(listingPath(r.item))}${failed ? `?loi-anh=${failed}` : ""}`);
     } catch (e) {
       setError((e as ApiError).message);
       setBusy(false);
