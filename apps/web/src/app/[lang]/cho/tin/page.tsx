@@ -3,7 +3,11 @@ import { ListingDetail } from "@/components/listing-detail";
 import { pageMeta } from "@/i18n/meta";
 import { getI18n } from "@/i18n/server";
 
-export const generateMetadata = () => pageMeta("/cho/tin", (t) => t.pages.listing);
+export const generateMetadata = () => pageMeta("/cho/tin", (t) => t.pages.listing, {
+  desc: (t) => t.seo.listing,
+  // mỗi tin là /cho/tin?id=…: chưa khai link chuẩn (sẽ có khi tin có địa chỉ riêng)
+  alternates: {},
+});
 
 // Đọc tham số trên địa chỉ (useSearchParams) nên cần Suspense khi bật cacheComponents
 export default async function Page() {

@@ -3,7 +3,8 @@ import { Chakra_Petch, Inter } from "next/font/google";
 import { Shell } from "@/components/shell";
 import { brandFor, getBranding } from "@/lib/branding";
 import { I18nProvider } from "@/i18n/client";
-import { LOCALES } from "@/i18n/config";
+import { LOCALES, localePath } from "@/i18n/config";
+import { socialMeta } from "@/i18n/meta";
 import { getLocale } from "@/i18n/server";
 import "../globals.css";
 
@@ -28,6 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: b.slogan ? `${b.siteName} · ${b.slogan}` : b.siteName, template: `%s · ${b.siteName}` },
     description: b.description,
     applicationName: b.siteName,
+    ...socialMeta(locale, localePath(locale, "/"), b.slogan ? `${b.siteName} · ${b.slogan}` : b.siteName, b.description, b.siteName),
     icons: fav
       ? { icon: [{ url: sized(32), sizes: "32x32", type: "image/png" }, { url: sized(192), sizes: "192x192", type: "image/png" }], apple: [{ url: sized(180), sizes: "180x180" }] }
       : { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/favicon.ico", sizes: "48x48" }], apple: [{ url: "/apple-icon.png", sizes: "180x180" }] },

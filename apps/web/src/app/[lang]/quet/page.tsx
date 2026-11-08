@@ -3,7 +3,7 @@ import { ClaimScan } from "@/components/claim-scan";
 import { pageMeta } from "@/i18n/meta";
 import { getI18n } from "@/i18n/server";
 
-export const generateMetadata = () => pageMeta("/quet", (t) => t.pages.scan);
+export const generateMetadata = () => pageMeta("/quet", (t) => t.pages.scan, { desc: (t) => t.seo.scan });
 
 // Đọc tham số trên địa chỉ (useSearchParams) nên cần Suspense khi bật cacheComponents
 export default async function Page() {

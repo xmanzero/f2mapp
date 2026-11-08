@@ -571,4 +571,15 @@ export const en: typeof vi = {
     unreadable: "Couldn't read this image. Try a JPEG or PNG.",
     compressFail: "Couldn't compress the image",
   },
+  seo: {
+    ogAlt: "pcdex: score your PC's power from its real build",
+    machine: "Enter your PC build to see its power score, tier, FPS at 1080p / 1440p / 4K, bottlenecks and what to upgrade first. Free, nothing to install.",
+    board: "The pcdex community PC leaderboard by power score: see the top builds and PCs verified with the scanner.",
+    market: "Used PC parts market: graphics cards, CPUs, RAM, drives and PSUs. Every listing shows how many points it adds to your PC and whether it's good value.",
+    scan: "pcdex-scan for Windows reads your real build (CPU, graphics card, motherboard, RAM, drives) in seconds and links it to your account with a QR code.",
+    listing: "A used PC part listing on the pcdex market, with its power score and the gain in your PC.",
+    login: "Sign in to pcdex with email or Google to save your PC, join the leaderboard and sell parts.",
+    privacy: "What data pcdex collects, how it's used and your rights over your data.",
+    terms: "pcdex terms of use: accounts, scores, the parts market and the content you post.",
+  },
 };

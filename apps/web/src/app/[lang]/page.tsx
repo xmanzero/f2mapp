@@ -6,14 +6,18 @@ import { BrandLogo } from "@/components/brand-logo";
 import { brandFor, getBranding } from "@/lib/branding";
 import { LOCALES, localePath } from "@/i18n/config";
 import { getI18n } from "@/i18n/server";
+import { socialMeta } from "@/i18n/meta";
+import { SITE_URL } from "@/lib/site";
 import "../landing.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t, locale } = await getI18n();
   const b = await getBranding();
+  const title = `${b.siteName} · ${t.landing.title}`;
   return {
-    title: { absolute: `${b.siteName} · ${t.landing.title}` },
+    title: { absolute: title },
     description: t.landing.description,
+    ...socialMeta(locale, localePath(locale, "/"), title, t.landing.description, b.siteName),
     alternates: { canonical: localePath(locale, "/"), languages: { ...Object.fromEntries(LOCALES.map((l) => [l, localePath(l, "/")])), "x-default": "/" } },
   };
 }
@@ -49,8 +53,19 @@ export default async function Landing() {
   const stages: Stage[] = STAGE_IMG.map((im, i) => ({ src: `${L}/${im.file}.webp`, w: im.w, h: im.h, ...T.stages[i]! }) as Stage);
   const platforms: Platform[] = PLATFORM_META.map((m) => ({ ...m, status: m.status ?? T.soon, rows: T.platformRows[m.id]! }));
 
+  // schema.org: tên web, ô tìm kiếm (tìm trong chợ) và tổ chức cho Google
+  const home = `${SITE_URL}${localePath(locale, "/") === "/" ? "" : localePath(locale, "/")}`;
+  const ld = [
+    {
+      "@context": "https://schema.org", "@type": "WebSite", name: brand.siteName, url: home, inLanguage: locale,
+      description: T.description,
+      potentialAction: { "@type": "SearchAction", target: `${SITE_URL}${p("/cho")}?q={q}`, "query-input": "required name=q" },
+    },
+    { "@context": "https://schema.org", "@type": "Organization", name: brand.siteName, url: SITE_URL, logo: `${SITE_URL}/brand/icon-512.png`, email: "lienhe@pcdex.app" },
+  ];
   return (
     <div className="lp">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
       <Reveal />
       {/* ---------- màn đầu ---------- */}
       <header className="lp-hero">

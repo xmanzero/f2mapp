@@ -2,7 +2,7 @@ import Link from "next/link";
 import { pageMeta } from "@/i18n/meta";
 import { getI18n } from "@/i18n/server";
 
-export const generateMetadata = () => pageMeta("/dieu-khoan", (t) => t.pages.terms);
+export const generateMetadata = () => pageMeta("/dieu-khoan", (t) => t.pages.terms, { desc: (t) => t.seo.terms });
 
 const CONTACT = "lienhe@pcdex.app";
 

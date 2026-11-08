@@ -3,7 +3,7 @@ import { Market } from "@/components/market";
 import { pageMeta } from "@/i18n/meta";
 import { getI18n } from "@/i18n/server";
 
-export const generateMetadata = () => pageMeta("/cho", (t) => t.pages.market);
+export const generateMetadata = () => pageMeta("/cho", (t) => t.pages.market, { desc: (t) => t.seo.market });
 
 // Đọc tham số trên địa chỉ (useSearchParams) nên cần Suspense khi bật cacheComponents
 export default async function Page() {
