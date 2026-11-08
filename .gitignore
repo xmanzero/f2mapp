@@ -23,5 +23,5 @@ data/toms-gpu-hierarchy-2026.json
 
 # Phần mềm quét Windows: deploy.py build từ tools/f2m-scan rồi đặt vào đây (không đưa exe lên repo)
 apps/web/public/tai/
-tools/f2m-scan/bin/
-tools/f2m-scan/obj/
+tools/pcdex-scan/bin/
+tools/pcdex-scan/obj/
