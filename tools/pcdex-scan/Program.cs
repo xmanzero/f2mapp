@@ -10,7 +10,7 @@ namespace PcdexScan
     {
         public const string Version = "0.1.0";
         /// <summary>Địa chỉ web pcdex mặc định. Đổi bằng tham số --server hoặc biến môi trường PCDEX_SERVER.</summary>
-        const string DefaultServer = "http://192.168.110.136:8141";
+        const string DefaultServer = "https://pcdex.app";
 
         [STAThread]
         static int Main(string[] args)

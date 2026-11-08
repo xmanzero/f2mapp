@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { AppDeps } from "../app.js";
 import { createGoogleVerifier } from "../auth/google.js";
 import { PASSWORD_MAX, PASSWORD_MIN } from "../auth/password.js";
-import { clearSessionCookie, createSession, revokeSession, setSessionCookie } from "../auth/session.js";
+import { clearSessionCookie, cookieSecureFor, createSession, revokeSession, setSessionCookie } from "../auth/session.js";
 import { AuthError, getProfile, loginWithGoogle, loginWithPassword, registerWithPassword } from "../services/users.js";
 
 export const emailField = z.string().trim().max(254).email("Email chưa đúng định dạng, ví dụ ten@gmail.com");
@@ -26,7 +26,7 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
 
   const signIn = async (req: FastifyRequest, reply: FastifyReply, userId: string, created: boolean) => {
     const token = await createSession(db, userId, req.headers["user-agent"]);
-    setSessionCookie(reply, token, deps.cookieSecure);
+    setSessionCookie(reply, token, cookieSecureFor(req, deps.cookieSecure));
     return reply.code(created ? 201 : 200).send({ token, created, user: await getProfile(db, userId) });
   };
   const authFail = (reply: FastifyReply, e: unknown) => {
@@ -76,7 +76,7 @@ export const authRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
 
   app.post("/logout", async (req, reply) => {
     await revokeSession(db, req);
-    clearSessionCookie(reply, deps.cookieSecure);
+    clearSessionCookie(reply, cookieSecureFor(req, deps.cookieSecure));
     return { ok: true };
   });
 };

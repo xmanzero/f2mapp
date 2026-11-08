@@ -13,7 +13,7 @@ if (process.env.DATABASE_URL) {
   deps = {
     db,
     googleClientIds: (process.env.GOOGLE_CLIENT_IDS ?? "").split(",").map((s) => s.trim()).filter(Boolean),
-    cookieSecure: process.env.COOKIE_SECURE === "1",
+    cookieSecure: process.env.COOKIE_SECURE === "1" ? true : process.env.COOKIE_SECURE === "auto" ? "auto" : false,
     webUrl: process.env.WEB_URL || undefined,
   };
 }

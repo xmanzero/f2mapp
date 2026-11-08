@@ -17,7 +17,8 @@ export interface AppDeps {
   googleClientIds: string[];
   /** Chỉ dùng khi test: thay bộ xác thực token Google */
   googleVerifier?: GoogleVerifier;
-  cookieSecure: boolean;
+  /** Cookie chỉ gửi qua HTTPS. "auto": bật khi người dùng vào bằng HTTPS (qua Cloudflare), tắt khi vào LAN bằng http */
+  cookieSecure: boolean | "auto";
   /** Giới hạn theo IP (mặc định 10 đăng ký/giờ, 30 lần đăng nhập/10 phút) — test đặt cao hơn */
   registerPerIpHour?: number;
   loginPerIp10Min?: number;

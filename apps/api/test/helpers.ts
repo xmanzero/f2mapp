@@ -14,7 +14,7 @@ const MIGRATIONS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".
 export const GOOGLE_CLIENT = "test-client.apps.googleusercontent.com";
 
 /** Postgres thật (PGlite, trong bộ nhớ) + đủ migration + app có tài khoản */
-export async function setup(opts: { registerPerIpHour?: number } = {}) {
+export async function setup(opts: { registerPerIpHour?: number; cookieSecure?: boolean | "auto" } = {}) {
   const pg = new PGlite();
   for (const f of (await readdir(MIGRATIONS)).filter((x) => x.endsWith(".sql")).sort()) {
     // gen_random_uuid() có sẵn từ Postgres 13; PGlite không cần pgcrypto
@@ -34,7 +34,7 @@ export async function setup(opts: { registerPerIpHour?: number } = {}) {
     deps: {
       db, googleClientIds: [GOOGLE_CLIENT],
       googleVerifier: createGoogleVerifier([GOOGLE_CLIENT], createLocalJWKSet({ keys: [jwk] })),
-      cookieSecure: false, registerPerIpHour: opts.registerPerIpHour ?? 1000, loginPerIp10Min: 1000,
+      cookieSecure: opts.cookieSecure ?? false, registerPerIpHour: opts.registerPerIpHour ?? 1000, loginPerIp10Min: 1000,
     },
   });
   return { app, db, googleToken, close: async () => { await app.close(); await db.destroy(); } };

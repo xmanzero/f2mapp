@@ -48,6 +48,19 @@ export async function revokeOtherSessions(db: DB, req: FastifyRequest, userId: s
   await q.execute();
 }
 
+/**
+ * Người dùng có đang vào bằng HTTPS không. Đường đi: Cloudflare → cloudflared → web Next.js → API,
+ * nên xem header Cloudflare gửi kèm (CF-Visitor) hoặc giá trị đầu của X-Forwarded-Proto.
+ */
+export function viaHttps(req: FastifyRequest) {
+  const visitor = req.headers["cf-visitor"];
+  if (typeof visitor === "string" && /"scheme"\s*:\s*"https"/.test(visitor)) return true;
+  const proto = req.headers["x-forwarded-proto"];
+  const first = (Array.isArray(proto) ? proto[0] : proto)?.split(",")[0]?.trim();
+  return first === "https";
+}
+export const cookieSecureFor = (req: FastifyRequest, setting: boolean | "auto") => (setting === "auto" ? viaHttps(req) : setting);
+
 export function setSessionCookie(reply: FastifyReply, token: string, secure: boolean) {
   reply.setCookie(SESSION_COOKIE, token, { httpOnly: true, sameSite: "lax", secure, path: "/", maxAge: SESSION_TTL_MS / 1000 });
 }
