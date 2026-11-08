@@ -15,6 +15,7 @@ import { useMachine, type PartView } from "@/lib/use-machine";
 import { MachineDiagram } from "./machine-diagram";
 import { TierEmblem, tierVars } from "./tier";
 import { ConfigEditor } from "./config-editor";
+import { NewMachine } from "./new-machine";
 import CountUp from "./CountUp";
 
 const SEV_ORDER: Record<Severity, number> = { critical: 0, warning: 1, info: 2, ok: 3 };
@@ -48,6 +49,10 @@ export function MyMachine() {
 
   useEffect(() => { setPreview(null); }, [active.id]);
   if (!view) return <Loading />;
+  if (m.empty || m.adding) return (
+    <NewMachine first={m.empty} name={m.empty ? "Máy của tôi" : "Máy 2"} browserSpec={m.empty ? m.browserSpec : null}
+      onCreated={m.created} onCancel={m.adding && !m.empty ? m.cancelAdding : undefined} />
+  );
   const { cfg, r, upgrades } = view;
   const findings = [...specFindings(shownSpec), ...r.findings].sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity]);
   const lead = findings[0]!;
@@ -148,7 +153,7 @@ function MachineTabs({ m }: { m: ReturnType<typeof useMachine> }) {
           <button className="btn small" onClick={() => setConfirmDelete(false)}>Giữ lại</button>
         </>
       ) : <button className="btn small" onClick={() => setConfirmDelete(true)}>Xóa máy này</button>)}
-      {m.canAdd && <button className="btn small" onClick={() => void m.addMachine("Máy 2")}>Thêm máy thứ hai</button>}
+      {m.canAdd && <button className="btn small" onClick={m.startAdding}>Thêm máy thứ hai</button>}
       {m.error && <span className="stamp" role="alert" style={{ color: "var(--negative)" }}>{m.error}</span>}
     </div>
   );

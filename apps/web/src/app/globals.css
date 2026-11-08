@@ -674,3 +674,20 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .ok-text { color: var(--positive); }
 .check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .check input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+/* Tài khoản chưa có máy / thêm máy thứ hai */
+.new-machine { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--gap); align-items: start; max-width: 1120px; }
+@media (max-width: 900px) { .new-machine { grid-template-columns: minmax(0, 1fr); } }
+.new-machine h2 { font-size: var(--fs-section); font-weight: 600; margin-bottom: 8px; }
+.nm-scan { display: grid; gap: 16px; align-content: start; }
+.nm-steps { margin: 0; padding-left: 20px; list-style: decimal; display: grid; gap: 6px; }
+.nm-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.nm-browser { display: grid; gap: 10px; justify-items: start; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 14px; }
+.nm-browser b { color: var(--text); font-weight: 500; }
+.nm-form { margin-top: 8px; }
+.nm-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.nm-form select.unset { color: var(--faint); }
+.nm-form select.unset option { color: var(--text); }
+.nm-form .hint { font-size: 13px; }
+.nm-go { height: 48px; }
+@media (max-width: 520px) { .nm-pair { grid-template-columns: 1fr; } }

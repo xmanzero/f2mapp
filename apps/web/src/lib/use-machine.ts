@@ -71,7 +71,8 @@ export type SaveState = "idle" | "saving" | "saved" | "error";
 /**
  * Các máy của người dùng (tối đa 2), cấu hình chi tiết.
  * - Khách: một máy trên trình duyệt (localStorage).
- * - Đã đăng nhập: các máy trên tài khoản. Lần đầu đăng nhập mà tài khoản chưa có máy, máy trên trình duyệt được đưa lên.
+ * - Đã đăng nhập: các máy trên tài khoản. Tài khoản chưa có máy thì để trống (`empty`), không tự gán máy mẫu hay máy trên trình duyệt;
+ *   người dùng quét bằng pcdex-scan hoặc tự chọn linh kiện. Các trang khác (chợ, xếp hạng) vẫn so với máy mẫu (`isSample`).
  * `ready` = false cho tới khi biết là khách hay đã đăng nhập.
  */
 export function useMachine() {
@@ -85,7 +86,6 @@ export function useMachine() {
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [error, setError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const uploaded = useRef(false);
 
   useEffect(() => { setLocal(readLocal()); setLocalLoaded(true); }, []);
 
@@ -104,17 +104,12 @@ export function useMachine() {
     }).catch(() => setServer([]));
   }, [user, reload]);
 
-  // Đăng nhập lần đầu: tài khoản chưa có máy, trình duyệt có → đưa lên
-  useEffect(() => {
-    if (!user || !server || server.length || !local || uploaded.current) return;
-    uploaded.current = true;
-    api("/v1/me/machines", { method: "POST", body: { spec: local } }).then(reload).catch(() => { uploaded.current = false; });
-  }, [user, server, local, reload]);
-
   const ready = localLoaded && user !== undefined && (user === null || server !== null);
-  const machines: MachineView[] = user && server?.length ? server : [localView(local ?? SAMPLE_SPEC)];
+  const machines: MachineView[] = user ? (server?.length ? server : [localView(SAMPLE_SPEC)]) : [localView(local ?? SAMPLE_SPEC)];
   const active = machines.find((m) => m.id === activeId) ?? machines.find((m) => m.isPrimary) ?? machines[0]!;
-  const isSample = user ? !server?.length && !local : !local;
+  const isSample = user ? !server?.length : !local;
+  /** Tài khoản chưa có máy: không gán máy mẫu, trang Máy của tôi hiện màn hình thêm máy */
+  const empty = !!user && server !== null && server.length === 0;
   const spec = draft ?? active.spec;
 
   // đổi máy đang xem thì bỏ bản nháp
@@ -145,11 +140,15 @@ export function useMachine() {
     try { const r = await fn(); setServer(r.machines); return r.machines; }
     catch (e) { setError((e as ApiError).message); return null; }
   }, []);
-  const addMachine = useCallback(async (name: string) => {
-    const ms = await run(() => api("/v1/me/machines", { method: "POST", body: { name, spec: SAMPLE_SPEC } }));
-    const added = ms?.find((m) => !server?.some((s) => s.id === m.id));
+  const [adding, setAdding] = useState(false);
+  /** Sau khi tạo máy (màn hình thêm máy): tải lại và mở máy vừa tạo */
+  const created = useCallback(async () => {
+    const before = new Set(server?.map((m) => m.id));
+    const ms = await reload();
+    const added = ms.find((m) => !before.has(m.id));
     if (added) setActiveId(added.id);
-  }, [run, server]);
+    setAdding(false);
+  }, [reload, server]);
   const rename = useCallback((name: string) => active.id && run(() => api(`/v1/me/machines/${active.id}`, { method: "PUT", body: { name, spec } })), [run, active.id, spec]);
   const setPrimary = useCallback((id: string) => run(() => api(`/v1/me/machines/${id}/primary`, { method: "POST", body: {} })), [run]);
   const removeMachine = useCallback(async (id: string) => {
@@ -161,6 +160,6 @@ export function useMachine() {
     ready, user, machines, active, activeId: active.id, setActiveId, spec, machine: specToInput(spec), isSample,
     save, saveState, error, savedTo: user ? ("account" as const) : ("browser" as const),
     canAdd: !!user && (server?.length ?? 0) > 0 && (server?.length ?? 0) < MAX_MACHINES,
-    addMachine, rename, setPrimary, removeMachine, reload, justScanned, dismissScanned: () => setJustScanned(false),
+    empty, browserSpec: local, adding, startAdding: () => setAdding(true), cancelAdding: () => setAdding(false), created, rename, setPrimary, removeMachine, reload, justScanned, dismissScanned: () => setJustScanned(false),
   };
 }
