@@ -3,7 +3,7 @@
 Mạng xã hội máy tính: người dùng khai báo cấu hình PC, xem điểm sức mạnh và hạng, nhận gợi ý nâng cấp, rao bán / tìm mua linh kiện. Chạy đa nền tảng: website, Android, iOS.
 
 ## Quy định
-- **Tên sản phẩm: pcdex** (chốt 08/11/2026, viết thường; tên cũ f2m). Hướng tới đa ngôn ngữ, toàn cầu. Tên miền dự kiến pcdex.app (chính) + pcdex.net. Chỉ đổi tên hiển thị; tên nội bộ giữ nguyên: repo `f2mapp`, gói `@f2m/*`, cookie `f2m_session` / `f2m_region`, khóa trình duyệt `f2m.*`, container `f2m_*`, slug / scheme Expo.
+- **Tên sản phẩm: pcdex** (chốt 08/11/2026, viết thường; tên cũ f2m). Hướng tới đa ngôn ngữ, toàn cầu. Tên miền **https://pcdex.app** (chạy từ 08/11/2026 qua Cloudflare Tunnel riêng `cloudflared_pcdex` trên aicenter → web :8141; cookie phiên tự bật Secure khi vào bằng HTTPS, `COOKIE_SECURE=auto`, LAN http vẫn đăng nhập được); pcdex.net dự kiến chuyển hướng về. Chỉ đổi tên hiển thị; tên nội bộ giữ nguyên: repo `f2mapp`, gói `@f2m/*`, cookie `f2m_session` / `f2m_region`, khóa trình duyệt `f2m.*`, container `f2m_*`, slug / scheme Expo.
 - Trao đổi với chủ dự án bằng **tiếng Việt** (kể cả phần tóm tắt cuối mỗi lượt).
 - App **độc lập, trung lập**: không gắn với cửa hàng hay thương hiệu nào (kể cả cửa hàng của chủ dự án). Giá, danh mục, gợi ý không ưu tiên người bán nào.
 - **Đăng nhập**: email + mật khẩu, hoặc Google (chốt 08/11/2026). Không dùng số điện thoại / OTP. Chưa có: xác minh email, quên mật khẩu (chờ dịch vụ gửi email).
@@ -14,7 +14,8 @@ Mạng xã hội máy tính: người dùng khai báo cấu hình PC, xem điể
 
 ## Việc để sau (chủ dự án dặn nhắc lại khi xong chức năng chính)
 - Dịch vụ gửi email → quên mật khẩu, xác minh email.
-- Tên miền HTTPS riêng + Google OAuth Client ID → bật đăng nhập Google, `COOKIE_SECURE=1`.
+- Google OAuth Client ID cho https://pcdex.app → bật đăng nhập Google (`GOOGLE_CLIENT_IDS` trong `~/f2mapp/.env`).
+- Gắn pcdex.net chuyển về pcdex.app (khi mua).
 
 ## Cấu trúc (npm workspaces)
 - `apps/web`: Next.js 16, App Router, Tailwind 4, bật `cacheComponents`. **Đọc `node_modules/next/dist/docs/` trước khi viết mã** (API khác bản cũ). Trang tĩnh không được đọc đồng hồ (`new Date()`) lúc dựng.
