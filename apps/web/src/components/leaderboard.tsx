@@ -11,6 +11,7 @@ import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 import { MachineDetail, type DetailTarget } from "./machine-detail";
 import { TierEmblem, tierVars } from "./tier";
+import { Gauge } from "lucide-react";
 
 type Filter = "all" | "legend" | "diamond" | "platinum" | "gold_down";
 const FILTERS: [Filter, (code: string) => boolean][] = [
@@ -26,11 +27,14 @@ const MIN_REAL = 10;
 export interface ApiRow {
   userId: string; handle: string; displayName: string; province: string | null;
   cpu: string | null; gpu: string | null; ramGb: number; resolution: number; power: number; tier: string;
+  /** % so với trung bình cùng mẫu khi đã đo hiệu năng bằng pcdex-scan */
+  bench?: { cpu: number | null; gpu: number | null } | null;
 }
 interface Row {
   key: string; name: string; sub: string; cpu: string; gpu: string; ramGb: number; resolution: number;
   power: number; tierCode: string; tierName: string; me: boolean; sample: boolean; initial: string;
   userId: string | null; machine: MachineInput | null;
+  bench?: ApiRow["bench"];
 }
 
 const res = (r: number) => (r === 2160 ? "4K" : `${r}p`);
@@ -56,7 +60,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
       key: r.userId, name: r.displayName, sub: [`@${r.handle}`, r.province].filter(Boolean).join(" · "),
       cpu: r.cpu!, gpu: r.gpu!, ramGb: r.ramGb, resolution: r.resolution, power: r.power,
       tierCode: r.tier, tierName: tierName(r.tier), me: !!user && r.userId === user.id, sample: false,
-      initial: r.displayName.trim()[0]?.toUpperCase() ?? "?", userId: r.userId, machine: null,
+      initial: r.displayName.trim()[0]?.toUpperCase() ?? "?", userId: r.userId, machine: null, bench: r.bench,
     }));
     // khách đã khai báo máy trên trình duyệt: hiện tạm để thấy vị trí
     if (user === null && ready && !isSample) {
@@ -160,12 +164,14 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
                           <div className="faint" style={{ fontSize: 13 }}>
                             {r.sub}<span className="show-sm"> · <span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></span>
                           </div>
+                          {r.bench && <span className="show-sm"><BenchBadge b={r.bench} /></span>}
                         </div>
                       </div>
                     </td>
                     <td className="hide-sm">
                       <div><span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></div>
                       <div className="faint" style={{ fontSize: 13 }}>{T.ramScreen(r.ramGb, res(r.resolution))}</div>
+                      {r.bench && <BenchBadge b={r.bench} />}
                     </td>
                     <td className="r">
                       <div className="num" style={{ fontWeight: 600, fontSize: 16 }}>{n0(r.power)}</div>
@@ -181,5 +187,16 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
       </section>
       <MachineDetail target={open} myPower={me?.power ?? null} onClose={() => setOpen(null)} />
     </>
+  );
+}
+
+/** Huy hiệu "Đã đo hiệu năng": % so với trung bình cùng mẫu (Blender Benchmark trong pcdex-scan) */
+function BenchBadge({ b }: { b: NonNullable<ApiRow["bench"]> }) {
+  const { t } = useI18n();
+  const parts = [b.cpu != null ? `CPU ${b.cpu}%` : null, b.gpu != null ? `${t.board.benchGpu} ${b.gpu}%` : null].filter(Boolean).join(" · ");
+  return (
+    <span className="pill pos bench-badge" title={t.board.benchTip}>
+      <Gauge size={12} aria-hidden="true" />{t.board.benched}{parts && <span className="num"> · {parts}</span>}
+    </span>
   );
 }

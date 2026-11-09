@@ -364,6 +364,8 @@ export const en: typeof vi = {
     colPlayer: "Player", colBuild: "Build", colPower: "Power score", colTier: "Tier",
     viewPc: (name: string) => `View ${name}'s PC`,
     ramScreen: (gb: number, res: string) => `${gb} GB RAM · ${res} display`,
+    benched: "Benchmarked", benchGpu: "GPU",
+    benchTip: "Real performance measured with Blender Benchmark in pcdex-scan; % is versus the average of the same CPU / card model",
   },
   pcDetail: {
     loadFailed: "Couldn't load this PC",

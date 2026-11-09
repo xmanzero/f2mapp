@@ -32,9 +32,62 @@ def build_scanner():
         return
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["dotnet", "build", str(ROOT / "tools/pcdex-scan"), "-c", "Release", "-o", tmp, "-nologo", "-v", "q"], check=True)
+        exe = Path(tmp) / "pcdex-scan.exe"
+        signed = sign_exe(exe)
         SCANNER_OUT.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(Path(tmp) / "pcdex-scan.exe", SCANNER_OUT)
-    print(f"pcdex-scan.exe: {SCANNER_OUT.stat().st_size / 1024:.0f} KB")
+        shutil.copyfile(exe, SCANNER_OUT)
+    import hashlib
+    digest = hashlib.sha256(SCANNER_OUT.read_bytes()).hexdigest()
+    # mã băm công khai để người dùng tự kiểm tra tệp tải về (Get-FileHash pcdex-scan.exe)
+    SCANNER_OUT.with_name("pcdex-scan.exe.sha256").write_text(f"{digest}  pcdex-scan.exe\n", encoding="ascii")
+    print(f"pcdex-scan.exe: {SCANNER_OUT.stat().st_size / 1024:.0f} KB · {'đã ký' if signed else 'CHƯA KÝ'} · sha256 {digest[:16]}…")
+
+
+def find_signtool():
+    import glob, shutil
+    if shutil.which("signtool"):
+        return shutil.which("signtool")
+    found = sorted(glob.glob(r"C:\Program Files (x86)\Windows Kits\10\bin\10.*\x64\signtool.exe"))
+    return found[-1] if found else None
+
+
+def sign_exe(exe: Path) -> bool:
+    """
+    Ký số Authenticode cho pcdex-scan.exe nếu đã cấu hình (biến môi trường, không lưu trong repo):
+      - PCDEX_SIGN_THUMBPRINT: chứng chỉ trong kho Windows (CurrentUser\\My) — thẻ USB, Certum SimplySign…
+      - PCDEX_SIGN_PFX (+ PCDEX_SIGN_PFX_PASS): tệp .pfx
+      - PCDEX_SIGN_DLIB + PCDEX_SIGN_METADATA: Azure Trusted Signing (Azure.CodeSigning.Dlib.dll + metadata.json)
+      - PCDEX_SIGN_TIMESTAMP: máy chủ đóng dấu thời gian (mặc định theo kiểu ký)
+    Chưa cấu hình → không ký (in cảnh báo). Đã cấu hình mà ký / kiểm tra lỗi → dừng deploy, không phát hành bản chưa ký.
+    """
+    import subprocess
+    env = os.environ
+    thumb, pfx, dlib = env.get("PCDEX_SIGN_THUMBPRINT"), env.get("PCDEX_SIGN_PFX"), env.get("PCDEX_SIGN_DLIB")
+    if not (thumb or pfx or dlib):
+        print("Chưa cấu hình ký số (PCDEX_SIGN_*): pcdex-scan.exe phát hành chưa ký")
+        return False
+    tool = find_signtool()
+    if not tool:
+        sys.exit("Đã cấu hình ký số nhưng không tìm thấy signtool.exe (cài Windows SDK)")
+    ts = env.get("PCDEX_SIGN_TIMESTAMP") or ("http://timestamp.acs.microsoft.com" if dlib else "http://timestamp.digicert.com")
+    cmd = [tool, "sign", "/fd", "sha256", "/tr", ts, "/td", "sha256", "/d", "pcdex-scan", "/du", "https://pcdex.app"]
+    if dlib:
+        cmd += ["/dlib", dlib, "/dmdf", env["PCDEX_SIGN_METADATA"]]
+    elif pfx:
+        cmd += ["/f", pfx] + (["/p", env["PCDEX_SIGN_PFX_PASS"]] if env.get("PCDEX_SIGN_PFX_PASS") else [])
+    else:
+        cmd += ["/sha1", thumb]
+    r = subprocess.run(cmd + [str(exe)], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit("Ký số lỗi: " + (r.stdout + r.stderr).strip()[-400:])
+    # /pa: chính sách Authenticode; chứng chỉ tự tạo (thử) không qua bước này → chỉ cảnh báo khi PCDEX_SIGN_TEST=1
+    v = subprocess.run([tool, "verify", "/pa", str(exe)], capture_output=True, text=True)
+    if v.returncode != 0:
+        if env.get("PCDEX_SIGN_TEST") == "1":
+            print("Đã ký bằng chứng chỉ thử (Windows chưa tin): " + v.stderr.strip()[-200:])
+        else:
+            sys.exit("Đã ký nhưng Windows không xác minh được chữ ký: " + (v.stdout + v.stderr).strip()[-400:])
+    return True
 
 
 def make_tarball() -> bytes:

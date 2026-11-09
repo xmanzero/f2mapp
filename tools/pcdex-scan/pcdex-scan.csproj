@@ -11,7 +11,9 @@
     <ApplicationIcon>pcdex.ico</ApplicationIcon>
     <Version>0.5.1</Version>
     <Product>pcdex-scan</Product>
-    <Description>Quét cấu hình máy tính cho pcdex</Description>
+    <Company>pcdex.app</Company>
+    <Copyright>© 2026 pcdex.app</Copyright>
+    <Description>pcdex-scan — quét cấu hình máy tính cho pcdex.app</Description>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Deterministic>true</Deterministic>
   </PropertyGroup>

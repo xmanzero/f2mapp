@@ -367,6 +367,8 @@ export const vi = {
     colPlayer: "Người chơi", colBuild: "Cấu hình", colPower: "Điểm sức mạnh", colTier: "Hạng",
     viewPc: (name: string) => `Xem máy của ${name}`,
     ramScreen: (gb: number, res: string) => `${gb} GB RAM · màn hình ${res}`,
+    benched: "Đã đo", benchGpu: "Card",
+    benchTip: "Đã đo hiệu năng thật bằng Blender Benchmark trong pcdex-scan; % là so với trung bình của cùng mẫu CPU / card",
   },
   pcDetail: {
     loadFailed: "Không tải được máy",

@@ -286,18 +286,22 @@ export async function leaderboard(db: DB, limit = 100) {
   const rows = await db.selectFrom("machines as m")
     .innerJoin("users as u", "u.id", "m.owner_id")
     .innerJoin("machine_scores as s", (j) => j.onRef("s.machine_id", "=", "m.id").on("s.scale_version", "=", SCALE_VERSION))
-    .select(["u.id as userId", "u.handle", "u.display_name", "u.province", "m.id as machineId", "m.ram_gb", "m.resolution", "s.power", "s.tier"])
+    .select(["u.id as userId", "u.handle", "u.display_name", "u.province", "m.id as machineId", "m.ram_gb", "m.resolution", "m.bench", "s.power", "s.tier"])
     .where("m.is_primary", "=", true).where("u.banned_at", "is", null).orderBy("s.power", "desc").limit(limit).execute();
   const parts = rows.length === 0 ? [] : await db.selectFrom("machine_parts")
     .select(["machine_id", "kind", "label", "verified_at"]).where("status", "=", "in_use").where("kind", "in", ["cpu", "gpu"])
     .where("machine_id", "in", rows.map((r) => r.machineId)).execute();
   return rows.map((r, i) => {
     const mine = parts.filter((p) => p.machine_id === r.machineId);
+    const cpu = mine.find((p) => p.kind === "cpu")?.label ?? null, gpu = mine.find((p) => p.kind === "gpu")?.label ?? null;
+    // số đo hiệu năng còn đúng CPU / card đang lắp: chỉ hiện % so với trung bình (chưa tính vào điểm — số đo chưa chống giả mạo)
+    const b = cpu && gpu ? benchForSpec(r.bench as BenchResult | null, { cpu, gpu }) : null;
     return {
       rank: i + 1, userId: r.userId, handle: r.handle, displayName: r.display_name, province: r.province,
       cpu: mine.find((p) => p.kind === "cpu")?.label ?? null, gpu: mine.find((p) => p.kind === "gpu")?.label ?? null,
       ramGb: r.ram_gb, resolution: r.resolution, power: r.power, tier: r.tier,
       verified: mine.length === 2 && mine.every((p) => p.verified_at),
+      bench: b ? { cpu: b.cpu?.pct ?? null, gpu: b.gpu?.pct ?? null } : null,
     };
   });
 }

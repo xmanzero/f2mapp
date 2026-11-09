@@ -75,6 +75,9 @@ describe("quét máy → gắn vào tài khoản", () => {
     const m = (await machines(tk))[0]! as unknown as { id: string; bench: B };
     expect(m.bench.cpu?.points).toBe(6100);
     expect(m.bench.gpu).toBeNull();
+    // bảng xếp hạng: chỉ % so với trung bình (huy hiệu "Đã đo")
+    const board = (await req("GET", "/v1/leaderboard")).json().items as { handle: string; bench: unknown }[];
+    expect(board.find((x) => x.handle.startsWith("quetbench"))?.bench).toEqual({ cpu: 61, gpu: null });
     const again = (await req("POST", "/v1/scans", report())).json();
     await req("POST", `/v1/scans/${again.code}/claim`, { machineId: m.id }, tk);
     expect(((await machines(tk))[0]! as unknown as { bench: B }).bench.cpu?.points).toBe(6100);
