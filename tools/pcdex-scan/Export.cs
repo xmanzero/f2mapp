@@ -59,32 +59,32 @@ namespace PcdexScan
                         g.DrawString("EX", f, gr, M + 108 + w, 54, typo);
                 }
                 var right = new StringFormat { Alignment = StringAlignment.Far };
-                using (var f = F(32, FontStyle.Bold)) g.DrawString("Cấu hình máy", f, Brushes.White, W - M, 50, right);
-                using (var f = F(22)) using (var b = new SolidBrush(Color.FromArgb(0xb3, 0xbc, 0xd3))) g.DrawString(at.ToString("HH:mm dd/MM/yyyy"), f, b, W - M, 98, right);
+                using (var f = F(32, FontStyle.Bold)) g.DrawString(L.T("Cấu hình máy", "PC configuration"), f, Brushes.White, W - M, 50, right);
+                using (var f = F(22)) using (var b = new SolidBrush(Color.FromArgb(0xb3, 0xbc, 0xd3))) g.DrawString(L.When(at), f, b, W - M, 98, right);
 
                 // tiêu đề
                 float y = 200;
-                using (var f = F(46, FontStyle.Bold)) using (var b = new SolidBrush(Ink)) g.DrawString("Kết quả quét phần cứng", f, b, M - 4, y);
+                using (var f = F(46, FontStyle.Bold)) using (var b = new SolidBrush(Ink)) g.DrawString(L.T("Kết quả quét phần cứng", "Hardware scan result"), f, b, M - 4, y);
                 y += 66;
-                using (var f = F(24)) using (var b = new SolidBrush(Muted)) g.DrawString("Đọc bằng pcdex-scan" + (string.IsNullOrEmpty(os) ? "" : " · " + os), f, b, M, y);
+                using (var f = F(24)) using (var b = new SolidBrush(Muted)) g.DrawString(L.T("Đọc bằng pcdex-scan", "Read by pcdex-scan") + (string.IsNullOrEmpty(os) ? "" : " · " + os), f, b, M, y);
 
                 // khung nhắc xem điểm trên web
                 y += 60;
                 using (var b = new SolidBrush(Panel)) using (var p = Rounded(new RectangleF(M, y, W - 2 * M, 150), 24)) g.FillPath(b, p);
-                using (var f = F(28, FontStyle.Bold)) using (var b = new SolidBrush(Ink)) g.DrawString("Xem điểm sức mạnh, FPS và gợi ý nâng cấp", f, b, M + 36, y + 32);
+                using (var f = F(28, FontStyle.Bold)) using (var b = new SolidBrush(Ink)) g.DrawString(L.T("Xem điểm sức mạnh, FPS và gợi ý nâng cấp", "See the power score, FPS and upgrade tips"), f, b, M + 36, y + 32);
                 using (var f = F(22)) using (var b = new SolidBrush(Muted))
-                    g.DrawString("Gắn kết quả quét vào tài khoản trên pcdex.app (nút “Gắn vào tài khoản pcdex” trong phần mềm).", f, b, new RectangleF(M + 36, y + 80, W - 2 * M - 72, 60));
+                    g.DrawString(L.T("Gắn kết quả quét vào tài khoản trên pcdex.app (nút “Gắn vào tài khoản pcdex” trong phần mềm).", "Link this scan to your account on pcdex.app (the “Link to pcdex account” button in the app)."), f, b, new RectangleF(M + 36, y + 80, W - 2 * M - 72, 60));
                 y += 220;
 
                 // bảng phần cứng
-                using (var f = F(32, FontStyle.Bold)) using (var b = new SolidBrush(Ink)) g.DrawString("Cấu hình", f, b, M - 2, y);
+                using (var f = F(32, FontStyle.Bold)) using (var b = new SolidBrush(Ink)) g.DrawString(L.T("Cấu hình", "Configuration"), f, b, M - 2, y);
                 y += 60;
                 using (var rule = new Pen(Rule, 2))
                 using (var kf = F(22)) using (var vf = F(25)) using (var mb = new SolidBrush(Muted)) using (var ib = new SolidBrush(Ink))
                 {
                     foreach (var row in rows)
                     {
-                        var text = row.Value.Count > 0 ? string.Join("\n", row.Value) : "Không đọc được";
+                        var text = row.Value.Count > 0 ? string.Join("\n", row.Value) : MainForm.Unreadable;
                         var size = g.MeasureString(text, vf, 800);
                         var rh = Math.Max(66, size.Height + 26);
                         if (y + rh > H - 140) break;
@@ -103,8 +103,8 @@ namespace PcdexScan
                     var w = g.MeasureString("pcdex.app", f).Width;
                     using (var f2 = F(22)) using (var b2 = new SolidBrush(Muted))
                     {
-                        g.DrawString("· Chấm điểm PC từ cấu hình thật", f2, b2, M + w - 4, H - 74);
-                        g.DrawString("Tạo lúc " + at.ToString("HH:mm dd/MM/yyyy"), f2, b2, W - M, H - 74, right);
+                        g.DrawString(L.T("· Chấm điểm PC từ cấu hình thật", "· PC scores from real configurations"), f2, b2, M + w - 4, H - 74);
+                        g.DrawString(L.T("Tạo lúc ", "Created ") + L.When(at), f2, b2, W - M, H - 74, right);
                     }
                 }
             }
@@ -161,7 +161,7 @@ namespace PcdexScan
                 Put("\nendstream");
             });
             Obj(5, () => Put($"<< /Length {content.Length} >>\nstream\n{content}\nendstream"));
-            Obj(6, () => Put("<< /Title (pcdex - Ket qua quet phan cung) /Producer (pcdex-scan) /Creator (pcdex.app) >>"));
+            Obj(6, () => Put("<< /Title (" + L.T("pcdex - Ket qua quet phan cung", "pcdex - Hardware scan result") + ") /Producer (pcdex-scan) /Creator (pcdex.app) >>"));
             var xref = outp.Position;
             Put("xref\n0 7\n0000000000 65535 f \n");
             for (int i = 1; i <= 6; i++) Put(offsets[i].ToString("D10") + " 00000 n \n");

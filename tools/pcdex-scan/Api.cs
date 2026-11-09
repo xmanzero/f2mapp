@@ -22,6 +22,8 @@ namespace PcdexScan
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
             http.DefaultRequestHeaders.UserAgent.ParseAdd("pcdex-scan/" + Program.Version);
+            // máy chủ trả thông báo và địa chỉ gắn mã theo ngôn ngữ giao diện
+            http.DefaultRequestHeaders.Add("x-lang", L.Code);
         }
 
         public async Task<CreateScanReply> SendAsync(ScanReport report)
@@ -29,11 +31,11 @@ namespace PcdexScan
             var body = new StringContent(ToJson(report), Encoding.UTF8, "application/json");
             HttpResponseMessage res;
             try { res = await http.PostAsync(Server + "/api/v1/scans", body); }
-            catch (Exception) { throw new ApiException("Không kết nối được máy chủ pcdex. Kiểm tra mạng rồi thử lại."); }
+            catch (Exception) { throw new ApiException(L.T("Không kết nối được máy chủ pcdex. Kiểm tra mạng rồi thử lại.", "Couldn’t reach the pcdex server. Check your connection and try again.")); }
             var text = await res.Content.ReadAsStringAsync();
             var reply = FromJson<CreateScanReply>(text);
             if (!res.IsSuccessStatusCode || reply?.Code == null)
-                throw new ApiException(reply?.Message ?? $"Máy chủ trả lỗi ({(int)res.StatusCode}).");
+                throw new ApiException(reply?.Message ?? L.T("Máy chủ trả lỗi", "Server error") + $" ({(int)res.StatusCode}).");
             return reply;
         }
 

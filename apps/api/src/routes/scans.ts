@@ -2,6 +2,7 @@ import { scanReportSchema } from "@f2m/shared";
 import type { FastifyPluginAsync, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { AppDeps } from "../app.js";
+import { reqLang } from "../i18n.js";
 import { userIdFromRequest } from "../auth/session.js";
 import { MachineError } from "../services/machines.js";
 import { claimScan, createScan, getScan, prettyCode, qrMatrix } from "../services/scans.js";
@@ -25,7 +26,8 @@ export const scanRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
     const body = scanReportSchema.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "bad_request", message: "Dữ liệu quét không hợp lệ", issues: body.error.issues.slice(0, 3) });
     const s = await createScan(db, body.data);
-    const claimUrl = `${webBase(req)}/quet?ma=${s.code}`;
+    // phần mềm chạy tiếng Anh (header x-lang: en) → trang gắn mã bản tiếng Anh
+    const claimUrl = `${webBase(req)}${reqLang(req) === "en" ? "/en" : ""}/quet?ma=${s.code}`;
     return reply.code(201).send({ code: s.code, pretty: prettyCode(s.code), claimUrl, qr: qrMatrix(claimUrl), expiresAt: s.expiresAt, result: s.result });
   });
 

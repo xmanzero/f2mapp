@@ -40,11 +40,16 @@ namespace PcdexScan
         readonly Panel side = new Panel();
         readonly Label sideTitle = new Label(), sideText = new Label(), codeLabel = new Label(), expiryLabel = new Label(), claimedLabel = new Label();
         readonly QrBox qr = new QrBox();
+        /// <summary>Người dùng bấm đổi ngôn ngữ: Program mở lại cửa sổ với ngôn ngữ mới, giữ kết quả quét</summary>
+        public bool SwitchLang { get; private set; }
+        public ScanReport Report => report;
+        static string SideIntro => L.T("Gắn kết quả quét vào tài khoản pcdex để cập nhật máy đã khai hoặc tạo máy mới. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng” trên bảng xếp hạng và chợ.", "Link this scan to your pcdex account to update a machine you already added or create a new one. Parts read from this PC get the “Verified in use” label on the leaderboard and market.");
 
-        public MainForm(Api api)
+        public MainForm(Api api, ScanReport existing = null)
         {
             this.api = api;
-            Text = "pcdex — Quét cấu hình máy";
+            report = existing;
+            Text = L.T("pcdex — Quét cấu hình máy", "pcdex — PC hardware scan");
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScaleDimensions = new SizeF(96F, 96F);
             ClientSize = new Size(940, 660);
@@ -60,22 +65,27 @@ namespace PcdexScan
             var logo = new PictureBox { Size = new Size(32, 32), Location = new Point(24, 16), SizeMode = PictureBoxSizeMode.Zoom, BackColor = Ground };
             try { if (Icon != null) logo.Image = new Icon(Icon, new Size(64, 64)).ToBitmap(); } catch { }
             var brand = new Label { Text = "pcdex", Font = new Font(FontName, 18F, FontStyle.Bold), ForeColor = Ink, AutoSize = true, Location = new Point(62, 14) };
-            var sub = new Label { Text = "Quét cấu hình máy", Font = new Font(FontName, 11F), ForeColor = Muted, AutoSize = true, Location = new Point(80, 23) };
-            var ver = new Label { Text = "phiên bản " + Program.Version, ForeColor = Faint, AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
-            head.Controls.AddRange(new Control[] { logo, brand, sub, ver });
-            head.Resize += (s, e) => ver.Location = new Point(head.ClientSize.Width - ver.Width - 24, 26);
+            var sub = new Label { Text = L.T("Quét cấu hình máy", "Hardware scan"), Font = new Font(FontName, 11F), ForeColor = Muted, AutoSize = true, Location = new Point(80, 23) };
+            var ver = new Label { Text = L.T("phiên bản ", "version ") + Program.Version, ForeColor = Faint, AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            // đổi ngôn ngữ: tên ngôn ngữ kia, viết bằng chính ngôn ngữ đó
+            var langBtn = new LinkLabel { Text = L.En ? "Tiếng Việt" : "English", AutoSize = true, LinkColor = Lime, ActiveLinkColor = Ink, LinkBehavior = LinkBehavior.HoverUnderline, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            // không nhận tiêu điểm: cửa sổ mới mở mà người dùng đang gõ phím (Space / Enter) thì không bị đổi ngôn ngữ nhầm
+            langBtn.TabStop = false;
+            langBtn.LinkClicked += (s, e) => { if (e.Button == MouseButtons.Left) { SwitchLang = true; Close(); } };
+            head.Controls.AddRange(new Control[] { logo, brand, sub, ver, langBtn });
+            head.Resize += (s, e) => { langBtn.Location = new Point(head.ClientSize.Width - langBtn.Width - 24, 26); ver.Location = new Point(langBtn.Left - ver.Width - 16, 26); };
             head.Layout += (s, e) => sub.Location = new Point(brand.Right + 8, sub.Top);
 
             // ---------- cột phải: gắn vào tài khoản ----------
             side.Dock = DockStyle.Right; side.Width = 340; side.BackColor = Surface; side.Padding = new Padding(24);
-            sideTitle.Text = "Gắn vào tài khoản"; sideTitle.Font = new Font(FontName, 13F, FontStyle.Bold); sideTitle.AutoSize = true;
+            sideTitle.Text = L.T("Gắn vào tài khoản", "Link to your account"); sideTitle.Font = new Font(FontName, 13F, FontStyle.Bold); sideTitle.AutoSize = true;
             sideText.ForeColor = Muted; sideText.AutoSize = true; sideText.MaximumSize = new Size(280, 0);
-            sideText.Text = "Gắn kết quả quét vào tài khoản pcdex để cập nhật máy đã khai hoặc tạo máy mới. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng” trên bảng xếp hạng và chợ.";
+            sideText.Text = SideIntro;
             qr.Size = new Size(200, 200); qr.Visible = false;
             codeLabel.Font = new Font(FontName, 22F, FontStyle.Bold); codeLabel.ForeColor = Lime; codeLabel.AutoSize = true; codeLabel.Visible = false;
             expiryLabel.ForeColor = Faint; expiryLabel.AutoSize = true; expiryLabel.MaximumSize = new Size(280, 0); expiryLabel.Visible = false;
             claimedLabel.ForeColor = Lime; claimedLabel.Font = new Font(FontName, 11F, FontStyle.Bold); claimedLabel.AutoSize = true; claimedLabel.MaximumSize = new Size(280, 0); claimedLabel.Visible = false;
-            openBtn = MakeButton("Mở trên trình duyệt máy này", false); openBtn.Visible = false; openBtn.Width = 280;
+            openBtn = MakeButton(L.T("Mở trên trình duyệt máy này", "Open in this PC’s browser"), false); openBtn.Visible = false; openBtn.Width = 280;
             openBtn.Click += (s, e) => { if (sent != null) Open(sent.ClaimUrl); };
             var sideFlow = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, BackColor = Surface, AutoScroll = false };
             sideFlow.Controls.AddRange(new Control[] { sideTitle, Gap(8), sideText, Gap(16), qr, Gap(12), codeLabel, Gap(4), expiryLabel, Gap(16), openBtn, Gap(12), claimedLabel });
@@ -83,22 +93,22 @@ namespace PcdexScan
 
             // ---------- cột trái: cấu hình ----------
             var main = new Panel { Dock = DockStyle.Fill, Padding = new Padding(24, 8, 24, 24), BackColor = Ground };
-            var h = new Label { Text = "Cấu hình máy này", Font = new Font(FontName, 13F, FontStyle.Bold), AutoSize = true, Dock = DockStyle.Top };
-            status.ForeColor = Muted; status.AutoSize = true; status.Dock = DockStyle.Top; status.Padding = new Padding(0, 6, 0, 10); status.Text = "Đang đọc cấu hình…";
+            var h = new Label { Text = L.T("Cấu hình máy này", "This PC’s configuration"), Font = new Font(FontName, 13F, FontStyle.Bold), AutoSize = true, Dock = DockStyle.Top };
+            status.ForeColor = Muted; status.AutoSize = true; status.Dock = DockStyle.Top; status.Padding = new Padding(0, 6, 0, 10); status.Text = L.T("Đang đọc cấu hình…", "Reading hardware…");
             specTable.Dock = DockStyle.Top; specTable.AutoSize = true; specTable.ColumnCount = 2; specTable.BackColor = Ground;
-            specTable.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
+            specTable.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, L.En ? 120 : 110));
             specTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
             var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 124, FlowDirection = FlowDirection.LeftToRight, BackColor = Ground, Padding = new Padding(0, 12, 0, 0) };
-            sendBtn = MakeButton("Gắn vào tài khoản pcdex", true); sendBtn.Width = 220; sendBtn.Enabled = false;
-            rescanBtn = MakeButton("Quét lại", false); rescanBtn.Width = 110; rescanBtn.Enabled = false;
-            exportBtn = MakeButton("Xuất ảnh / PDF", false); exportBtn.Width = 150; exportBtn.Enabled = false;
+            sendBtn = MakeButton(SendLabel, true); sendBtn.Width = 220; sendBtn.Enabled = false;
+            rescanBtn = MakeButton(L.T("Quét lại", "Scan again"), false); rescanBtn.Width = L.En ? 120 : 110; rescanBtn.Enabled = false;
+            exportBtn = MakeButton(L.T("Xuất ảnh / PDF", "Save image / PDF"), false); exportBtn.Width = L.En ? 170 : 150; exportBtn.Enabled = false;
             exportBtn.Click += (s, e) => ExportSheet();
             sendBtn.Click += async (s, e) => await Send();
             rescanBtn.Click += async (s, e) => await RunScan();
             var privacy = new Label
             {
-                Text = "Chỉ gửi thông tin phần cứng ở trên. Không gửi tên máy, tên người dùng, số serial hay tệp nào.",
+                Text = L.T("Chỉ gửi thông tin phần cứng ở trên. Không gửi tên máy, tên người dùng, số serial hay tệp nào.", "Only the hardware details above are sent. No computer name, user name, serial numbers or files."),
                 ForeColor = Faint, AutoSize = true, MaximumSize = new Size(520, 0), Margin = new Padding(0, 10, 0, 0),
             };
             actions.Controls.AddRange(new Control[] { sendBtn, rescanBtn, exportBtn });
@@ -115,7 +125,7 @@ namespace PcdexScan
             Controls.Add(head);
 
             poll.Tick += async (s, e) => await Poll();
-            Shown += async (s, e) => await RunScan();
+            Shown += async (s, e) => { if (report == null) await RunScan(); else { ShowSpec(report); status.Text = ScannedNote(); sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = true; } };
             FormClosed += (s, e) => poll.Stop();
         }
 
@@ -125,12 +135,15 @@ namespace PcdexScan
             sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = false;
             ResetSide();
             status.ForeColor = Muted;
-            status.Text = "Đang đọc cấu hình…";
+            status.Text = L.T("Đang đọc cấu hình…", "Reading hardware…");
             report = await Task.Run(() => Scanner.Scan("pcdex-scan/" + Program.Version));
             ShowSpec(report);
-            status.Text = $"Đọc lúc {DateTime.Now:HH:mm}. Nguồn (PSU) không đọc được bằng phần mềm — khai trên web.";
+            status.Text = ScannedNote();
             sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = true;
         }
+
+        static string SendLabel => L.T("Gắn vào tài khoản pcdex", "Link to pcdex account");
+        static string ScannedNote() => L.T($"Đọc lúc {DateTime.Now:HH:mm}. Nguồn (PSU) không đọc được bằng phần mềm — khai trên web.", $"Read at {DateTime.Now:HH:mm}. The power supply can’t be detected by software — add it on the web.");
 
         void ShowSpec(ScanReport r)
         {
@@ -139,7 +152,7 @@ namespace PcdexScan
             specTable.RowStyles.Clear();
             specTable.RowCount = 0;
             rows = SpecRows(r);
-            foreach (var row in rows) Row(row.Key, row.Value, row.Key == "Nguồn" ? Faint : (Color?)null);
+            foreach (var row in rows) Row(row.Key, row.Value, row.Key == PsuKey ? Faint : (Color?)null);
             specTable.ResumeLayout();
 
             void Row(string k, List<string> vs, Color? color = null)
@@ -147,7 +160,7 @@ namespace PcdexScan
                 var key = new Label { Text = k, ForeColor = Muted, AutoSize = true, Margin = new Padding(0, 8, 8, 8) };
                 var val = new Label
                 {
-                    Text = vs.Count > 0 ? string.Join(Environment.NewLine, vs) : "Không đọc được",
+                    Text = vs.Count > 0 ? string.Join(Environment.NewLine, vs) : Unreadable,
                     ForeColor = vs.Count > 0 ? (color ?? Ink) : Warn, AutoSize = true, MaximumSize = new Size(440, 0),
                     Margin = new Padding(0, 8, 0, 8), Font = new Font(FontName, 10.5F, vs.Count > 0 ? FontStyle.Bold : FontStyle.Regular),
                 };
@@ -157,19 +170,22 @@ namespace PcdexScan
             }
         }
 
+        public static string PsuKey => L.T("Nguồn", "Power supply");
+        public static string Unreadable => L.T("Không đọc được", "Not detected");
+
         /// <summary>Các dòng cấu hình từ kết quả quét (dùng cho bảng trong cửa sổ và phiếu xuất ảnh / PDF)</summary>
         public static List<KeyValuePair<string, List<string>>> SpecRows(ScanReport r)
         {
             var list = new List<KeyValuePair<string, List<string>>>();
             void Row(string k, IEnumerable<string> values) =>
                 list.Add(new KeyValuePair<string, List<string>>(k, values.Where(v => !string.IsNullOrWhiteSpace(v)).ToList()));
-            Row("CPU", new[] { r.Cpu?.Name + (r.Cpu?.Cores > 0 ? $"  ·  {r.Cpu.Cores} nhân / {r.Cpu.Threads} luồng" : "") });
-            Row("Card đồ họa", r.Gpus.OrderByDescending(g => g.VramBytes ?? 0).Select(g => g.Name + (g.VramBytes > 0 ? $"  ·  {Gb(g.VramBytes.Value, 1024)} GB" : "") + (g.PcieGen > 0 ? $"  ·  PCIe {g.PcieGen}.0" : "")));
+            Row("CPU", new[] { r.Cpu?.Name + (r.Cpu?.Cores > 0 ? L.T($"  ·  {r.Cpu.Cores} nhân / {r.Cpu.Threads} luồng", $"  ·  {r.Cpu.Cores} cores / {r.Cpu.Threads} threads") : "") });
+            Row(L.T("Card đồ họa", "Graphics card"), r.Gpus.OrderByDescending(g => g.VramBytes ?? 0).Select(g => g.Name + (g.VramBytes > 0 ? $"  ·  {Gb(g.VramBytes.Value, 1024)} GB" : "") + (g.PcieGen > 0 ? $"  ·  PCIe {g.PcieGen}.0" : "")));
             Row("Mainboard", new[] { $"{Brand(r.Board?.Manufacturer)} {r.Board?.Product}".Trim() });
             Row("RAM", RamLines(r.Ram));
-            Row("Ổ cứng", r.Disks.Where(d => d.BusType != 7 && d.SizeBytes > 16e9).Select(DiskLine));
-            Row("Màn hình", new[] { r.Display != null ? $"{r.Display.Width} × {r.Display.Height}" : null });
-            Row("Nguồn", new[] { "Không đọc được — khai trên web" });
+            Row(L.T("Ổ cứng", "Storage"), r.Disks.Where(d => d.BusType != 7 && d.SizeBytes > 16e9).Select(DiskLine));
+            Row(L.T("Màn hình", "Display"), new[] { r.Display != null ? $"{r.Display.Width} × {r.Display.Height}" : null });
+            Row(PsuKey, new[] { L.T("Không đọc được — khai trên web", "Not detected — add it on the web") });
             return list;
         }
 
@@ -200,7 +216,7 @@ namespace PcdexScan
                 yield return (n > 1 ? $"{n} × {g.Key.gb} GB" : $"{g.Key.gb} GB") + t + s + p;
             }
             var total = ram.Sum(m => m.CapacityBytes);
-            if (ram.Count > 1) yield return $"Tổng {Gb(total, 1024)} GB";
+            if (ram.Count > 1) yield return L.T("Tổng ", "Total ") + $"{Gb(total, 1024)} GB";
         }
 
         static string DiskLine(DiskInfo d)
@@ -208,7 +224,7 @@ namespace PcdexScan
             var kind = d.BusType == 17 ? "NVMe" + (d.PcieGen > 0 ? $" Gen{d.PcieGen}" : "") : d.MediaType == 3 ? "HDD" : "SSD SATA";
             var gb = Math.Round(d.SizeBytes / 1e9);
             var size = gb >= 1000 ? $"{Math.Round(gb / 1000.0, 1)} TB" : $"{gb} GB";
-            return $"{d.Model}  ·  {size}  ·  {kind}" + (d.IsBoot ? "  ·  ổ Windows" : "") + (d.HealthPct != null ? $"  ·  sức khỏe {d.HealthPct}%" : "");
+            return $"{d.Model}  ·  {size}  ·  {kind}" + (d.IsBoot ? L.T("  ·  ổ Windows", "  ·  Windows drive") : "") + (d.HealthPct != null ? L.T("  ·  sức khỏe ", "  ·  health ") + $"{d.HealthPct}%" : "");
         }
         static long Gb(double bytes, int unit) => (long)Math.Round(bytes / unit / unit / unit);
 
@@ -218,8 +234,8 @@ namespace PcdexScan
             if (report == null) return;
             using (var dlg = new SaveFileDialog
             {
-                Title = "Xuất cấu hình",
-                Filter = "Ảnh PNG (*.png)|*.png|PDF khổ A4 (*.pdf)|*.pdf",
+                Title = L.T("Xuất cấu hình", "Save configuration"),
+                Filter = L.T("Ảnh PNG (*.png)|*.png|PDF khổ A4 (*.pdf)|*.pdf", "PNG image (*.png)|*.png|A4 PDF (*.pdf)|*.pdf"),
                 FileName = $"pcdex-scan-{DateTime.Now:yyyy-MM-dd}",
                 AddExtension = true,
             })
@@ -231,11 +247,11 @@ namespace PcdexScan
                     try { if (Icon != null) logo = new Icon(Icon, new Size(256, 256)).ToBitmap(); } catch { }
                     using (var bmp = SheetExport.Render(rows, report.Os, DateTime.Now, logo)) SheetExport.Save(bmp, dlg.FileName);
                     status.ForeColor = Muted;
-                    status.Text = "Đã lưu " + System.IO.Path.GetFileName(dlg.FileName);
+                    status.Text = L.T("Đã lưu ", "Saved ") + System.IO.Path.GetFileName(dlg.FileName);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(this, ex.Message, "Chưa xuất được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(this, ex.Message, L.T("Chưa xuất được", "Couldn’t save"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -245,26 +261,26 @@ namespace PcdexScan
         {
             if (report == null) return;
             sendBtn.Enabled = false;
-            sendBtn.Text = "Đang gửi…";
+            sendBtn.Text = L.T("Đang gửi…", "Sending…");
             try
             {
                 sent = await api.SendAsync(report);
                 qr.Set(sent.Qr);
                 qr.Visible = true;
-                sideTitle.Text = "Quét mã bằng điện thoại";
-                sideText.Text = $"Hoặc mở trang dưới đây và nhập mã:{Environment.NewLine}{Host(api.Server)}/quet";
+                sideTitle.Text = L.T("Quét mã bằng điện thoại", "Scan the code with your phone");
+                sideText.Text = L.T("Hoặc mở trang dưới đây và nhập mã:", "Or open this page and enter the code:") + Environment.NewLine + Host(api.Server) + (L.En ? "/en/quet" : "/quet");
                 codeLabel.Text = sent.Pretty; codeLabel.Visible = true;
-                var exp = DateTime.TryParse(sent.ExpiresAt, out var t) ? t.ToLocalTime().ToString("HH:mm") : "30 phút nữa";
-                expiryLabel.Text = $"Mã dùng được đến {exp}. Sau khi đăng nhập, chọn cập nhật máy đã có hoặc tạo máy mới."; expiryLabel.Visible = true;
+                var exp = DateTime.TryParse(sent.ExpiresAt, out var t) ? t.ToLocalTime().ToString("HH:mm") : L.T("30 phút nữa", "30 minutes from now");
+                expiryLabel.Text = L.T($"Mã dùng được đến {exp}. Sau khi đăng nhập, chọn cập nhật máy đã có hoặc tạo máy mới.", $"The code works until {exp}. After signing in, choose to update a machine you have or create a new one."); expiryLabel.Visible = true;
                 openBtn.Visible = true;
                 claimedLabel.Visible = false;
-                sendBtn.Text = "Đã gửi";
+                sendBtn.Text = L.T("Đã gửi", "Sent");
                 poll.Start();
             }
             catch (ApiException ex)
             {
-                MessageBox.Show(this, ex.Message, "Chưa gửi được", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                sendBtn.Text = "Gắn vào tài khoản pcdex";
+                MessageBox.Show(this, ex.Message, L.T("Chưa gửi được", "Couldn’t send"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                sendBtn.Text = SendLabel;
                 sendBtn.Enabled = true;
             }
         }
@@ -278,16 +294,18 @@ namespace PcdexScan
             if (st.Claimed != null)
             {
                 poll.Stop();
-                claimedLabel.Text = $"Đã gắn vào {st.Claimed.MachineName ?? "máy"}" + (st.Claimed.Handle != null ? $" của @{st.Claimed.Handle}" : "") + ". Có thể đóng phần mềm.";
+                claimedLabel.Text = L.En
+                    ? $"Linked to {st.Claimed.MachineName ?? "your machine"}" + (st.Claimed.Handle != null ? $" of @{st.Claimed.Handle}" : "") + ". You can close the app."
+                    : $"Đã gắn vào {st.Claimed.MachineName ?? "máy"}" + (st.Claimed.Handle != null ? $" của @{st.Claimed.Handle}" : "") + ". Có thể đóng phần mềm.";
                 claimedLabel.ForeColor = Lime; claimedLabel.Visible = true;
                 qr.Visible = false; openBtn.Visible = false; expiryLabel.Visible = false; codeLabel.Visible = false;
-                sideTitle.Text = "Xong";
-                sideText.Text = "Xem điểm, hạng và gợi ý nâng cấp ở trang Máy của tôi.";
+                sideTitle.Text = L.T("Xong", "Done");
+                sideText.Text = L.T("Xem điểm, hạng và gợi ý nâng cấp ở trang Máy của tôi.", "See the score, tier and upgrade tips on the My PC page.");
             }
             else if (st.Expired)
             {
                 poll.Stop();
-                claimedLabel.Text = "Mã đã hết hạn. Bấm “Quét lại” rồi gửi lại để lấy mã mới.";
+                claimedLabel.Text = L.T("Mã đã hết hạn. Bấm “Quét lại” rồi gửi lại để lấy mã mới.", "The code has expired. Click “Scan again” and send it again for a new code.");
                 claimedLabel.ForeColor = Warn; claimedLabel.Visible = true;
                 qr.Visible = false; openBtn.Visible = false;
             }
@@ -297,10 +315,10 @@ namespace PcdexScan
         {
             poll.Stop();
             sent = null;
-            sideTitle.Text = "Gắn vào tài khoản";
-            sideText.Text = "Gắn kết quả quét vào tài khoản pcdex để cập nhật máy đã khai hoặc tạo máy mới. Linh kiện đọc được từ máy có nhãn “Xác thực đang dùng” trên bảng xếp hạng và chợ.";
+            sideTitle.Text = L.T("Gắn vào tài khoản", "Link to your account");
+            sideText.Text = SideIntro;
             qr.Visible = codeLabel.Visible = expiryLabel.Visible = openBtn.Visible = claimedLabel.Visible = false;
-            sendBtn.Text = "Gắn vào tài khoản pcdex";
+            sendBtn.Text = SendLabel;
         }
 
         // ---------- tiện ích giao diện ----------
@@ -323,7 +341,7 @@ namespace PcdexScan
         void Open(string url)
         {
             try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
-            catch { Clipboard.SetText(url); MessageBox.Show(this, "Không mở được trình duyệt. Đã chép đường dẫn, dán vào trình duyệt:\n" + url, "pcdex"); }
+            catch { Clipboard.SetText(url); MessageBox.Show(this, L.T("Không mở được trình duyệt. Đã chép đường dẫn, dán vào trình duyệt:\n", "Couldn’t open the browser. The link is copied — paste it into your browser:\n") + url, "pcdex"); }
         }
     }
 

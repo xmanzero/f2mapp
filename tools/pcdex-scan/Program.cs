@@ -8,13 +8,15 @@ namespace PcdexScan
 {
     static class Program
     {
-        public const string Version = "0.3.0";
+        public const string Version = "0.4.0";
         /// <summary>Địa chỉ web pcdex mặc định. Đổi bằng tham số --server hoặc biến môi trường PCDEX_SERVER.</summary>
         const string DefaultServer = "https://pcdex.app";
 
         [STAThread]
         static int Main(string[] args)
         {
+            // --lang vi|en: ngôn ngữ giao diện và phiếu xuất (mặc định theo Windows / lựa chọn đã nhớ)
+            L.Init(Arg(args, "--lang"));
             string server = Arg(args, "--server") ?? Environment.GetEnvironmentVariable("PCDEX_SERVER") ?? DefaultServer;
 
             // --json: in kết quả quét ra màn hình / tệp, không mở cửa sổ (để kiểm tra, gửi hỗ trợ)
@@ -40,7 +42,16 @@ namespace PcdexScan
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(new Api(server)));
+            ScanReport kept = null;
+            while (true)
+            {
+                // Api đọc ngôn ngữ lúc tạo (header x-lang) nên tạo lại mỗi lần đổi
+                var form = new MainForm(new Api(server), kept);
+                Application.Run(form);
+                if (!form.SwitchLang) break;
+                L.Set(!L.En);
+                kept = form.Report;
+            }
             return 0;
         }
 

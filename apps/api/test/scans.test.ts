@@ -38,6 +38,14 @@ describe("quét máy → gắn vào tài khoản", () => {
     expect(g.json()).toMatchObject({ code: b.code, claimed: null, expired: false });
   });
 
+  it("phần mềm chạy tiếng Anh (x-lang: en) → QR trỏ tới /en/quet, thông báo lỗi tiếng Anh", async () => {
+    const r = await t.app.inject({ method: "POST", url: "/v1/scans", payload: report(), headers: { "x-lang": "en" } });
+    const b = r.json();
+    expect(b.claimUrl).toMatch(new RegExp(`/en/quet\\?ma=${b.code}$`));
+    const bad = await t.app.inject({ method: "POST", url: "/v1/scans", payload: { tool: "x" }, headers: { "x-lang": "en" } });
+    expect(bad.json().message).toBe("Invalid scan data");
+  });
+
   it("dữ liệu sai → 400", async () => {
     expect((await req("POST", "/v1/scans", { tool: "x" })).statusCode).toBe(400);
   });

@@ -211,7 +211,7 @@ export const vi = {
     subFirst: "Tài khoản chưa có máy nào. Quét máy hoặc tự chọn linh kiện để xem điểm, FPS và gợi ý nâng cấp.",
     subMore: "Quét máy đó bằng pcdex-scan, hoặc tự chọn linh kiện.",
     scanTitle: "Quét bằng pcdex-scan",
-    scanText: "Phần mềm 85 KB cho Windows, không cần cài. Đọc CPU, card, mainboard, RAM, ổ cứng trong vài giây; linh kiện quét được có nhãn “Xác thực đang dùng”.",
+    scanText: "Phần mềm dưới 100 KB cho Windows, không cần cài. Đọc CPU, card, mainboard, RAM, ổ cứng trong vài giây; linh kiện quét được có nhãn “Xác thực đang dùng”.",
     steps: ["Tải và chạy pcdex-scan trên máy cần khai.", "Bấm “Gắn vào tài khoản”, phần mềm hiện mã và mã QR.", "Nhập mã ở trang Quét, chọn tạo máy mới."],
     browserSpec: (cpu: string, gpu: string, ram: string) => <>Trình duyệt này còn cấu hình bạn đã khai khi chưa đăng nhập: <b>{cpu}</b>, <b>{gpu}</b>, {ram}.</>,
     useThis: "Dùng cấu hình này",
@@ -526,7 +526,7 @@ export const vi = {
       { name: "Chợ linh kiện", alt: "Danh sách tin rao linh kiện cũ kèm giá, điểm trên triệu và mức tăng điểm khi lắp vào máy",
         text: "Mỗi tin rao cho biết lắp vào máy bạn tăng bao nhiêu điểm và được bao nhiêu điểm trên mỗi triệu đồng." },
       { name: "pcdex-scan cho Windows", alt: "Cửa sổ phần mềm pcdex-scan liệt kê CPU, card, mainboard, RAM, ổ cứng và màn hình của máy",
-        text: "Phần mềm 85 KB, không cần cài, đọc cấu hình thật trong vài giây rồi gắn vào tài khoản bằng mã QR." },
+        text: "Phần mềm dưới 100 KB, không cần cài, đọc cấu hình thật trong vài giây rồi gắn vào tài khoản bằng mã QR." },
     ],
     notes: [
       { name: "Tự đọc bằng pcdex-scan", text: "Không muốn gõ? Chạy phần mềm quét, cấu hình tự điền và có nhãn xác thực." },
@@ -552,7 +552,7 @@ export const vi = {
       windows: [
         ["Quét", "Đọc CPU, card, mainboard, RAM, ổ cứng, màn hình", "VRAM thật, thế hệ PCIe của card và ổ NVMe"],
         ["Gắn", "Gắn vào tài khoản bằng mã QR", "Cập nhật máy đang có hoặc tạo máy mới"],
-        ["Nhẹ", "Một file 85 KB, không cần cài", "Windows 10 và 11, không cần quyền quản trị"],
+        ["Nhẹ", "Một file dưới 100 KB, không cần cài", "Windows 10 và 11, không cần quyền quản trị"],
       ],
       android: [
         ["Máy", "Cùng tài khoản, cùng máy và điểm", "Dữ liệu đồng bộ với web"],
