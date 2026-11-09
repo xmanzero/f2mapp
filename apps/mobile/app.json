@@ -7,12 +7,15 @@
     "icon": "./assets/images/icon.png",
     "scheme": "f2m",
     "userInterfaceStyle": "automatic",
+    "backgroundColor": "#080F24",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "bundleIdentifier": "app.pcdex",
+      "supportsTablet": true
     },
     "android": {
+      "package": "app.pcdex",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#080F24",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -20,7 +23,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "server",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -28,11 +31,29 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#080F24",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 120
         }
-      ]
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "pcdex dùng camera để quét mã QR của phần mềm pcdex-scan và gắn máy vào tài khoản.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "pcdex cần quyền thư viện ảnh để bạn gửi ảnh trong tin nhắn.",
+          "cameraPermission": "pcdex dùng camera để chụp ảnh gửi trong tin nhắn."
+        }
+      ],
+      "expo-secure-store",
+      "expo-localization",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

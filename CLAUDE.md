@@ -21,6 +21,8 @@ Mạng xã hội máy tính: người dùng khai báo cấu hình PC, xem điể
 - **Giao diện** (website, app): thiết kế theo skill `ui-ux-pro-max:ui-ux-pro-max` và `taste-skill:design-taste-frontend`. Gọi cả hai skill trước khi dựng màn hình.
 - **Hiệu ứng chuyển động (web)**: thư viện [React Bits](https://reactbits.dev) (MIT + Commons Clause), đã khai registry `@react-bits` trong `apps/web/components.json`. Thêm thành phần: `cd apps/web && npx shadcn@latest add @react-bits/<Tên>-TS-CSS` (bản CSS thường, không dùng bản Tailwind `-TW` nếu thành phần cần token riêng). Chỉ chọn hiệu ứng hợp phong cách ở docs/design.md (không glow / kính mờ; gradient chỉ ở logo và nút chính), luôn tôn trọng `prefers-reduced-motion`. Không dùng cho app Expo.
 
+- **App Android / iOS** (09/11/2026, `apps/mobile`, Expo SDK 58, Expo Router): 5 tab gốc (NativeTabs, `src/app/(tabs)/`): Máy (điểm, FPS, cấu hình, số đo — công thức từ `packages/shared`), Xếp hạng (Máy bàn / Laptop), Chợ (+ chi tiết tin, nhắn người bán), Tin nhắn (hộp thư, hội thoại, gửi ảnh nén JPEG ≤ 1600 px, chặn / báo cáo), Tôi (hồ sơ, bảng tin, quét mã, ngôn ngữ, đăng xuất); màn hình chồng: `dang-nhap`, `quet` (camera quét QR pcdex-scan → tạo / cập nhật máy), `u/[handle]`, `bang-tin`. Gọi API `https://pcdex.app/api` (đổi bằng `EXPO_PUBLIC_API_URL`), đăng nhập bằng token (header Bearer, lưu `expo-secure-store`). Chữ ở `src/lib/i18n.tsx` (vi / en, mặc định theo máy: tiếng Việt khi ngôn ngữ / vùng Việt Nam). Màu `src/lib/theme.ts` (giống token web), font Inter + Chakra Petch. `(tabs)/_layout.web.tsx` chỉ để xem thử trên trình duyệt (`npx expo export --platform web`). Chưa có trong app: sửa cấu hình chi tiết, đăng tin bán, thông báo đẩy (cần tài khoản EAS), đăng nhập Google — làm trên web.
+
 ## Việc để sau (chủ dự án dặn nhắc lại khi xong chức năng chính)
 - Google OAuth Client ID cho https://pcdex.app → bật đăng nhập Google (`GOOGLE_CLIENT_IDS` trong `~/f2mapp/.env`).
 - Gắn pcdex.net chuyển về pcdex.app (khi mua).
@@ -28,7 +30,7 @@ Mạng xã hội máy tính: người dùng khai báo cấu hình PC, xem điể
 
 ## Cấu trúc (npm workspaces)
 - `apps/web`: Next.js 16, App Router, Tailwind 4, bật `cacheComponents`. **Đọc `node_modules/next/dist/docs/` trước khi viết mã** (API khác bản cũ). Trang tĩnh không được đọc đồng hồ (`new Date()`) lúc dựng.
-- `apps/mobile`: Expo SDK 58, Expo Router (`src/app/`). Thêm thư viện bằng `npx expo install`; đọc docs theo đúng SDK (https://docs.expo.dev/llms.txt). Không sửa tay `android/`, `ios/`.
+- `apps/mobile`: Expo SDK 58, Expo Router (`src/app/`). Chạy thử: `npm run dev:mobile` rồi quét QR bằng Expo Go. Thêm thư viện bằng `npx expo install`; đọc docs theo đúng SDK (https://docs.expo.dev/llms.txt). Không sửa tay `android/`, `ios/`.
 - `apps/api`: Fastify 5 + Zod, Kysely + Postgres (`DATABASE_URL`; chưa đặt thì vẫn chạy được phần danh mục + tính điểm). Cổng dev 8140.
 - `packages/shared`: công thức điểm (`src/scoring.ts`), danh mục (`src/data/parts.json`, sinh tự động), schema Zod. Dùng chung cho web, mobile, API — **mọi logic điểm nằm ở đây**, không chép sang app.
 - `db/migrations`: SQL, chạy bằng `npm run migrate -w @f2m/api`.
