@@ -53,6 +53,8 @@ export interface Database {
     resolution: number;
     verified_at: Date | null;
     last_scan_at: Generated<Date | null>;
+    /** Đo hiệu năng Blender gần nhất (BenchResult + at) */
+    bench: Generated<unknown | null>;
     created_at: Generated<Date>;
     updated_at: Generated<Date>;
   };

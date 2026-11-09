@@ -1,7 +1,8 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   chipsetOf, drivesFrom, interpretScan, mainboardFrom, matchCpu, matchGpu, pcieGenOfChipset, primaryGpu, ramKitsFrom, resolutionOf,
-  sameScannedPart, scanReportSchema, specFromScan,
+  sameScannedPart, scanReportSchema, specFromScan, benchForSpec, BLENDER_REF,
 } from "../src";
 
 const GB = 2 ** 30;
@@ -117,5 +118,42 @@ describe("tổng hợp", () => {
     expect(sameScannedPart("ram", { ...had, perStickGb: 16 }, now, "", "")).toBe(false);
     expect(sameScannedPart("storage", { interface: "nvme4", capacityGb: 1000, model: null }, { interface: "nvme4", capacityGb: 1000, model: "Samsung SSD 980 PRO 1TB" }, "", "")).toBe(true);
     expect(sameScannedPart("mainboard", { model: "MSI PRO B660M-A", chipset: "B660" }, { model: "MSI PRO B660M-A DDR4 (MS-7D25)", chipset: "B660" }, "", "")).toBe(true);
+  });
+});
+
+describe("đo hiệu năng (Blender Benchmark)", () => {
+  // số đo thật: i7-14700 + GTX 1660 Ti, Blender 4.5.0, benchmark-launcher-cli 3.3.0 (09/11/2026)
+  const cpuRun = { name: "Intel Core i7-14700", type: "CPU", scenes: { monster: 122.16189338906506, junkshop: 84.96790057622727, classroom: 63.29469203040549 } };
+  const base = {
+    tool: "pcdex-scan/0.5.0",
+    cpu: { name: "Intel(R) Core(TM) i7-14700", cores: 20, threads: 28 },
+    gpus: [{ name: "NVIDIA GeForce GTX 1660 Ti", vramBytes: 6 * GB, pcieGen: 3 }],
+    board: { manufacturer: "ASUSTeK COMPUTER INC.", product: "TUF GAMING B660M-PLUS D4" },
+    ram: [], disks: [],
+  };
+  it("quy số đo về thang render và so với trung bình của đúng mẫu", () => {
+    const s = interpretScan(scanReportSchema.parse({ ...base, bench: { blender: "4.5.0", cpu: cpuRun } }));
+    expect(s.bench?.cpu).toMatchObject({ part: "Core i7-14700", score: 270.4, points: 17364, expected: 19277, pct: 90 });
+    expect(s.bench?.gpu).toBeNull();
+  });
+  it("bỏ số đo của thiết bị khác, sai phiên bản Blender, hoặc sai loại", () => {
+    const other = { ...cpuRun, name: "AMD Ryzen 7 7800X3D 8-Core Processor" };
+    expect(interpretScan(scanReportSchema.parse({ ...base, bench: { blender: "4.5.0", cpu: other } })).bench).toBeNull();
+    expect(interpretScan(scanReportSchema.parse({ ...base, bench: { blender: "4.2.0", cpu: cpuRun } })).bench).toBeNull();
+    expect(interpretScan(scanReportSchema.parse({ ...base, bench: { blender: "4.5.0", gpu: cpuRun } })).bench).toBeNull();
+    expect(() => scanReportSchema.parse({ ...base, bench: { blender: "4.5.0", cpu: { ...cpuRun, scenes: { monster: -1, junkshop: 1, classroom: 1 } } } })).toThrow();
+  });
+  it("card đo bằng CUDA thì ghi điểm nhưng không so (dữ liệu so sánh dùng OptiX)", () => {
+    const gpu = { name: "NVIDIA GeForce GTX 1660 Ti", type: "CUDA", scenes: { monster: 300, junkshop: 200, classroom: 150 } };
+    const b = interpretScan(scanReportSchema.parse({ ...base, bench: { blender: "4.5.0", gpu } })).bench;
+    expect(b?.gpu).toMatchObject({ part: "GTX 1660 Ti", score: 650, expected: null, pct: null });
+    expect(benchForSpec(b, { cpu: "Core i7-14700", gpu: "GTX 1660 Ti" })?.gpu?.part).toBe("GTX 1660 Ti");
+    // đổi card sau khi đo → số đo cũ không còn hiện
+    expect(benchForSpec(b, { cpu: "Core i7-14700", gpu: "RTX 3060 12GB" })).toBeNull();
+  });
+  it("mốc quy đổi khớp dữ liệu Blender Open Data", () => {
+    const rows = JSON.parse(readFileSync(new URL("../../../data/blender-render-4.5.json", import.meta.url), "utf-8")).rows as { kind: string; name: string; score: number }[];
+    expect(rows.find((r) => r.name === "Core i5-12400F")?.score).toBe(BLENDER_REF.cpu);
+    expect(rows.find((r) => r.kind === "gpu" && r.name === "RTX 3060")?.score).toBe(BLENDER_REF.gpu);
   });
 });

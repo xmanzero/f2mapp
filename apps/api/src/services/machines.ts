@@ -1,6 +1,6 @@
 import {
-  badgesFor, computeScores, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
-  tierOf, VERIFIABLE_KINDS, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
+  badgesFor, benchForSpec, computeScores, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
+  tierOf, VERIFIABLE_KINDS, type BenchResult, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
 } from "@f2m/shared";
 import { sql } from "kysely";
 import type { DB } from "../db.js";
@@ -59,7 +59,9 @@ const keyOf = (row: { kind: PartKind; label: string; details: unknown }): string
   }
 };
 
-type MachineRow = { id: string; name: string; is_primary: boolean; ram_gb: number; ram_channels: number; storage: string; pcie_gen: number; psu_w: number; resolution: number; last_scan_at: Date | null };
+type MachineRow = { id: string; name: string; is_primary: boolean; ram_gb: number; ram_channels: number; storage: string; pcie_gen: number; psu_w: number; resolution: number; last_scan_at: Date | null; bench: unknown };
+/** Số đo hiệu năng còn đúng với CPU / card đang lắp */
+const benchOf = (m: MachineRow, spec: MachineSpec) => benchForSpec(m.bench as BenchResult | null, spec);
 const summaryOf = (m: MachineRow, cpu: string, gpu: string): MachineInput => ({
   cpu, gpu, ramGb: m.ram_gb, ramChannels: m.ram_channels as 1 | 2, storage: m.storage as MachineInput["storage"],
   pcieGen: m.pcie_gen as 3 | 4 | 5, psuW: m.psu_w, resolution: m.resolution as MachineInput["resolution"],
@@ -116,7 +118,7 @@ async function materializeLegacy(db: DB, machineId: string, spec: MachineSpec, p
   return wants.length > 0;
 }
 
-const machineCols = ["id", "name", "is_primary", "ram_gb", "ram_channels", "storage", "pcie_gen", "psu_w", "resolution", "last_scan_at"] as const;
+const machineCols = ["id", "name", "is_primary", "ram_gb", "ram_channels", "storage", "pcie_gen", "psu_w", "resolution", "last_scan_at", "bench"] as const;
 
 /** Các máy của người dùng (tối đa 2), kèm linh kiện, trạng thái xác thực và điểm */
 export async function loadMachines(db: DB, userId: string) {
@@ -141,7 +143,7 @@ export async function loadMachines(db: DB, userId: string) {
     const s = computeScores(resolveMachine(input));
     out.push({
       id: m.id, name: m.name, isPrimary: m.is_primary, spec: built.spec, input, missing: built.missing, parts: view,
-      verified: verifiable.length > 0 && verifiable.every((p) => p.verified), lastScanAt: m.last_scan_at,
+      verified: verifiable.length > 0 && verifiable.every((p) => p.verified), lastScanAt: m.last_scan_at, bench: benchOf(m, built.spec),
       power: Math.round(s.power), tier: tierOf(s.power).code,
     });
   }
@@ -315,7 +317,7 @@ export async function publicMachine(db: DB, userId: string) {
   if (!built) return null;
   return {
     userId, handle: row.handle, displayName: row.display_name, province: row.province,
-    spec: built.spec, lastScanAt: m.last_scan_at,
+    spec: built.spec, lastScanAt: m.last_scan_at, bench: benchOf(m, built.spec),
     parts: parts.filter((p) => p.status === "in_use" || p.status === "for_sale").map((p) => ({
       kind: p.kind, label: p.label, verified: !!p.verified_at && p.status === "in_use",
     })),

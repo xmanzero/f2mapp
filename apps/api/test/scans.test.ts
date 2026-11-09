@@ -65,6 +65,21 @@ describe("quét máy → gắn vào tài khoản", () => {
     expect((await req("GET", `/v1/scans/${code}`)).json().claimed).toMatchObject({ handle: expect.any(String), machineName: "Máy của tôi" });
   });
 
+  it("đo hiệu năng: lưu vào máy khi gắn mã, lần quét sau không đo thì giữ số đo cũ", async () => {
+    const tk = await register("quetbench@test.vn");
+    const scenes = { monster: 40, junkshop: 30, classroom: 25 };
+    const r = (await req("POST", "/v1/scans", report({ bench: { blender: "4.5.0", launcher: "3.3.0", cpu: { name: "Intel Core i5-12400F", type: "CPU", scenes } } }))).json();
+    expect(r.result.bench.cpu).toMatchObject({ part: "Core i5-12400F", score: 95, pct: 61 });
+    await req("POST", `/v1/scans/${r.code}/claim`, { machineId: null, psuW: 650 }, tk);
+    type B = { cpu: { points: number } | null; gpu: unknown; at: string };
+    const m = (await machines(tk))[0]! as unknown as { id: string; bench: B };
+    expect(m.bench.cpu?.points).toBe(6100);
+    expect(m.bench.gpu).toBeNull();
+    const again = (await req("POST", "/v1/scans", report())).json();
+    await req("POST", `/v1/scans/${again.code}/claim`, { machineId: m.id }, tk);
+    expect(((await machines(tk))[0]! as unknown as { bench: B }).bench.cpu?.points).toBe(6100);
+  });
+
   it("cập nhật máy đã khai: linh kiện khai sơ sài được giữ (kể cả tin đang bán) và bổ sung chi tiết; linh kiện khác thì thành đã thay ra", async () => {
     const tk = await register("quet2@test.vn");
     await req("POST", "/v1/me/machines", { spec: spec({

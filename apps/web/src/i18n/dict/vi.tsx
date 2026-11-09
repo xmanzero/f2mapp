@@ -211,7 +211,7 @@ export const vi = {
     subFirst: "Tài khoản chưa có máy nào. Quét máy hoặc tự chọn linh kiện để xem điểm, FPS và gợi ý nâng cấp.",
     subMore: "Quét máy đó bằng pcdex-scan, hoặc tự chọn linh kiện.",
     scanTitle: "Quét bằng pcdex-scan",
-    scanText: "Phần mềm dưới 100 KB cho Windows, không cần cài. Đọc CPU, card, mainboard, RAM, ổ cứng trong vài giây; linh kiện quét được có nhãn “Xác thực đang dùng”.",
+    scanText: "Phần mềm dưới 150 KB cho Windows, không cần cài. Đọc CPU, card, mainboard, RAM, ổ cứng trong vài giây; linh kiện quét được có nhãn “Xác thực đang dùng”.",
     steps: ["Tải và chạy pcdex-scan trên máy cần khai.", "Bấm “Gắn vào tài khoản”, phần mềm hiện mã và mã QR.", "Nhập mã ở trang Quét, chọn tạo máy mới."],
     browserSpec: (cpu: string, gpu: string, ram: string) => <>Trình duyệt này còn cấu hình bạn đã khai khi chưa đăng nhập: <b>{cpu}</b>, <b>{gpu}</b>, {ram}.</>,
     useThis: "Dùng cấu hình này",
@@ -526,7 +526,7 @@ export const vi = {
       { name: "Chợ linh kiện", alt: "Danh sách tin rao linh kiện cũ kèm giá, điểm trên triệu và mức tăng điểm khi lắp vào máy",
         text: "Mỗi tin rao cho biết lắp vào máy bạn tăng bao nhiêu điểm và được bao nhiêu điểm trên mỗi triệu đồng." },
       { name: "pcdex-scan cho Windows", alt: "Cửa sổ phần mềm pcdex-scan liệt kê CPU, card, mainboard, RAM, ổ cứng và màn hình của máy",
-        text: "Phần mềm dưới 100 KB, không cần cài, đọc cấu hình thật trong vài giây rồi gắn vào tài khoản bằng mã QR." },
+        text: "Phần mềm dưới 150 KB, không cần cài, đọc cấu hình thật trong vài giây rồi gắn vào tài khoản bằng mã QR." },
     ],
     notes: [
       { name: "Tự đọc bằng pcdex-scan", text: "Không muốn gõ? Chạy phần mềm quét, cấu hình tự điền và có nhãn xác thực." },
@@ -552,7 +552,7 @@ export const vi = {
       windows: [
         ["Quét", "Đọc CPU, card, mainboard, RAM, ổ cứng, màn hình", "VRAM thật, thế hệ PCIe của card và ổ NVMe"],
         ["Gắn", "Gắn vào tài khoản bằng mã QR", "Cập nhật máy đang có hoặc tạo máy mới"],
-        ["Nhẹ", "Một file dưới 100 KB, không cần cài", "Windows 10 và 11, không cần quyền quản trị"],
+        ["Nhẹ", "Một file dưới 150 KB, không cần cài", "Windows 10 và 11, không cần quyền quản trị"],
       ],
       android: [
         ["Máy", "Cùng tài khoản, cùng máy và điểm", "Dữ liệu đồng bộ với web"],
@@ -582,6 +582,19 @@ export const vi = {
     login: "Đăng nhập pcdex bằng email hoặc Google để lưu máy, lên bảng xếp hạng và đăng bán linh kiện.",
     privacy: "pcdex thu thập dữ liệu gì, dùng vào việc gì và quyền của bạn với dữ liệu của mình.",
     terms: "Điều khoản sử dụng pcdex: tài khoản, điểm số, chợ linh kiện và nội dung bạn đăng.",
+  },
+  bench: {
+    title: "Hiệu năng đo thật",
+    meta: (v: string, at: string | null) => `Blender ${v}${at ? ` · ${at}` : ""}`,
+    gpu: "Card đồ họa",
+    aria: (pct: number) => `Đạt ${pct}% điểm trung bình của mẫu này`,
+    vsAvg: (pts: string, avg: string) => `Đo được ${pts} điểm render · trung bình cùng mẫu ${avg}`,
+    noCompare: (pts: string, api: string) => `Đo được ${pts} điểm render (${api} — chưa có dữ liệu so sánh)`,
+    lowTip: "Thấp hơn trung bình đáng kể: kiểm tra nhiệt độ, chế độ nguồn của Windows (Hiệu suất cao), giới hạn điện năng trong BIOS và driver card.",
+    how: "Đo bằng Blender Benchmark (render Cycles) trong phần mềm pcdex-scan, so với kết quả của cùng mẫu trên Blender Open Data. Số đo do máy người dùng gửi lên.",
+    cta: "Đo hiệu năng thật bằng pcdex-scan (nút “Đo hiệu năng”) để biết máy có chạy đúng sức không.",
+    scanTitle: "Hiệu năng đo được",
+    ofAvg: "so với trung bình cùng mẫu",
   },
   export: {
     heading: "Cấu hình máy",

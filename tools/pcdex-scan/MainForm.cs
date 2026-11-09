@@ -34,7 +34,9 @@ namespace PcdexScan
 
         readonly TableLayoutPanel specTable = new TableLayoutPanel();
         readonly Label status = new Label();
-        readonly Button sendBtn, rescanBtn, openBtn, exportBtn;
+        readonly Button sendBtn, rescanBtn, openBtn, exportBtn, benchBtn;
+        readonly Label benchStatus = new Label();
+        System.Threading.CancellationTokenSource benchCts;
         /// <summary>Các dòng cấu hình đang hiện (dùng lại khi xuất ảnh / PDF)</summary>
         List<KeyValuePair<string, List<string>>> rows = new List<KeyValuePair<string, List<string>>>();
         readonly Panel side = new Panel();
@@ -52,8 +54,8 @@ namespace PcdexScan
             Text = L.T("pcdex — Quét cấu hình máy", "pcdex — PC hardware scan");
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScaleDimensions = new SizeF(96F, 96F);
-            ClientSize = new Size(940, 660);
-            MinimumSize = new Size(820, 640);
+            ClientSize = new Size(940, 710);
+            MinimumSize = new Size(820, 690);
             StartPosition = FormStartPosition.CenterScreen;
             BackColor = Ground; ForeColor = Ink;
             Font = new Font(FontName, 10F);
@@ -99,11 +101,15 @@ namespace PcdexScan
             specTable.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, L.En ? 120 : 110));
             specTable.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-            var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 124, FlowDirection = FlowDirection.LeftToRight, BackColor = Ground, Padding = new Padding(0, 12, 0, 0) };
+            var actions = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 180, FlowDirection = FlowDirection.LeftToRight, BackColor = Ground, Padding = new Padding(0, 12, 0, 0) };
             sendBtn = MakeButton(SendLabel, true); sendBtn.Width = 220; sendBtn.Enabled = false;
             rescanBtn = MakeButton(L.T("Quét lại", "Scan again"), false); rescanBtn.Width = L.En ? 120 : 110; rescanBtn.Enabled = false;
             exportBtn = MakeButton(L.T("Xuất ảnh / PDF", "Save image / PDF"), false); exportBtn.Width = L.En ? 170 : 150; exportBtn.Enabled = false;
             exportBtn.Click += (s, e) => ExportSheet();
+            benchBtn = MakeButton(BenchLabel, false); benchBtn.Width = L.En ? 130 : 140; benchBtn.Enabled = false; benchBtn.Margin = new Padding(0, 10, 12, 0);
+            benchBtn.Click += async (s, e) => await RunBench();
+            benchStatus.ForeColor = Muted; benchStatus.AutoSize = true; benchStatus.MaximumSize = new Size(380, 0); benchStatus.Margin = new Padding(0, 16, 0, 0);
+            benchStatus.Text = L.T("Đo sức mạnh thật bằng Blender Benchmark, so với trung bình của cùng mẫu CPU / card.", "Measure real performance with Blender Benchmark against the average of the same CPU / card.");
             sendBtn.Click += async (s, e) => await Send();
             rescanBtn.Click += async (s, e) => await RunScan();
             var privacy = new Label
@@ -111,8 +117,9 @@ namespace PcdexScan
                 Text = L.T("Chỉ gửi thông tin phần cứng ở trên. Không gửi tên máy, tên người dùng, số serial hay tệp nào.", "Only the hardware details above are sent. No computer name, user name, serial numbers or files."),
                 ForeColor = Faint, AutoSize = true, MaximumSize = new Size(520, 0), Margin = new Padding(0, 10, 0, 0),
             };
-            actions.Controls.AddRange(new Control[] { sendBtn, rescanBtn, exportBtn });
+            actions.Controls.AddRange(new Control[] { sendBtn, rescanBtn, exportBtn, benchBtn, benchStatus });
             actions.SetFlowBreak(exportBtn, true);
+            actions.SetFlowBreak(benchStatus, true);
             actions.Controls.Add(privacy);
 
             main.Controls.Add(specTable);
@@ -125,23 +132,24 @@ namespace PcdexScan
             Controls.Add(head);
 
             poll.Tick += async (s, e) => await Poll();
-            Shown += async (s, e) => { if (report == null) await RunScan(); else { ShowSpec(report); status.Text = ScannedNote(); sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = true; } };
-            FormClosed += (s, e) => poll.Stop();
+            Shown += async (s, e) => { if (report == null) await RunScan(); else { ShowSpec(report); status.Text = ScannedNote(); sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = benchBtn.Enabled = true; } };
+            FormClosed += (s, e) => { poll.Stop(); benchCts?.Cancel(); };
         }
 
         // ---------- quét ----------
         async Task RunScan()
         {
-            sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = false;
+            sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = benchBtn.Enabled = false;
             ResetSide();
             status.ForeColor = Muted;
             status.Text = L.T("Đang đọc cấu hình…", "Reading hardware…");
             report = await Task.Run(() => Scanner.Scan("pcdex-scan/" + Program.Version));
             ShowSpec(report);
             status.Text = ScannedNote();
-            sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = true;
+            sendBtn.Enabled = rescanBtn.Enabled = exportBtn.Enabled = benchBtn.Enabled = true;
         }
 
+        static string BenchLabel => L.T("Đo hiệu năng", "Benchmark");
         static string SendLabel => L.T("Gắn vào tài khoản pcdex", "Link to pcdex account");
         static string ScannedNote() => L.T($"Đọc lúc {DateTime.Now:HH:mm}. Nguồn (PSU) không đọc được bằng phần mềm — khai trên web.", $"Read at {DateTime.Now:HH:mm}. The power supply can’t be detected by software — add it on the web.");
 
@@ -185,6 +193,9 @@ namespace PcdexScan
             Row("RAM", RamLines(r.Ram));
             Row(L.T("Ổ cứng", "Storage"), r.Disks.Where(d => d.BusType != 7 && d.SizeBytes > 16e9).Select(DiskLine));
             Row(L.T("Màn hình", "Display"), new[] { r.Display != null ? $"{r.Display.Width} × {r.Display.Height}" : null });
+            if (r.Bench != null)
+                Row(L.T("Hiệu năng", "Performance"), new[] { r.Bench.Cpu, r.Bench.Gpu }.Where(d => d != null)
+                    .Select(d => (d.Type == "CPU" ? "CPU" : $"{d.Name} ({d.Type})") + L.T($"  ·  {d.Score:0} điểm Blender {r.Bench.Blender}", $"  ·  {d.Score:0} Blender {r.Bench.Blender} points")));
             Row(PsuKey, new[] { L.T("Không đọc được — khai trên web", "Not detected — add it on the web") });
             return list;
         }
@@ -253,6 +264,40 @@ namespace PcdexScan
                 {
                     MessageBox.Show(this, ex.Message, L.T("Chưa xuất được", "Couldn’t save"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+            }
+        }
+
+        // ---------- đo hiệu năng ----------
+        async Task RunBench()
+        {
+            if (benchCts != null) { benchCts.Cancel(); return; }
+            if (report == null) return;
+            if (MessageBox.Show(this, L.T("Phần mềm sẽ tải công cụ đo chính thức của Blender (lần đầu khoảng 500 MB, lưu ở %LOCALAPPDATA%\\pcdex-scan\\bench) rồi render 3 cảnh thử trên CPU và card đồ họa, mất khoảng 5–10 phút.\n\nMáy chạy hết công suất trong lúc đo: laptop nên cắm sạc, đóng các ứng dụng nặng để kết quả chính xác.\n\nBắt đầu đo?", "pcdex-scan will download the official Blender benchmark tool (about 500 MB the first time, stored in %LOCALAPPDATA%\\pcdex-scan\\bench) and render 3 test scenes on the CPU and graphics card. It takes about 5–10 minutes.\n\nYour PC runs at full load while measuring: plug in laptops and close heavy apps for an accurate result.\n\nStart the benchmark?"), BenchLabel, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK) return;
+            benchCts = new System.Threading.CancellationTokenSource();
+            var bench = new Bench();
+            bench.Progress += (text, pct) =>
+            {
+                void Set() { benchStatus.ForeColor = Ink; benchStatus.Text = $"{text}  {pct}%"; }
+                if (InvokeRequired) BeginInvoke((Action)Set); else Set();
+            };
+            benchBtn.Text = L.T("Dừng đo", "Stop");
+            sendBtn.Enabled = rescanBtn.Enabled = false;
+            try
+            {
+                var gpuHint = report.Gpus.OrderByDescending(g => g.VramBytes ?? 0).FirstOrDefault()?.Name;
+                report.Bench = await bench.RunAsync(gpuHint, benchCts.Token);
+                ShowSpec(report);
+                ResetSide(); // mã đã gửi (nếu có) chưa kèm số đo → gửi lại
+                benchStatus.ForeColor = Lime;
+                benchStatus.Text = L.T("Đo xong. Gắn vào tài khoản để xem so sánh với trung bình của cùng mẫu CPU / card.", "Done. Link to your account to compare with the average of the same CPU / card.");
+            }
+            catch (BenchCancelled) { benchStatus.ForeColor = Muted; benchStatus.Text = L.T("Đã dừng đo.", "Benchmark stopped."); }
+            catch (Exception ex) { benchStatus.ForeColor = Warn; benchStatus.Text = L.T("Chưa đo được: ", "Benchmark failed: ") + ex.Message; }
+            finally
+            {
+                benchCts = null;
+                benchBtn.Text = BenchLabel;
+                sendBtn.Enabled = rescanBtn.Enabled = true;
             }
         }
 

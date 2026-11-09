@@ -19,6 +19,7 @@ import { ExportMachine } from "./export-machine";
 import CountUp from "./CountUp";
 import { useI18n } from "@/i18n/client";
 import { machineName } from "@/lib/use-machine";
+import { BenchCard } from "./bench-card";
 
 const SEV_ORDER: Record<Severity, number> = { critical: 0, warning: 1, info: 2, ok: 3 };
 const sevClass = (s: Severity) => (s === "critical" ? "neg" : s === "warning" ? "warn" : s === "ok" ? "pos" : "");
@@ -100,6 +101,7 @@ export function MyMachine() {
       <div className="grid split">
         <div className="col col-l">
           <ScoreCard r={r} verified={active.verified} isAccount={!!active.id} spec={shownSpec} parts={active.parts} />
+          {active.bench && !preview && <BenchCard bench={active.bench} />}
           <OsdCard cfg={cfg} bottlenecks={r.bottlenecks} />
           <NeedsCard needs={r.needs} />
           <UpgradesCard items={upgrades} active={preview} onPreview={setPreview} />

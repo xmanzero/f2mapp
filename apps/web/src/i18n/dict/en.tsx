@@ -208,7 +208,7 @@ export const en: typeof vi = {
     subFirst: "Your account has no PC yet. Scan your PC or pick the parts to see its score, FPS and upgrade picks.",
     subMore: "Scan that PC with pcdex-scan, or pick the parts yourself.",
     scanTitle: "Scan with pcdex-scan",
-    scanText: "A Windows app under 100 KB, no install needed. Reads CPU, graphics card, motherboard, RAM and drives in seconds; scanned parts get the “Verified in use” badge.",
+    scanText: "A Windows app under 150 KB, no install needed. Reads CPU, graphics card, motherboard, RAM and drives in seconds; scanned parts get the “Verified in use” badge.",
     steps: ["Download and run pcdex-scan on the PC.", "Click “Link to account”; the app shows a code and a QR code.", "Enter the code on the Scan page and choose to create a new PC."],
     browserSpec: (cpu: string, gpu: string, ram: string) => <>This browser still has the build you entered before signing in: <b>{cpu}</b>, <b>{gpu}</b>, {ram}.</>,
     useThis: "Use this build",
@@ -526,7 +526,7 @@ export const en: typeof vi = {
       { name: "Parts market", alt: "Used-part listings with price, score per million ₫ and the gain in your PC",
         text: "Every listing shows how many points it adds to your PC and how much score you get per million ₫." },
       { name: "pcdex-scan for Windows", alt: "The pcdex-scan window listing the PC's CPU, graphics card, motherboard, RAM, drives and display",
-        text: "An app under 100 KB, no install: reads your real build in seconds and links it to your account with a QR code." },
+        text: "An app under 150 KB, no install: reads your real build in seconds and links it to your account with a QR code." },
     ],
     notes: [
       { name: "Read by pcdex-scan", text: "Don't want to type? Run the scanner and your build fills itself in, verified." },
@@ -552,7 +552,7 @@ export const en: typeof vi = {
       windows: [
         ["Scan", "Reads CPU, card, motherboard, RAM, drives, display", "Real VRAM, PCIe generation of the card and NVMe drives"],
         ["Link", "Link to your account with a QR code", "Update an existing PC or create a new one"],
-        ["Light", "One file under 100 KB, no install", "Windows 10 and 11, no admin rights needed"],
+        ["Light", "One file under 150 KB, no install", "Windows 10 and 11, no admin rights needed"],
       ],
       android: [
         ["PC", "Same account, same PCs and scores", "Synced with the web"],
@@ -582,6 +582,19 @@ export const en: typeof vi = {
     login: "Sign in to pcdex with email or Google to save your PC, join the leaderboard and sell parts.",
     privacy: "What data pcdex collects, how it's used and your rights over your data.",
     terms: "pcdex terms of use: accounts, scores, the parts market and the content you post.",
+  },
+  bench: {
+    title: "Measured performance",
+    meta: (v: string, at: string | null) => `Blender ${v}${at ? ` · ${at}` : ""}`,
+    gpu: "Graphics card",
+    aria: (pct: number) => `${pct}% of this model’s average score`,
+    vsAvg: (pts: string, avg: string) => `Measured ${pts} render points · model average ${avg}`,
+    noCompare: (pts: string, api: string) => `Measured ${pts} render points (${api} — no comparison data yet)`,
+    lowTip: "Well below average: check temperatures, the Windows power plan (High performance), BIOS power limits and the graphics driver.",
+    how: "Measured with Blender Benchmark (Cycles rendering) in pcdex-scan and compared with the same model on Blender Open Data. Results are sent from the user’s PC.",
+    cta: "Measure real performance with pcdex-scan (the “Benchmark” button) to see whether your PC runs at full strength.",
+    scanTitle: "Measured performance",
+    ofAvg: "of the model average",
   },
   export: {
     heading: "PC build",

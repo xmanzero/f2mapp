@@ -113,7 +113,9 @@ export async function claimScan(db: DB, userId: string, rawCode: string, input: 
     for (const [kind, m] of [["cpu", result.cpu], ["gpu", result.gpu]] as const)
       if (!m.name) await db.updateTable("machine_parts").set({ details: JSON.stringify({ substituteFor: m.raw }) })
         .where("machine_id", "=", machineId).where("status", "=", "in_use").where("kind", "=", kind).execute();
-    await db.updateTable("machines").set({ last_scan_at: now, updated_at: sql`now()` }).where("id", "=", machineId).execute();
+    // có đo hiệu năng trong lần quét này → thay số đo cũ; không đo thì giữ số đo cũ (chỉ hiện khi vẫn đúng CPU / card)
+    const bench = result.bench ? JSON.stringify({ ...result.bench, at: now.toISOString() }) : undefined;
+    await db.updateTable("machines").set({ last_scan_at: now, updated_at: sql`now()`, ...(bench ? { bench } : {}) }).where("id", "=", machineId).execute();
     await db.updateTable("scans").set({ claimed_machine: machineId }).where("code", "=", code).execute();
     return machineId;
   } catch (e) {

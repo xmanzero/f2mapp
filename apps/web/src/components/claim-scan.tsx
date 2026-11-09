@@ -17,6 +17,7 @@ import type { MachineView } from "@/lib/use-machine";
 import { OPEN_MACHINE_KEY } from "@/lib/use-machine";
 import { Combo } from "./combo";
 import { Mascot } from "./mascot";
+import { BenchCard } from "./bench-card";
 
 interface ScanView {
   code: string; pretty: string; result: ScanResult; createdAt: string; expiresAt: string; expired: boolean;
@@ -188,6 +189,7 @@ export function ClaimScan() {
             </dl>
             {r.notes.length > 0 && <ul className="scan-notes">{r.notes.map((n) => <li key={n}>{T.notes[n] ?? n}</li>)}</ul>}
           </section>
+          {r.bench && <BenchCard bench={r.bench} />}
         </div>
 
         <div className="col col-r">

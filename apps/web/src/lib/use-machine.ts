@@ -7,6 +7,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError } from "./api";
 import { useSession } from "./session";
+import type { MachineBench } from "@/components/bench-card";
 import { makeI18n, type Locale } from "@/i18n";
 
 const KEY = "f2m.spec.v1";
@@ -30,6 +31,8 @@ export interface MachineView {
   /** null = máy trên trình duyệt (khách) hoặc máy mẫu */
   id: string | null; name: string; isPrimary: boolean; spec: MachineSpec; parts: PartView[];
   missing: PartKind[]; verified: boolean; lastScanAt: string | null; power?: number; tier?: string;
+  /** Đo hiệu năng Blender còn đúng với CPU / card đang lắp (API đã lọc) */
+  bench?: MachineBench | null;
 }
 
 function validSpec(raw: unknown): MachineSpec | null {

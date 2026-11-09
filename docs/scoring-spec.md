@@ -209,6 +209,8 @@ Phương án ban đầu (để tham khảo): dựng trên [LibreHardwareMonitor]
 
 Đo xác minh (huy hiệu "Đã xác minh"): chạy Blender Benchmark CLI, kết quả so được trực tiếp với dữ liệu CC0; có thể thêm `7z b` cho CPU.
 
+**Đã làm (09/11/2026, pcdex-scan 0.5.0):** nút "Đo hiệu năng" chạy `benchmark-launcher-cli 3.3.0` (Blender 4.5.0, 3 cảnh, mỗi cảnh 30 giây) cho CPU và card, gửi `samples_per_minute` từng cảnh kèm bản quét. Điểm Blender = tổng 3 cảnh (giống Blender Open Data); điểm render đo được = điểm Blender / điểm của mốc (i5-12400F 155,74 · RTX 3060 2155,30) × 10.000, so với điểm render trung vị của cùng mẫu trong danh mục. Card đo bằng CUDA (không có OptiX) chỉ ghi điểm, không so. Ví dụ thật: i7-14700 đạt 270,4 điểm Blender = 17.364 điểm render = 90% trung vị (19.277). Chưa đưa số đo vào điểm sức mạnh; chưa chống giả mạo (số đo do máy người dùng gửi).
+
 ## 9. Việc còn mở
 
 - [x] Điểm GPU (FPS 3 độ phân giải, ray tracing) và điểm CPU (gaming, đơn nhân) từ Tom's Hardware cho 48 card và khoảng 30 CPU (07/11/2026).
