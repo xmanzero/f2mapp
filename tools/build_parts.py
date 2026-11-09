@@ -64,6 +64,43 @@ CPU = [
     ("Ryzen 9 9900X", "AM5", 73.9, 92.2, None, None, 162, 2024),
     ("Ryzen 9 9950X", "AM5", 76.9, 93.3, None, None, 230, 2024),
     ("Ryzen 9 9950X3D", "AM5", 95.7, 92.8, None, None, 230, 2025),
+    # --- mở rộng 09/11/2026: đời cũ phổ biến (Steam Hardware Survey, chợ máy cũ Việt Nam). Gaming / đơn nhân ước tính
+    #     theo tương quan với các mẫu đã có số Tom's (cùng kiến trúc, xung, cache); render lấy Blender Open Data nếu có.
+    ("Core i5-8400", "LGA1151", None, None, 66, 72, 65, 2017),
+    ("Core i3-9100F", "LGA1151", None, None, 60, 72, 65, 2019),
+    ("Core i5-9400F", "LGA1151", None, None, 70, 75, 65, 2019),
+    ("Core i7-8700K", "LGA1151", None, None, 80, 82, 95, 2017),
+    ("Core i7-9700K", "LGA1151", None, None, 86, 86, 95, 2018),
+    ("Core i9-9900K", "LGA1151", None, None, 88, 87, 95, 2018),
+    ("Core i5-10600K", "LGA1200", None, None, 84, 84, 182, 2020),
+    ("Core i7-10700F", "LGA1200", None, None, 85, 82, 224, 2020),
+    ("Core i7-10700K", "LGA1200", None, None, 88, 86, 229, 2020),
+    ("Core i9-10900K", "LGA1200", None, None, 91, 89, 250, 2020),
+    ("Core i5-11600K", "LGA1200", None, None, 92, 95, 224, 2021),
+    ("Core i7-11700F", "LGA1200", None, None, 93, 95, 224, 2021),
+    ("Core i7-11700K", "LGA1200", None, None, 96, 98, 251, 2021),
+    ("Core i9-11900K", "LGA1200", None, None, 98, 101, 251, 2021),
+    ("Core i3-14100F", "LGA1700", None, None, 97, 104, 110, 2024),
+    ("Core i7-12700F", "LGA1700", None, None, 118, 112, 180, 2022),
+    ("Core i7-13700F", "LGA1700", None, None, 134, 120, 219, 2023),
+    ("Core i9-12900K", "LGA1700", None, None, 124, 120, 241, 2021),
+    ("Ryzen 5 1600", "AM4", None, None, 58, 64, 88, 2017),
+    ("Ryzen 5 2600", "AM4", None, None, 63, 70, 88, 2018),
+    ("Ryzen 7 2700X", "AM4", None, None, 66, 72, 142, 2018),
+    ("Ryzen 7 3700X", "AM4", None, None, 80, 82, 88, 2019),
+    ("Ryzen 9 3900X", "AM4", None, None, 82, 84, 142, 2019),
+    ("Ryzen 5 4500", "AM4", None, None, 70, 78, 88, 2022),
+    ("Ryzen 5 5600G", "AM4", None, None, 82, 92, 88, 2021),
+    ("Ryzen 5 5600X", "AM4", None, None, 98, 96, 76, 2020),
+    ("Ryzen 7 5700G", "AM4", None, None, 86, 94, 88, 2021),
+    ("Ryzen 7 5800X", "AM4", None, None, 100, 98, 142, 2020),
+    ("Ryzen 9 5900X", "AM4", None, None, 102, 99, 142, 2020),
+    ("Ryzen 9 5950X", "AM4", None, None, 103, 100, 142, 2020),
+    ("Ryzen 5 8600G", "AM5", None, None, 100, 112, 88, 2024),
+    ("Ryzen 7 8700G", "AM5", None, None, 104, 116, 88, 2024),
+    ("Ryzen 9 7900", "AM5", None, None, 128, 120, 88, 2023),
+    ("Ryzen 9 7900X", "AM5", None, None, 131, 124, 230, 2022),
+    ("Ryzen 9 7950X3D", "AM5", None, None, 157, 124, 162, 2023),
 ]
 
 # ---------- GPU ----------
@@ -122,14 +159,46 @@ GPU = [
 ]
 # Card đời cũ không có trong bảng 2026: tên, sức mạnh ước tính (3060 = 1), RT ước tính / None, VRAM, làn, W, nguồn, năm
 GPU_OLD = [
+    ("RTX 2080 Ti", 1.40, 1.15, 11, 16, 250, 650, 2018),
+    ("RTX 2080 Super", 1.22, 1.00, 8, 16, 250, 650, 2019),
+    ("RTX 2080", 1.15, 0.95, 8, 16, 215, 650, 2018),
+    ("RTX 2070 Super", 1.08, 0.90, 8, 16, 215, 650, 2019),
+    ("RTX 2070", 0.97, 0.80, 8, 16, 175, 550, 2018),
+    ("RTX 2060 Super", 0.93, 0.78, 8, 16, 175, 550, 2019),
+    ("RTX 2060 12GB", 0.88, 0.80, 12, 16, 184, 500, 2021),
+    ("RTX 3060 8GB", 0.85, 0.85, 8, 16, 170, 550, 2022),
+    ("RTX 3050 6GB", 0.72, 0.65, 6, 8, 70, 300, 2024),
+    ("RX 7900 GRE", 1.92, 1.40, 16, 16, 260, 700, 2024),
+    ("RX 6800", 1.48, 0.95, 16, 16, 250, 650, 2020),
+    ("RX 5700 XT", 0.97, None, 8, 16, 225, 600, 2019),
+    ("RX 5700", 0.88, None, 8, 16, 180, 550, 2019),
+    ("RX 5600 XT", 0.80, None, 6, 16, 150, 450, 2020),
+    ("Arc A770", 1.03, 1.00, 16, 16, 225, 650, 2022),
+    ("Arc A750", 0.95, 0.92, 8, 16, 225, 600, 2022),
+    ("GTX 1080 Ti", 1.00, None, 11, 16, 250, 600, 2017),
+    ("GTX 1080", 0.80, None, 8, 16, 180, 500, 2016),
+    ("GTX 1070 Ti", 0.75, None, 8, 16, 180, 500, 2017),
+    ("GTX 1070", 0.68, None, 8, 16, 150, 500, 2016),
     ("RTX 2060", 0.85, 0.80, 6, 16, 160, 500, 2019),
     ("GTX 1660 Super", 0.72, None, 6, 16, 125, 450, 2019),
     ("GTX 1660 Ti", 0.71, None, 6, 16, 120, 450, 2019),
     ("GTX 1660", 0.63, None, 6, 16, 120, 450, 2019),
     ("RX 6500 XT", 0.58, 0.40, 4, 4, 107, 400, 2022),
     ("GTX 1060 6GB", 0.55, None, 6, 16, 120, 400, 2016),
+    ("GTX 1650 Super", 0.58, None, 4, 16, 100, 350, 2019),
+    ("RX 590", 0.60, None, 8, 16, 225, 500, 2018),
+    ("RX 580 8GB", 0.56, None, 8, 16, 185, 500, 2017),
+    ("RX 5500 XT", 0.57, None, 8, 8, 130, 400, 2019),
+    ("GTX 1060 3GB", 0.50, None, 3, 16, 120, 400, 2016),
+    ("RX 580 2048SP", 0.48, None, 8, 16, 150, 450, 2018),
+    ("RX 570", 0.48, None, 4, 16, 150, 450, 2017),
+    ("GTX 970", 0.47, None, 4, 16, 145, 500, 2014),
+    ("Arc A380", 0.40, 0.35, 6, 8, 75, 300, 2022),
+    ("RX 6400", 0.40, 0.25, 4, 4, 53, 300, 2022),
     ("GTX 1650", 0.47, None, 4, 16, 75, 300, 2019),
     ("GTX 1050 Ti", 0.38, None, 4, 16, 75, 300, 2016),
+    ("GTX 1050", 0.30, None, 2, 16, 75, 300, 2016),
+    ("GTX 1630", 0.28, None, 4, 16, 75, 300, 2022),
     ("Đồ họa tích hợp (iGPU)", 0.12, None, 1, 16, 0, 300, None),
 ]
 
@@ -144,7 +213,8 @@ blender = json.load(open(ROOT / "data/blender-render-4.5.json", encoding="utf-8"
 def blender_points(kind, name):
     key = norm(re.sub(r" (6|8|10|12|16)GB$", "", name))
     for r in blender:
-        if r["kind"] == kind and norm(r["name"]) == key:
+        # tên trong dữ liệu Blender có đuôi: "Ryzen 5 2600 Six-Core", "Ryzen 7 8700G w/ 780M"
+        if r["kind"] == kind and norm(re.sub(r"\s+(w/.*|\w+-Core)$", "", r["name"])) == key:
             return r["points"]
     return None
 
@@ -172,10 +242,20 @@ for n, t, v, lanes, tbp, rec, y in GPU:
                      rt=round(rt[t][1] / REF_RT1440 * 10000), rd=blender_points("gpu", n), v=v, lanes=lanes,
                      tbp=tbp, rec=rec, y=y, src="toms"))
 base = [61.5, 41.9, 22.2]  # RTX 3060 12GB
+
+
+def render_est(name, rel):
+    """Card chưa có trong dữ liệu Blender (OptiX / HIP / oneAPI): ước tính render theo sức mạnh game và hãng.
+    RTX có OptiX render mạnh hơn game; GTX chỉ có CUDA, AMD Polaris không có HIP trên Blender 4.x → yếu hơn nhiều (scoring-spec mục 2)."""
+    if name.startswith("Đồ họa tích hợp"):
+        return 300
+    k = 1.15 if name.startswith("RTX") else 0.45 if name.startswith("GTX") else 0.8 if name.startswith("Arc") \
+        else 0.3 if re.match(r"RX (4|5)\d0\b", name) else 0.6
+    return round(rel * 10000 * k)
 for n, rel, rtrel, v, lanes, tbp, rec, y in GPU_OLD:
     vf = [1, 0.85 if v <= 6 else 1, 0.6 if v <= 6 else 1]
     gpus.append(dict(n=n, f=[round(b * rel * k, 1) for b, k in zip(base, vf)], r=round(rel * 10000),
-                     rt=None if rtrel is None else round(rtrel * 10000), rd=blender_points("gpu", n) or 300, v=v,
+                     rt=None if rtrel is None else round(rtrel * 10000), rd=blender_points("gpu", n) or render_est(n, rel), v=v,
                      lanes=lanes, tbp=tbp, rec=rec, y=y, src="est"))
 
 missing_cpu = [c["n"] for c in cpus if c["mt"] is None]

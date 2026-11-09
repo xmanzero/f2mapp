@@ -76,7 +76,7 @@ export type ScanReport = z.infer<typeof scanReportSchema>;
 // ---------- nhận diện CPU / card ----------
 const fold = (s: string) => s.toLowerCase()
   .replace(/\((r|tm|c)\)|®|™/g, " ")
-  .replace(/\b(\d+(st|nd|rd|th) gen|intel|amd|nvidia|geforce|radeon|processor|graphics|cpu|with|\d+-core|\d+ cores?)\b/g, " ")
+  .replace(/\b(\d+(st|nd|rd|th) gen|intel|amd|nvidia|geforce|radeon|processor|graphics|cpu|with|series|[a-z0-9]+-core|\d+ cores?)\b/g, " ")
   .replace(/@.*$/, " ")
   .replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
 /** Tên trong danh mục, bỏ đuôi dung lượng VRAM ("RTX 3060 12GB" → "rtx 3060") */
@@ -101,8 +101,11 @@ function closest(q: string, names: string[]) {
     const t = baseOf(n).split(" ");
     let k = 0;
     while (k < qt.length && k < t.length && qt[k] === t[k]) k++;
-    // trùng một phần ở từ cuối (14700 ~ 14700k) cũng tính nửa điểm
-    const partial = k < qt.length && k < t.length && (t[k] ?? "").startsWith((qt[k] ?? "").slice(0, 4)) ? 0.5 : 0;
+    // trùng phần đầu ở từ tiếp theo (14700 ~ 14700k, 13500 ~ 13400f hơn 10400f): tối đa nửa điểm theo số ký tự trùng
+    const a = qt[k] ?? "", b = t[k] ?? "";
+    let cp = 0;
+    while (k < qt.length && k < t.length && cp < a.length && a[cp] === b[cp]) cp++;
+    const partial = a.length ? 0.5 * cp / a.length : 0;
     if (k + partial > score) { score = k + partial; best = n; }
   }
   return score >= 1.5 ? best : null;
@@ -117,6 +120,9 @@ export function matchCpu(raw: string): PartMatch {
     const k = CPUS.find((c) => baseOf(c.name) === q.slice(0, -1));
     if (k) return { name: k.name, raw, suggestion: null, equivalent: true };
   }
+  // bản F (không iGPU) và bản thường: cùng nhân, cùng xung → dùng chung số liệu (i5-12400 ↔ i5-12400F)
+  const f = /\d(k?)f$/.test(q) ? CPUS.find((c) => baseOf(c.name) === q.slice(0, -1)) : CPUS.find((c) => baseOf(c.name) === q + "f");
+  if (f) return { name: f.name, raw, suggestion: null, equivalent: true };
   return { name: null, raw, suggestion: closest(q, CPUS.map((c) => c.name)) };
 }
 
@@ -127,7 +133,8 @@ const isIntegrated = (raw: string) => {
 
 export function matchGpu(raw: string, vramGb: number | null): PartMatch {
   if (isIntegrated(raw)) return { name: GPUS.find((g) => g.integrated)?.name ?? null, raw, suggestion: null };
-  const q = fold(raw);
+  // tên có ghi VRAM ("GTX 1060 3GB") so như tên gốc, chọn bản theo VRAM bên dưới
+  const q = baseOf(raw);
   const same = GPUS.filter((g) => !g.integrated && baseOf(g.name) === q);
   if (same.length === 1 && same[0]) return { name: same[0].name, raw, suggestion: null };
   if (same.length > 1) {

@@ -574,6 +574,496 @@
     "st": "toms",
     "mt": "blender"
    }
+  },
+  {
+   "name": "Core i5-8400",
+   "socket": "LGA1151",
+   "powerW": 65,
+   "releaseYear": 2017,
+   "gaming": 6600,
+   "single": 7200,
+   "render": 5052,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i3-9100F",
+   "socket": "LGA1151",
+   "powerW": 65,
+   "releaseYear": 2019,
+   "gaming": 6000,
+   "single": 7200,
+   "render": 4304,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i5-9400F",
+   "socket": "LGA1151",
+   "powerW": 65,
+   "releaseYear": 2019,
+   "gaming": 7000,
+   "single": 7500,
+   "render": 5171,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-8700K",
+   "socket": "LGA1151",
+   "powerW": 95,
+   "releaseYear": 2017,
+   "gaming": 8000,
+   "single": 8200,
+   "render": 7895,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-9700K",
+   "socket": "LGA1151",
+   "powerW": 95,
+   "releaseYear": 2018,
+   "gaming": 8600,
+   "single": 8600,
+   "render": 8777,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i9-9900K",
+   "socket": "LGA1151",
+   "powerW": 95,
+   "releaseYear": 2018,
+   "gaming": 8800,
+   "single": 8700,
+   "render": 10878,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i5-10600K",
+   "socket": "LGA1200",
+   "powerW": 182,
+   "releaseYear": 2020,
+   "gaming": 8400,
+   "single": 8400,
+   "render": 8709,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-10700F",
+   "socket": "LGA1200",
+   "powerW": 224,
+   "releaseYear": 2020,
+   "gaming": 8500,
+   "single": 8200,
+   "render": 10204,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-10700K",
+   "socket": "LGA1200",
+   "powerW": 229,
+   "releaseYear": 2020,
+   "gaming": 8800,
+   "single": 8600,
+   "render": 11625,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i9-10900K",
+   "socket": "LGA1200",
+   "powerW": 250,
+   "releaseYear": 2020,
+   "gaming": 9100,
+   "single": 8900,
+   "render": 15277,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i5-11600K",
+   "socket": "LGA1200",
+   "powerW": 224,
+   "releaseYear": 2021,
+   "gaming": 9200,
+   "single": 9500,
+   "render": 9303,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-11700F",
+   "socket": "LGA1200",
+   "powerW": 224,
+   "releaseYear": 2021,
+   "gaming": 9300,
+   "single": 9500,
+   "render": 11322,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-11700K",
+   "socket": "LGA1200",
+   "powerW": 251,
+   "releaseYear": 2021,
+   "gaming": 9600,
+   "single": 9800,
+   "render": 12740,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i9-11900K",
+   "socket": "LGA1200",
+   "powerW": 251,
+   "releaseYear": 2021,
+   "gaming": 9800,
+   "single": 10100,
+   "render": 14657,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i3-14100F",
+   "socket": "LGA1700",
+   "powerW": 110,
+   "releaseYear": 2024,
+   "gaming": 9700,
+   "single": 10400,
+   "render": 7800,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "est"
+   }
+  },
+  {
+   "name": "Core i7-12700F",
+   "socket": "LGA1700",
+   "powerW": 180,
+   "releaseYear": 2022,
+   "gaming": 11800,
+   "single": 11200,
+   "render": 15193,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i7-13700F",
+   "socket": "LGA1700",
+   "powerW": 219,
+   "releaseYear": 2023,
+   "gaming": 13400,
+   "single": 12000,
+   "render": 17991,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Core i9-12900K",
+   "socket": "LGA1700",
+   "powerW": 241,
+   "releaseYear": 2021,
+   "gaming": 12400,
+   "single": 12000,
+   "render": 22737,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 5 1600",
+   "socket": "AM4",
+   "powerW": 88,
+   "releaseYear": 2017,
+   "gaming": 5800,
+   "single": 6400,
+   "render": 6213,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 5 2600",
+   "socket": "AM4",
+   "powerW": 88,
+   "releaseYear": 2018,
+   "gaming": 6300,
+   "single": 7000,
+   "render": 6922,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 7 2700X",
+   "socket": "AM4",
+   "powerW": 142,
+   "releaseYear": 2018,
+   "gaming": 6600,
+   "single": 7200,
+   "render": 9295,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 7 3700X",
+   "socket": "AM4",
+   "powerW": 88,
+   "releaseYear": 2019,
+   "gaming": 8000,
+   "single": 8200,
+   "render": 11147,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 9 3900X",
+   "socket": "AM4",
+   "powerW": 142,
+   "releaseYear": 2019,
+   "gaming": 8200,
+   "single": 8400,
+   "render": 17225,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 5 4500",
+   "socket": "AM4",
+   "powerW": 88,
+   "releaseYear": 2022,
+   "gaming": 7000,
+   "single": 7800,
+   "render": 7953,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 5 5600G",
+   "socket": "AM4",
+   "powerW": 88,
+   "releaseYear": 2021,
+   "gaming": 8200,
+   "single": 9200,
+   "render": 9338,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 5 5600X",
+   "socket": "AM4",
+   "powerW": 76,
+   "releaseYear": 2020,
+   "gaming": 9800,
+   "single": 9600,
+   "render": 9716,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 7 5700G",
+   "socket": "AM4",
+   "powerW": 88,
+   "releaseYear": 2021,
+   "gaming": 8600,
+   "single": 9400,
+   "render": 12066,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 7 5800X",
+   "socket": "AM4",
+   "powerW": 142,
+   "releaseYear": 2020,
+   "gaming": 10000,
+   "single": 9800,
+   "render": 13329,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 9 5900X",
+   "socket": "AM4",
+   "powerW": 142,
+   "releaseYear": 2020,
+   "gaming": 10200,
+   "single": 9900,
+   "render": 19649,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 9 5950X",
+   "socket": "AM4",
+   "powerW": 142,
+   "releaseYear": 2020,
+   "gaming": 10300,
+   "single": 10000,
+   "render": 25162,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 5 8600G",
+   "socket": "AM5",
+   "powerW": 88,
+   "releaseYear": 2024,
+   "gaming": 10000,
+   "single": 11200,
+   "render": 11829,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 7 8700G",
+   "socket": "AM5",
+   "powerW": 88,
+   "releaseYear": 2024,
+   "gaming": 10400,
+   "single": 11600,
+   "render": 16080,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 9 7900",
+   "socket": "AM5",
+   "powerW": 88,
+   "releaseYear": 2023,
+   "gaming": 12800,
+   "single": 12000,
+   "render": 26258,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 9 7900X",
+   "socket": "AM5",
+   "powerW": 230,
+   "releaseYear": 2022,
+   "gaming": 13100,
+   "single": 12400,
+   "render": 26574,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
+  },
+  {
+   "name": "Ryzen 9 7950X3D",
+   "socket": "AM5",
+   "powerW": 162,
+   "releaseYear": 2023,
+   "gaming": 15700,
+   "single": 12400,
+   "render": 34736,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   }
   }
  ],
  "gpus": [
@@ -1442,6 +1932,366 @@
    "source": "toms"
   },
   {
+   "name": "RTX 2080 Ti",
+   "fps": {
+    "1080": 86.1,
+    "1440": 58.7,
+    "2160": 31.1
+   },
+   "raster": 14000,
+   "rayTracing": 11500,
+   "render": 13161,
+   "vramGb": 11,
+   "pcieLanes": 16,
+   "boardPowerW": 250,
+   "psuRecommendedW": 650,
+   "releaseYear": 2018,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 2080 Super",
+   "fps": {
+    "1080": 75.0,
+    "1440": 51.1,
+    "2160": 27.1
+   },
+   "raster": 12200,
+   "rayTracing": 10000,
+   "render": 10624,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 250,
+   "psuRecommendedW": 650,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 2080",
+   "fps": {
+    "1080": 70.7,
+    "1440": 48.2,
+    "2160": 25.5
+   },
+   "raster": 11500,
+   "rayTracing": 9500,
+   "render": 10578,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 215,
+   "psuRecommendedW": 650,
+   "releaseYear": 2018,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 2070 Super",
+   "fps": {
+    "1080": 66.4,
+    "1440": 45.3,
+    "2160": 24.0
+   },
+   "raster": 10800,
+   "rayTracing": 9000,
+   "render": 10350,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 215,
+   "psuRecommendedW": 650,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 2070",
+   "fps": {
+    "1080": 59.7,
+    "1440": 40.6,
+    "2160": 21.5
+   },
+   "raster": 9700,
+   "rayTracing": 8000,
+   "render": 9752,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 175,
+   "psuRecommendedW": 550,
+   "releaseYear": 2018,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 2060 Super",
+   "fps": {
+    "1080": 57.2,
+    "1440": 39.0,
+    "2160": 20.6
+   },
+   "raster": 9300,
+   "rayTracing": 7800,
+   "render": 9577,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 175,
+   "psuRecommendedW": 550,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 2060 12GB",
+   "fps": {
+    "1080": 54.1,
+    "1440": 36.9,
+    "2160": 19.5
+   },
+   "raster": 8800,
+   "rayTracing": 8000,
+   "render": 7319,
+   "vramGb": 12,
+   "pcieLanes": 16,
+   "boardPowerW": 184,
+   "psuRecommendedW": 500,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 3060 8GB",
+   "fps": {
+    "1080": 52.3,
+    "1440": 35.6,
+    "2160": 18.9
+   },
+   "raster": 8500,
+   "rayTracing": 8500,
+   "render": 10000,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 170,
+   "psuRecommendedW": 550,
+   "releaseYear": 2022,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RTX 3050 6GB",
+   "fps": {
+    "1080": 44.3,
+    "1440": 25.6,
+    "2160": 9.6
+   },
+   "raster": 7200,
+   "rayTracing": 6500,
+   "render": 6270,
+   "vramGb": 6,
+   "pcieLanes": 8,
+   "boardPowerW": 70,
+   "psuRecommendedW": 300,
+   "releaseYear": 2024,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 7900 GRE",
+   "fps": {
+    "1080": 118.1,
+    "1440": 80.4,
+    "2160": 42.6
+   },
+   "raster": 19200,
+   "rayTracing": 14000,
+   "render": 13438,
+   "vramGb": 16,
+   "pcieLanes": 16,
+   "boardPowerW": 260,
+   "psuRecommendedW": 700,
+   "releaseYear": 2024,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 6800",
+   "fps": {
+    "1080": 91.0,
+    "1440": 62.0,
+    "2160": 32.9
+   },
+   "raster": 14800,
+   "rayTracing": 9500,
+   "render": 8691,
+   "vramGb": 16,
+   "pcieLanes": 16,
+   "boardPowerW": 250,
+   "psuRecommendedW": 650,
+   "releaseYear": 2020,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 5700 XT",
+   "fps": {
+    "1080": 59.7,
+    "1440": 40.6,
+    "2160": 21.5
+   },
+   "raster": 9700,
+   "rayTracing": null,
+   "render": 4460,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 225,
+   "psuRecommendedW": 600,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 5700",
+   "fps": {
+    "1080": 54.1,
+    "1440": 36.9,
+    "2160": 19.5
+   },
+   "raster": 8800,
+   "rayTracing": null,
+   "render": 5280,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 180,
+   "psuRecommendedW": 550,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 5600 XT",
+   "fps": {
+    "1080": 49.2,
+    "1440": 28.5,
+    "2160": 10.7
+   },
+   "raster": 8000,
+   "rayTracing": null,
+   "render": 3510,
+   "vramGb": 6,
+   "pcieLanes": 16,
+   "boardPowerW": 150,
+   "psuRecommendedW": 450,
+   "releaseYear": 2020,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "Arc A770",
+   "fps": {
+    "1080": 63.3,
+    "1440": 43.2,
+    "2160": 22.9
+   },
+   "raster": 10300,
+   "rayTracing": 10000,
+   "render": 11372,
+   "vramGb": 16,
+   "pcieLanes": 16,
+   "boardPowerW": 225,
+   "psuRecommendedW": 650,
+   "releaseYear": 2022,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "Arc A750",
+   "fps": {
+    "1080": 58.4,
+    "1440": 39.8,
+    "2160": 21.1
+   },
+   "raster": 9500,
+   "rayTracing": 9200,
+   "render": 10629,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 225,
+   "psuRecommendedW": 600,
+   "releaseYear": 2022,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1080 Ti",
+   "fps": {
+    "1080": 61.5,
+    "1440": 41.9,
+    "2160": 22.2
+   },
+   "raster": 10000,
+   "rayTracing": null,
+   "render": 3811,
+   "vramGb": 11,
+   "pcieLanes": 16,
+   "boardPowerW": 250,
+   "psuRecommendedW": 600,
+   "releaseYear": 2017,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1080",
+   "fps": {
+    "1080": 49.2,
+    "1440": 33.5,
+    "2160": 17.8
+   },
+   "raster": 8000,
+   "rayTracing": null,
+   "render": 2718,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 180,
+   "psuRecommendedW": 500,
+   "releaseYear": 2016,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1070 Ti",
+   "fps": {
+    "1080": 46.1,
+    "1440": 31.4,
+    "2160": 16.6
+   },
+   "raster": 7500,
+   "rayTracing": null,
+   "render": 2754,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 180,
+   "psuRecommendedW": 500,
+   "releaseYear": 2017,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1070",
+   "fps": {
+    "1080": 41.8,
+    "1440": 28.5,
+    "2160": 15.1
+   },
+   "raster": 6800,
+   "rayTracing": null,
+   "render": 2422,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 150,
+   "psuRecommendedW": 500,
+   "releaseYear": 2016,
+   "integrated": false,
+   "source": "est"
+  },
+  {
    "name": "RTX 2060",
    "fps": {
     "1080": 52.3,
@@ -1550,6 +2400,186 @@
    "source": "est"
   },
   {
+   "name": "GTX 1650 Super",
+   "fps": {
+    "1080": 35.7,
+    "1440": 20.7,
+    "2160": 7.7
+   },
+   "raster": 5800,
+   "rayTracing": null,
+   "render": 2565,
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 100,
+   "psuRecommendedW": 350,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 590",
+   "fps": {
+    "1080": 36.9,
+    "1440": 25.1,
+    "2160": 13.3
+   },
+   "raster": 6000,
+   "rayTracing": null,
+   "render": 1800,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 225,
+   "psuRecommendedW": 500,
+   "releaseYear": 2018,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 580 8GB",
+   "fps": {
+    "1080": 34.4,
+    "1440": 23.5,
+    "2160": 12.4
+   },
+   "raster": 5600,
+   "rayTracing": null,
+   "render": 1680,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 185,
+   "psuRecommendedW": 500,
+   "releaseYear": 2017,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 5500 XT",
+   "fps": {
+    "1080": 35.1,
+    "1440": 23.9,
+    "2160": 12.7
+   },
+   "raster": 5700,
+   "rayTracing": null,
+   "render": 2360,
+   "vramGb": 8,
+   "pcieLanes": 8,
+   "boardPowerW": 130,
+   "psuRecommendedW": 400,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1060 3GB",
+   "fps": {
+    "1080": 30.8,
+    "1440": 17.8,
+    "2160": 6.7
+   },
+   "raster": 5000,
+   "rayTracing": null,
+   "render": 1239,
+   "vramGb": 3,
+   "pcieLanes": 16,
+   "boardPowerW": 120,
+   "psuRecommendedW": 400,
+   "releaseYear": 2016,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 580 2048SP",
+   "fps": {
+    "1080": 29.5,
+    "1440": 20.1,
+    "2160": 10.7
+   },
+   "raster": 4800,
+   "rayTracing": null,
+   "render": 1440,
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 150,
+   "psuRecommendedW": 450,
+   "releaseYear": 2018,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 570",
+   "fps": {
+    "1080": 29.5,
+    "1440": 17.1,
+    "2160": 6.4
+   },
+   "raster": 4800,
+   "rayTracing": null,
+   "render": 1440,
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 150,
+   "psuRecommendedW": 450,
+   "releaseYear": 2017,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 970",
+   "fps": {
+    "1080": 28.9,
+    "1440": 16.7,
+    "2160": 6.3
+   },
+   "raster": 4700,
+   "rayTracing": null,
+   "render": 1186,
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 145,
+   "psuRecommendedW": 500,
+   "releaseYear": 2014,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "Arc A380",
+   "fps": {
+    "1080": 24.6,
+    "1440": 14.2,
+    "2160": 5.3
+   },
+   "raster": 4000,
+   "rayTracing": 3500,
+   "render": 2708,
+   "vramGb": 6,
+   "pcieLanes": 8,
+   "boardPowerW": 75,
+   "psuRecommendedW": 300,
+   "releaseYear": 2022,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "RX 6400",
+   "fps": {
+    "1080": 24.6,
+    "1440": 14.2,
+    "2160": 5.3
+   },
+   "raster": 4000,
+   "rayTracing": 2500,
+   "render": 1392,
+   "vramGb": 4,
+   "pcieLanes": 4,
+   "boardPowerW": 53,
+   "psuRecommendedW": 300,
+   "releaseYear": 2022,
+   "integrated": false,
+   "source": "est"
+  },
+  {
    "name": "GTX 1650",
    "fps": {
     "1080": 28.9,
@@ -1582,6 +2612,42 @@
    "boardPowerW": 75,
    "psuRecommendedW": 300,
    "releaseYear": 2016,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1050",
+   "fps": {
+    "1080": 18.4,
+    "1440": 10.7,
+    "2160": 4.0
+   },
+   "raster": 3000,
+   "rayTracing": null,
+   "render": 821,
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 75,
+   "psuRecommendedW": 300,
+   "releaseYear": 2016,
+   "integrated": false,
+   "source": "est"
+  },
+  {
+   "name": "GTX 1630",
+   "fps": {
+    "1080": 17.2,
+    "1440": 10.0,
+    "2160": 3.7
+   },
+   "raster": 2800,
+   "rayTracing": null,
+   "render": 1260,
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 75,
+   "psuRecommendedW": 300,
+   "releaseYear": 2022,
    "integrated": false,
    "source": "est"
   },

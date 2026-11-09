@@ -214,7 +214,8 @@ Phương án ban đầu (để tham khảo): dựng trên [LibreHardwareMonitor]
 ## 9. Việc còn mở
 
 - [x] Điểm GPU (FPS 3 độ phân giải, ray tracing) và điểm CPU (gaming, đơn nhân) từ Tom's Hardware cho 48 card và khoảng 30 CPU (07/11/2026).
-- [ ] Bổ sung linh kiện đời cũ còn ước tính (GTX 10/16, RTX 2060, Intel đời 10–11, Ryzen 3000/5000, Ryzen 5 5600, 7500F/7600/7700, 9700X). Chọn danh sách theo [Steam Hardware Survey](https://store.steampowered.com/hwsurvey) (thống kê công khai linh kiện người chơi đang dùng), về sau theo chính cấu hình người dùng app khai báo.
+- [x] Bổ sung linh kiện đời cũ (09/11/2026): 76 CPU (thêm Intel 8–14, LGA1151; Ryzen 1000–8000G, 5000/7000 các bản X/G/X3D) và 89 card (RTX 20, GTX 9/10/16, RX 400/500/5000/6800/7900 GRE, Arc A). Gaming / đơn nhân của mẫu thiếu số Tom's là ước tính (`source: est`) theo tương quan với mẫu cùng kiến trúc; render lấy Blender Open Data (khớp cả tên có đuôi "Six-Core", "w/ 760M"), card chưa có OptiX / HIP thì ước tính theo hãng (`render_est`). Nhận diện: bản F ↔ bản thường dùng chung số liệu, bỏ chữ "Series", tên card ghi VRAM chọn đúng bản. Điểm đã lưu tính lại mỗi lần API khởi động (`refreshScores`).
+- [ ] Thay số ước tính bằng số đo: dùng kết quả "Đo hiệu năng" của người dùng (khi đủ lượt / chống giả mạo) để hiệu chỉnh mẫu `est`. Chọn danh sách theo [Steam Hardware Survey](https://store.steampowered.com/hwsurvey) (thống kê công khai linh kiện người chơi đang dùng), về sau theo chính cấu hình người dùng app khai báo.
 - [x] Hiệu chỉnh mô hình FPS theo số đo (xem mục 3).
 - [ ] **Bản quyền:** số FPS của Tom's Hardware chỉ dùng nội bộ để dựng và hiệu chỉnh thang điểm. App công khai hiển thị điểm và FPS ước tính của mô hình, không đăng lại bảng của họ. Về lâu dài thay bằng số đo từ tool xác minh của chính app.
 - [ ] Bổ sung danh mục laptop: CPU/GPU laptop là mục riêng, GPU ghi kèm mức công suất (TGP); chấm nguyên chiếc theo model.

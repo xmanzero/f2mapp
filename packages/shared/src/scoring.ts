@@ -24,7 +24,7 @@ export function ramScore(gb: RamGb): number {
 const lowRam = (gb: RamGb) => gb <= 8;
 export const STORAGE_SCORE: Record<StorageKind, number> = { hdd: 2000, sata: 7000, nvme3: 10000, nvme4: 12000, nvme5: 13000 };
 export const SOCKET_MEMORY: Record<Socket, "DDR4" | "DDR5" | "DDR4/DDR5"> = {
-  LGA1200: "DDR4", LGA1700: "DDR4/DDR5", LGA1851: "DDR5", AM4: "DDR4", AM5: "DDR5",
+  LGA1151: "DDR4", LGA1200: "DDR4", LGA1700: "DDR4/DDR5", LGA1851: "DDR5", AM4: "DDR4", AM5: "DDR5",
 };
 
 /** i5-12400F nuôi ~120 FPS ở 1080p Ultra (bộ game Tom's Hardware 2026) */

@@ -20,7 +20,7 @@ describe("nhận diện CPU", () => {
     expect(m).toMatchObject({ name: "Core i5-14600K", equivalent: true });
   });
   it("chưa có trong danh mục → gợi ý mẫu gần nhất", () => {
-    expect(matchCpu("Intel(R) Core(TM) i7-13700")).toMatchObject({ name: null, suggestion: "Core i7-13700K" });
+    expect(matchCpu("Intel(R) Core(TM) i5-13500")).toMatchObject({ name: null, suggestion: "Core i5-13400F" });
     expect(matchCpu("Intel(R) Core(TM) i7-14700").name).toBe("Core i7-14700");
   });
 });
@@ -38,7 +38,8 @@ describe("nhận diện card", () => {
     expect(matchGpu("AMD Radeon(TM) Graphics", null).name).toBe("Đồ họa tích hợp (iGPU)");
   });
   it("chưa có trong danh mục → gợi ý", () => {
-    expect(matchGpu("NVIDIA GeForce GTX 1650 SUPER", 4)).toMatchObject({ name: null, suggestion: "GTX 1650" });
+    expect(matchGpu("NVIDIA GeForce GTX 960", 4).name).toBeNull();
+    expect(matchGpu("NVIDIA GeForce GTX 1650 SUPER", 4).name).toBe("GTX 1650 Super");
     expect(matchGpu("NVIDIA GeForce GTX 1660 Ti", 6).name).toBe("GTX 1660 Ti");
     expect(matchGpu("NVIDIA GeForce GTX 1660", 6).name).toBe("GTX 1660");
   });
@@ -155,5 +156,26 @@ describe("đo hiệu năng (Blender Benchmark)", () => {
     const rows = JSON.parse(readFileSync(new URL("../../../data/blender-render-4.5.json", import.meta.url), "utf-8")).rows as { kind: string; name: string; score: number }[];
     expect(rows.find((r) => r.name === "Core i5-12400F")?.score).toBe(BLENDER_REF.cpu);
     expect(rows.find((r) => r.kind === "gpu" && r.name === "RTX 3060")?.score).toBe(BLENDER_REF.gpu);
+  });
+});
+
+describe("danh mục mở rộng (09/11/2026)", () => {
+  it("bản F và bản thường dùng chung số liệu", () => {
+    expect(matchCpu("12th Gen Intel(R) Core(TM) i5-12400")).toMatchObject({ name: "Core i5-12400F", equivalent: true });
+    expect(matchCpu("Intel(R) Core(TM) i7-10700")).toMatchObject({ name: "Core i7-10700F", equivalent: true });
+    expect(matchCpu("Intel(R) Core(TM) i3-12100").name).toBe("Core i3-12100F");
+    expect(matchCpu("Intel(R) Core(TM) i7-14700").name).toBe("Core i7-14700");
+  });
+  it("CPU đời cũ và AMD có đuôi lạ", () => {
+    expect(matchCpu("Intel(R) Core(TM) i7-8700K CPU @ 3.70GHz").name).toBe("Core i7-8700K");
+    expect(matchCpu("AMD Ryzen 5 2600 Six-Core Processor").name).toBe("Ryzen 5 2600");
+    expect(matchCpu("AMD Ryzen 7 5700G with Radeon Graphics").name).toBe("Ryzen 7 5700G");
+  });
+  it("card đời cũ: Series, bản VRAM", () => {
+    expect(matchGpu("AMD Radeon RX 580 Series", 8).name).toBe("RX 580 8GB");
+    expect(matchGpu("NVIDIA GeForce RTX 2060 SUPER", 8).name).toBe("RTX 2060 Super");
+    expect(matchGpu("NVIDIA GeForce RTX 3060", 8).name).toBe("RTX 3060 8GB");
+    expect(matchGpu("NVIDIA GeForce RTX 2060", 12).name).toBe("RTX 2060 12GB");
+    expect(matchGpu("NVIDIA GeForce GTX 1060 3GB", 3).name).toBe("GTX 1060 3GB");
   });
 });

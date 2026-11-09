@@ -1,4 +1,4 @@
-export type Socket = "LGA1200" | "LGA1700" | "LGA1851" | "AM4" | "AM5";
+export type Socket = "LGA1151" | "LGA1200" | "LGA1700" | "LGA1851" | "AM4" | "AM5";
 export type Resolution = 1080 | 1440 | 2160;
 /** Tổng dung lượng RAM (GB) */
 export type RamGb = number;

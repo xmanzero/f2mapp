@@ -2,7 +2,7 @@ import { buildApp, type AppDeps } from "./app.js";
 import { createDb } from "./db.js";
 import { expireListings } from "./services/listings.js";
 import { processPending, WATERMARK } from "./services/photos.js";
-import { syncParts } from "./services/machines.js";
+import { refreshScores, syncParts } from "./services/machines.js";
 
 const port = Number(process.env.PORT ?? 8140);
 let deps: AppDeps | undefined;
@@ -29,6 +29,7 @@ if (deps) {
     expireListings(db).then((n) => { if (n) app.log.info(`${n} tin hết hạn đã tự hủy`); }).catch((e) => app.log.error(e));
   }, 60_000).unref();
   // ảnh đăng trước khi có WebP + dấu: xử lý lại một lần
+  refreshScores(db).then((n) => app.log.info(`Đã tính lại điểm ${n} máy theo danh mục hiện tại`)).catch((e) => app.log.error(e));
   processPending(db).then((n) => { if (n) app.log.info(`Đã đổi ${n} ảnh sang WebP + dấu ${WATERMARK}`); }).catch((e) => app.log.error(e));
 }
 

@@ -220,6 +220,22 @@ export async function saveSpec(db: DB, userId: string, machineId: string | null,
   });
 }
 
+/**
+ * Tính lại điểm mọi máy theo danh mục hiện tại (chạy lúc API khởi động): sửa / bổ sung số liệu linh kiện
+ * mà không đổi phiên bản thang điểm thì bảng xếp hạng vẫn khớp với điểm web tính trực tiếp.
+ */
+export async function refreshScores(db: DB) {
+  const ms = await db.selectFrom("machines").select(machineCols).execute();
+  let n = 0;
+  for (const m of ms) {
+    const built = buildSpec(m as unknown as MachineRow, await partsOf(db, m.id));
+    if (!built) continue;
+    await upsertScores(db, m.id, resolveMachine(specToInput(built.spec)));
+    n++;
+  }
+  return n;
+}
+
 async function upsertScores(db: DB, machineId: string, cfg: MachineConfig) {
   const s = computeScores(cfg);
   const row = {
