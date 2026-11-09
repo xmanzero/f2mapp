@@ -319,6 +319,8 @@ export async function leaderboard(db: DB, limit = 100) {
   const parts = rows.length === 0 ? [] : await db.selectFrom("machine_parts")
     .select(["machine_id", "kind", "label", "verified_at"]).where("status", "=", "in_use").where("kind", "in", ["cpu", "gpu"])
     .where("machine_id", "in", rows.map((r) => r.machineId)).execute();
+  const likes = rows.length === 0 ? [] : await db.selectFrom("machine_likes").select(["machine_id", (eb) => eb.fn.countAll<string>().as("n")])
+    .where("machine_id", "in", rows.map((r) => r.machineId)).groupBy("machine_id").execute();
   return rows.map((r, i) => {
     const mine = parts.filter((p) => p.machine_id === r.machineId);
     const cpu = mine.find((p) => p.kind === "cpu")?.label ?? null, gpu = mine.find((p) => p.kind === "gpu")?.label ?? null;
@@ -332,6 +334,7 @@ export async function leaderboard(db: DB, limit = 100) {
       ramGb: r.ram_gb, resolution: r.resolution, power: r.power, tier: r.tier,
       verified: mine.length === 2 && mine.every((p) => p.verified_at),
       bench: b,
+      likes: Number(likes.find((l) => l.machine_id === r.machineId)?.n ?? 0),
     };
   });
 }
@@ -356,6 +359,32 @@ export async function publicMachine(db: DB, userId: string) {
       kind: p.kind, label: p.label, verified: !!p.verified_at && p.status === "in_use",
     })),
   };
+}
+
+/**
+ * Mọi máy (tối đa 2) của một người cho trang hồ sơ công khai: cấu hình, linh kiện đã xác thực, số đo, điểm đã lưu.
+ * Máy chính trước. Không lộ id linh kiện / tin rao.
+ */
+export async function publicMachines(db: DB, userId: string) {
+  const ms = await db.selectFrom("machines as m")
+    .leftJoin("machine_scores as s", (j) => j.onRef("s.machine_id", "=", "m.id").on("s.scale_version", "=", SCALE_VERSION))
+    .select([...machineCols.map((c) => `m.${c}` as const), "s.power", "s.tier"])
+    .where("m.owner_id", "=", userId).orderBy("m.is_primary", "desc").orderBy("m.created_at").execute();
+  const out = [];
+  for (const row of ms) {
+    const m = row as unknown as MachineRow & { power: number | null; tier: string | null };
+    const parts = await partsOf(db, m.id);
+    const built = buildSpec(m, parts);
+    if (!built) continue;
+    out.push({
+      id: m.id, name: m.name, isPrimary: m.is_primary, spec: built.spec, lastScanAt: m.last_scan_at, bench: benchOf(m, built.spec),
+      power: m.power, tier: m.tier,
+      parts: parts.filter((p) => p.status === "in_use" || p.status === "for_sale").map((p) => ({
+        kind: p.kind, label: p.label, verified: !!p.verified_at && p.status === "in_use",
+      })),
+    });
+  }
+  return out;
 }
 
 /** Xóa linh kiện đã thay ra khỏi kho (khai nhầm, đã vứt, đã cho…). Không xóa linh kiện đang lắp / đang có tin bán. */

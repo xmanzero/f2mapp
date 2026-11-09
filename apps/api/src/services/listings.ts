@@ -116,10 +116,11 @@ export async function expireListings(db: DB) {
   return gone.length;
 }
 
-export async function listListings(db: DB, opts: { kind?: string; q?: string; limit?: number; viewerId: string | null }) {
+export async function listListings(db: DB, opts: { kind?: string; q?: string; limit?: number; viewerId: string | null; sellerId?: string }) {
   await expireListings(db);
   let q = baseQuery(db).where("l.status", "=", "active").where("l.expires_at", ">", new Date())
     .where("l.removed_at", "is", null).where("u.banned_at", "is", null);
+  if (opts.sellerId) q = q.where("l.seller_id", "=", opts.sellerId);
   if (opts.kind && (LISTING_KINDS as readonly string[]).includes(opts.kind)) q = q.where("l.kind", "=", opts.kind as (typeof LISTING_KINDS)[number]);
   if (opts.q) {
     const like = `%${opts.q.trim().toLowerCase().replace(/[%_\\]/g, "")}%`;

@@ -1,0 +1,55 @@
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
+import { SCALE_VERSION } from "@f2m/shared";
+import type { AppDeps } from "../app.js";
+import { userIdFromRequest } from "../auth/session.js";
+import { followingIds, followList, profile, setFollow, setLike, SocialError } from "../services/social.js";
+
+/** Cộng đồng: hồ sơ công khai, theo dõi, thích cấu hình máy (không có bình luận) */
+export const socialRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
+  const { db } = deps;
+  const fail = (reply: FastifyReply, e: unknown) => {
+    if (e instanceof SocialError) return reply.code(e.status).send({ error: "social", message: e.message });
+    throw e;
+  };
+  const handleOf = (p: unknown) => String((p as { handle: string }).handle ?? "");
+
+  app.get("/users/:handle", async (req, reply) => {
+    const p = await profile(db, handleOf(req.params), await userIdFromRequest(db, req));
+    if (!p) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy người dùng" });
+    return { scaleVersion: SCALE_VERSION, ...p };
+  });
+
+  for (const which of ["followers", "following"] as const) {
+    app.get(`/users/:handle/${which}`, async (req, reply) => {
+      const items = await followList(db, handleOf(req.params), which);
+      if (!items) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy người dùng" });
+      return { items };
+    });
+  }
+
+  const follow = (on: boolean) => async (req: FastifyRequest, reply: FastifyReply) => {
+    const uid = await userIdFromRequest(db, req);
+    if (!uid) return reply.code(401).send({ error: "unauthorized", message: "Bạn cần đăng nhập." });
+    try { return await setFollow(db, uid, handleOf(req.params), on); } catch (e) { return fail(reply, e); }
+  };
+  const limit = { config: { rateLimit: { max: 120, timeWindow: "1 hour" } } };
+  app.post("/users/:handle/follow", limit, follow(true));
+  app.delete("/users/:handle/follow", limit, follow(false));
+
+  const like = (on: boolean) => async (req: FastifyRequest, reply: FastifyReply) => {
+    const uid = await userIdFromRequest(db, req);
+    if (!uid) return reply.code(401).send({ error: "unauthorized", message: "Bạn cần đăng nhập." });
+    const id = String((req.params as { id: string }).id ?? "");
+    if (!/^[0-9a-f-]{36}$/i.test(id)) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy máy" });
+    try { return await setLike(db, uid, id, on); } catch (e) { return fail(reply, e); }
+  };
+  app.post("/machines/:id/like", limit, like(true));
+  app.delete("/machines/:id/like", limit, like(false));
+
+  /** id những người mình đang theo dõi (lọc bảng xếp hạng "Đang theo dõi") */
+  app.get("/me/following", async (req, reply) => {
+    const uid = await userIdFromRequest(db, req);
+    if (!uid) return reply.code(401).send({ error: "unauthorized", message: "Bạn cần đăng nhập." });
+    return { ids: await followingIds(db, uid) };
+  });
+};

@@ -16,6 +16,7 @@ import {
 import { MAX_PHOTOS, photoUrl, shrinkImage, uploadPhoto } from "@/lib/photos";
 import { useMachine } from "@/lib/use-machine";
 import { useNow } from "@/lib/use-now";
+import { profilePath } from "@/lib/profile";
 import { LifeBar } from "./life-bar";
 import { Gallery, PhotoPicker } from "./photos";
 
@@ -79,7 +80,7 @@ export function ListingDetail({ initial }: { initial?: Listing } = {}) {
 
       <div className="grid">
         <section className="panel s7" aria-labelledby="h-info">
-          <header><h2 id="h-info">{T.info}</h2><span className="meta">{T.seller(item.seller.displayName, item.seller.handle)}</span></header>
+          <header><h2 id="h-info">{T.info}</h2><span className="meta"><Link href={p(profilePath(item.seller.handle))} className="handle-link">{T.seller(item.seller.displayName, item.seller.handle)}</Link></span></header>
           {item.sample && <p className="notice" style={{ marginTop: 0 }}>{T.sampleNotice}</p>}
           {item.mine && photoFails > 0 && <p className="notice" style={{ marginTop: 0 }}>{T.photoFails(photoFails)}</p>}
           <Gallery urls={item.photos.map(photoUrl)} name={localizePartLabel(item.name, locale)} />

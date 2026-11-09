@@ -11,7 +11,8 @@ import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 import { MachineDetail, type DetailTarget } from "./machine-detail";
 import { TierEmblem, tierVars } from "./tier";
-import { Gauge } from "lucide-react";
+import { Gauge, Heart } from "lucide-react";
+import { profilePath } from "@/lib/profile";
 
 type Filter = "all" | "legend" | "diamond" | "platinum" | "gold_down";
 const FILTERS: [Filter, (code: string) => boolean][] = [
@@ -29,12 +30,15 @@ export interface ApiRow {
   cpu: string | null; gpu: string | null; ramGb: number; resolution: number; power: number; tier: string;
   /** % so với trung bình cùng mẫu khi đã đo hiệu năng bằng pcdex-scan */
   bench?: { cpu: number | null; gpu: number | null } | null;
+  likes?: number;
 }
 interface Row {
   key: string; name: string; sub: string; cpu: string; gpu: string; ramGb: number; resolution: number;
   power: number; tierCode: string; tierName: string; me: boolean; sample: boolean; initial: string;
   userId: string | null; machine: MachineInput | null;
   bench?: ApiRow["bench"];
+  /** tên đăng nhập (máy thật) — link tới hồ sơ */
+  handle?: string; likes?: number;
 }
 
 const res = (r: number) => (r === 2160 ? "4K" : `${r}p`);
@@ -50,6 +54,13 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
   const [failed, setFailed] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<DetailTarget | null>(null);
+  // lọc "Đang theo dõi": id những người mình theo dõi (chỉ khi đã đăng nhập)
+  const [followIds, setFollowIds] = useState<string[] | null>(null);
+  const [onlyFollowing, setOnlyFollowing] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+    api<{ ids: string[] }>("/v1/me/following").then((r) => setFollowIds(r.ids)).catch(() => setFollowIds([]));
+  }, [user]);
 
   useEffect(() => {
     api<{ items: ApiRow[] }>("/v1/leaderboard").then((r) => setReal(r.items)).catch(() => { setReal([]); setFailed(true); });
@@ -57,7 +68,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
 
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = (real ?? []).filter((r) => r.cpu && r.gpu).map((r) => ({
-      key: r.userId, name: r.displayName, sub: [`@${r.handle}`, r.province].filter(Boolean).join(" · "),
+      key: r.userId, name: r.displayName, sub: [`@${r.handle}`, r.province].filter(Boolean).join(" · "), handle: r.handle, likes: r.likes ?? 0,
       cpu: r.cpu!, gpu: r.gpu!, ramGb: r.ramGb, resolution: r.resolution, power: r.power,
       tierCode: r.tier, tierName: tierName(r.tier), me: !!user && r.userId === user.id, sample: false,
       initial: r.displayName.trim()[0]?.toUpperCase() ?? "?", userId: r.userId, machine: null, bench: r.bench,
@@ -84,9 +95,13 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
   const me = ranked.find((r) => r.me);
   const realCount = real?.length ?? 0;
   const test = FILTERS.find((f) => f[0] === filter)![1];
-  const shown = ranked.filter((r) => test(r.tierCode));
+  const shown = ranked.filter((r) => test(r.tierCode) && (!onlyFollowing || (r.userId && followIds?.includes(r.userId)) || r.me));
   const tint = (r: Row) => (r.me ? "var(--accent)" : personTint(r.name));
-  const show = (r: Row & { rank: number }) => setOpen({ name: r.name, sub: r.sub, initial: r.initial, tint: tint(r), rank: r.rank, me: r.me, userId: r.userId, machine: r.machine });
+  const show = (r: Row & { rank: number }) => setOpen({ name: r.name, sub: r.sub, initial: r.initial, tint: tint(r), rank: r.rank, me: r.me, userId: r.userId, machine: r.machine, handle: r.handle });
+  /** "@tên · tỉnh": phần @tên là link tới hồ sơ (máy thật) */
+  const subLine = (r: Row) => r.handle
+    ? <><Link href={lp(profilePath(r.handle))} className="handle-link" onClick={(e) => e.stopPropagation()}>@{r.handle}</Link>{r.sub.slice(r.handle.length + 1)}</>
+    : r.sub;
 
   return (
     <>
@@ -114,7 +129,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
                 <TierEmblem code={r.tierCode} label={r.tierName} size={44} />
               </div>
               <button className="podium-name row-open" onClick={(e) => { e.stopPropagation(); show(r); }}>{r.name}</button>
-              <div className="faint" style={{ fontSize: 13 }}>{r.sub}</div>
+              <div className="faint" style={{ fontSize: 13 }}>{subLine(r)}</div>
               <div className="podium-score num tier-ink">{n0(r.power)}</div>
               <div className="faint" style={{ fontSize: 13 }}><span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></div>
             </li>
@@ -134,12 +149,17 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
       <section className="panel" aria-labelledby="h-board">
         <header>
           <h2 id="h-board">{T.filters[filter]}</h2>
-          <span className="meta">{T.anchor}</span>
+          {user ? (
+            <div className="segmented" role="group" aria-label={t.profile.filterFollowing}>
+              <button type="button" aria-pressed={!onlyFollowing} onClick={() => setOnlyFollowing(false)}>{t.profile.filterAll}</button>
+              <button type="button" aria-pressed={onlyFollowing} onClick={() => setOnlyFollowing(true)}>{t.profile.filterFollowing}</button>
+            </div>
+          ) : <span className="meta">{T.anchor}</span>}
         </header>
         {real === null ? (
           <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" style={{ height: 44, marginTop: 8 }} />)}</div>
         ) : shown.length === 0 ? (
-          <p className="empty">{T.none}</p>
+          <p className="empty">{onlyFollowing ? t.profile.noneFollowed : T.none}</p>
         ) : (
           <div className="table-wrap">
             <table className="data board">
@@ -162,7 +182,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
                         <div style={{ minWidth: 0 }}>
                           <button className="row-open" onClick={(e) => { e.stopPropagation(); show(r); }} aria-label={T.viewPc(r.name)}>{r.name}</button>
                           <div className="faint" style={{ fontSize: 13 }}>
-                            {r.sub}<span className="show-sm"> · <span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></span>
+                            {subLine(r)}{r.likes ? <span className="likes-inline" title={t.profile.likes(n0(r.likes))}> · <Heart size={11} aria-hidden="true" /> <span className="num">{n0(r.likes)}</span></span> : null}<span className="show-sm"> · <span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></span>
                           </div>
                           {r.bench && <span className="show-sm"><BenchBadge b={r.bench} /></span>}
                         </div>

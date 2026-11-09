@@ -7,6 +7,8 @@ import {
   type MachineInput, type MachineSpec, type PartKind,
 } from "@f2m/shared";
 import { X } from "lucide-react";
+import Link from "next/link";
+import { profilePath } from "@/lib/profile";
 import { useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { partsFromSpec, type PartView } from "@/lib/use-machine";
@@ -17,6 +19,8 @@ import type { MachineBench } from "./bench-card";
 /** Một dòng trên bảng xếp hạng được mở ra xem chi tiết */
 export interface DetailTarget {
   name: string; sub: string; initial: string; tint: string; rank: number; me: boolean;
+  /** tên đăng nhập (máy thật) — link "Xem hồ sơ" */
+  handle?: string;
   /** máy thật trên tài khoản: tải cấu hình chi tiết từ API */
   userId: string | null;
   /** máy mẫu / máy trên trình duyệt: cấu hình tóm tắt có sẵn */
@@ -31,7 +35,7 @@ interface PublicMachine {
 /** Bảng chi tiết máy: điểm, Gaming / Đồ họa / AI, FPS theo màn hình, huy hiệu, cấu hình đầy đủ, sơ đồ máy */
 export function MachineDetail({ target, myPower, onClose }: { target: DetailTarget | null; myPower: number | null; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
-  const { t } = useI18n();
+  const { t, p } = useI18n();
   const closeLabel = t.common.close;
   const [data, setData] = useState<PublicMachine | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +71,7 @@ export function MachineDetail({ target, myPower, onClose }: { target: DetailTarg
               <h2 id="h-detail">{target.name}</h2>
               <div className="faint" style={{ fontSize: 13 }}>{target.sub}</div>
             </div>
+            {target.handle && <Link href={p(profilePath(target.handle))} className="btn small">{t.profile.view}</Link>}
             <button className="icon-btn" onClick={onClose} aria-label={closeLabel}><X aria-hidden="true" /></button>
           </header>
           {error ? <p className="empty">{error}</p>

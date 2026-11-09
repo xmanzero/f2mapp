@@ -819,3 +819,32 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .bench-pct.dim { color: var(--muted); }
 .bench-trust { margin-top: 12px; font-size: var(--fs-small); color: var(--muted); }
 .bench-trust.ok { color: var(--positive); }
+
+/* hồ sơ công khai /u/<tên> */
+.profile-head { align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.profile-who { display: flex; gap: 16px; align-items: center; min-width: 0; }
+.avatar-lg { width: 64px; height: 64px; font-size: 26px; background: var(--accent); }
+.profile-counts { display: flex; gap: 18px; margin-top: 8px; font-size: 14px; color: var(--muted); }
+.profile-counts .link-btn { color: var(--muted); text-decoration: none; font-weight: 400; }
+.profile-counts .link-btn b { color: var(--text); }
+.profile-counts .link-btn[aria-pressed="true"] { color: var(--text); text-decoration: underline; }
+.profile-actions { display: flex; gap: 10px; align-items: center; margin-left: auto; }
+.profile-machine + .profile-machine { margin-top: var(--gap); }
+.profile-pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+.small-pill { margin-left: 8px; font-size: 11px; padding: 1px 8px; }
+.like-btn { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.like-btn.on { color: var(--accent); }
+.profile-listings { display: grid; gap: 4px; }
+.profile-listing { display: grid; grid-template-columns: 48px 1fr auto; gap: 12px; align-items: center; padding: 8px; border-radius: var(--radius-inner); color: inherit; text-decoration: none; }
+.profile-listing:hover { background: var(--control-hover); }
+.profile-listing .thumb { width: 48px; height: 48px; }
+.profile-listing-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-listing-price { font-weight: 600; }
+.follow-list { display: grid; gap: 2px; }
+.follow-row { display: flex; gap: 12px; align-items: center; padding: 8px; border-radius: var(--radius-inner); color: inherit; text-decoration: none; }
+.follow-row:hover { background: var(--control-hover); }
+.follow-row .pill { margin-left: auto; }
+@media (max-width: 640px) { .profile-actions { margin-left: 0; width: 100%; } .profile-actions .btn { flex: 1; justify-content: center; } }
+.handle-link { color: inherit; text-decoration: none; } .handle-link:hover { text-decoration: underline; color: var(--text); }
+.likes-inline { white-space: nowrap; }
+.likes-inline svg { display: inline-block; vertical-align: -1px; }

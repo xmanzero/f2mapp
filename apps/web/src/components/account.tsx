@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { api, ApiError, type Profile } from "@/lib/api";
 import { PROVINCES } from "@/lib/provinces";
 import { useSession } from "@/lib/session";
+import { profilePath } from "@/lib/profile";
 import { Combo } from "./combo";
 import { PasswordInput } from "./login";
 
@@ -102,7 +103,7 @@ export function Account() {
       <div className="title-row">
         <div>
           <h1>{t.pages.account}</h1>
-          <p className="sub">{isNew ? T.created : `@${user.handle}`}</p>
+          <p className="sub">{isNew ? T.created : `@${user.handle}`} · <Link href={p(profilePath(user.handle))} className="card-link">{t.profile.mine}</Link></p>
         </div>
       </div>
 

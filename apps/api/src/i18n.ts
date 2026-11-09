@@ -48,6 +48,8 @@ export const EXACT: Record<string, string> = {
   "Khai báo ít nhất một ổ cứng": "Declare at least one drive",
   "Không tìm thấy linh kiện": "Part not found",
   "Không tìm thấy máy": "PC not found",
+  "Không tự theo dõi chính mình được": "You can't follow yourself",
+  "Không thích máy của chính mình được": "You can't like your own PC",
   "Không tìm thấy mã quét. Kiểm tra lại mã trên phần mềm.": "Scan code not found. Check the code shown in the app.",
   "Không tìm thấy người dùng": "User not found",
   "Không tìm thấy tin": "Listing not found",

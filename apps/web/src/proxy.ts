@@ -32,8 +32,8 @@ async function oldListingUrl(req: NextRequest) {
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  // tệp tĩnh (có đuôi: .svg, .webp, .exe…) đi thẳng
-  if (/\.[a-zA-Z0-9]+$/.test(pathname)) return NextResponse.next();
+  // tệp tĩnh (có đuôi: .svg, .webp, .exe…) đi thẳng — trừ hồ sơ /u/<tên> (tên đăng nhập có thể có dấu chấm: minh.tran)
+  if (/\.[a-zA-Z0-9]+$/.test(pathname) && !/^\/(?:[a-z]{2}\/)?u\/[^/]+$/.test(pathname)) return NextResponse.next();
   const moved = await oldListingUrl(req);
   if (moved) return moved;
   const first = pathname.split("/")[1];

@@ -1,6 +1,7 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import type { Listing } from "./listings";
+import type { PublicProfile } from "./profile";
 
 /**
  * Dữ liệu công khai đọc từ API lúc dựng trang trên máy chủ (để HTML có nội dung thật cho Google và người xem lần đầu).
@@ -36,6 +37,7 @@ export async function publicListings(): Promise<Listing[]> {
 export interface BoardRow {
   userId: string; handle: string; displayName: string; province: string | null;
   cpu: string | null; gpu: string | null; ramGb: number; resolution: number; power: number; tier: string;
+  bench?: { cpu: number | null; gpu: number | null } | null; likes?: number;
 }
 /** Bảng xếp hạng */
 export async function publicBoard(): Promise<BoardRow[]> {
@@ -43,4 +45,12 @@ export async function publicBoard(): Promise<BoardRow[]> {
   cacheLife("minutes");
   cacheTag("leaderboard");
   return (await get<{ items: BoardRow[] }>("/v1/leaderboard"))?.items ?? [];
+}
+
+/** Hồ sơ công khai /u/<tên> (góc nhìn khách). null = không có / bị khóa */
+export async function publicProfile(handle: string): Promise<PublicProfile | null> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag(`profile:${handle.toLowerCase()}`);
+  return get<PublicProfile>(`/v1/users/${encodeURIComponent(handle)}`);
 }
