@@ -1,7 +1,7 @@
 "use client";
 
 import { SCALE_VERSION } from "@f2m/shared";
-import { Cpu, Search, ShieldCheck, Store, Trophy } from "lucide-react";
+import { Cpu, Newspaper, Search, ShieldCheck, Store, Trophy } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
@@ -11,10 +11,12 @@ import { splitLocale } from "@/i18n/config";
 import { useI18n } from "@/i18n/client";
 import { BrandLogo, BrandMark } from "./brand-logo";
 import { LangSwitch } from "./lang-switch";
+import { NotifyBell } from "./notify-bell";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV = [
   { href: "/may", key: "machine", short: "machineShort", icon: Cpu },
+  { href: "/bang-tin", key: "feed", short: "feedShort", icon: Newspaper },
   { href: "/xep-hang", key: "board", short: "boardShort", icon: Trophy },
   { href: "/cho", key: "market", short: "marketShort", icon: Store },
 ] as const;
@@ -117,6 +119,7 @@ export function Shell({ children, brand }: { children: ReactNode; brand: Brandin
           </form>
           <LangSwitch />
           <ThemeToggle />
+          <NotifyBell />
           <AccountControl />
         </header>
 

@@ -2,6 +2,7 @@ import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { SCALE_VERSION } from "@f2m/shared";
 import type { AppDeps } from "../app.js";
 import { userIdFromRequest } from "../auth/session.js";
+import { feed, markAllRead, notifications, unreadCount } from "../services/activity.js";
 import { followingIds, followList, profile, setFollow, setLike, SocialError } from "../services/social.js";
 
 /** Cộng đồng: hồ sơ công khai, theo dõi, thích cấu hình máy (không có bình luận) */
@@ -45,6 +46,32 @@ export const socialRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =
   };
   app.post("/machines/:id/like", limit, like(true));
   app.delete("/machines/:id/like", limit, like(false));
+
+  // ---------- bảng tin & thông báo ----------
+  const me = async (req: FastifyRequest, reply: FastifyReply) => {
+    const uid = await userIdFromRequest(db, req);
+    if (!uid) reply.code(401).send({ error: "unauthorized", message: "Bạn cần đăng nhập." });
+    return uid;
+  };
+  app.get("/feed", async (req, reply) => {
+    const uid = await me(req, reply); if (!uid) return;
+    const before = (req.query as { before?: string }).before;
+    const d = before ? new Date(before) : undefined;
+    return feed(db, uid, d && !Number.isNaN(d.getTime()) ? d : undefined);
+  });
+  app.get("/notifications", async (req, reply) => {
+    const uid = await me(req, reply); if (!uid) return;
+    return notifications(db, uid);
+  });
+  app.get("/notifications/unread", async (req, reply) => {
+    const uid = await me(req, reply); if (!uid) return;
+    return { unread: await unreadCount(db, uid) };
+  });
+  app.post("/notifications/read", async (req, reply) => {
+    const uid = await me(req, reply); if (!uid) return;
+    await markAllRead(db, uid);
+    return { unread: 0 };
+  });
 
   /** id những người mình đang theo dõi (lọc bảng xếp hạng "Đang theo dõi") */
   app.get("/me/following", async (req, reply) => {

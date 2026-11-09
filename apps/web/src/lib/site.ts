@@ -13,4 +13,4 @@ export const PUBLIC_PAGES = [
 ] as const;
 
 /** Trang riêng tư / thao tác: không cho lập chỉ mục */
-export const PRIVATE_PATHS = ["/quan-tri", "/tai-khoan", "/cho/dang-tin", "/cho/cua-toi", "/dat-lai-mat-khau", "/quen-mat-khau", "/xac-minh-email", "/dang-nhap"];
+export const PRIVATE_PATHS = ["/bang-tin", "/quan-tri", "/tai-khoan", "/cho/dang-tin", "/cho/cua-toi", "/dat-lai-mat-khau", "/quen-mat-khau", "/xac-minh-email", "/dang-nhap"];

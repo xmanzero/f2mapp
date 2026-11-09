@@ -1,6 +1,7 @@
 import { SCALE_VERSION } from "@f2m/shared";
 import { sql } from "kysely";
 import type { DB } from "../db.js";
+import { notify, unnotify } from "./activity.js";
 import { listListings } from "./listings.js";
 import { publicMachines } from "./machines.js";
 
@@ -76,19 +77,29 @@ export async function setFollow(db: DB, viewerId: string, handle: string, on: bo
   const u = await userByHandle(db, handle);
   if (!u) throw new SocialError(404, "Không tìm thấy người dùng");
   if (u.id === viewerId) throw new SocialError(400, "Không tự theo dõi chính mình được");
-  if (on) await db.insertInto("follows").values({ follower_id: viewerId, followee_id: u.id }).onConflict((oc) => oc.doNothing()).execute();
-  else await db.deleteFrom("follows").where("follower_id", "=", viewerId).where("followee_id", "=", u.id).execute();
+  if (on) {
+    const r = await db.insertInto("follows").values({ follower_id: viewerId, followee_id: u.id }).onConflict((oc) => oc.doNothing()).returning("followee_id").executeTakeFirst();
+    if (r) await notify(db, u.id, viewerId, "follow", null);
+  } else {
+    await db.deleteFrom("follows").where("follower_id", "=", viewerId).where("followee_id", "=", u.id).execute();
+    await unnotify(db, u.id, viewerId, "follow", null);
+  }
   const n = await db.selectFrom("follows").select((eb) => eb.fn.countAll<string>().as("n")).where("followee_id", "=", u.id).executeTakeFirstOrThrow();
   return { following: on, followers: Number(n.n) };
 }
 
 export async function setLike(db: DB, viewerId: string, machineId: string, on: boolean) {
-  const m = await db.selectFrom("machines as m").innerJoin("users as u", "u.id", "m.owner_id").select(["m.owner_id"])
+  const m = await db.selectFrom("machines as m").innerJoin("users as u", "u.id", "m.owner_id").select(["m.owner_id", "m.name"])
     .where("m.id", "=", machineId).where("u.banned_at", "is", null).executeTakeFirst();
   if (!m) throw new SocialError(404, "Không tìm thấy máy");
   if (m.owner_id === viewerId) throw new SocialError(400, "Không thích máy của chính mình được");
-  if (on) await db.insertInto("machine_likes").values({ user_id: viewerId, machine_id: machineId }).onConflict((oc) => oc.doNothing()).execute();
-  else await db.deleteFrom("machine_likes").where("user_id", "=", viewerId).where("machine_id", "=", machineId).execute();
+  if (on) {
+    const r = await db.insertInto("machine_likes").values({ user_id: viewerId, machine_id: machineId }).onConflict((oc) => oc.doNothing()).returning("machine_id").executeTakeFirst();
+    if (r) await notify(db, m.owner_id, viewerId, "like", machineId, { machineName: m.name });
+  } else {
+    await db.deleteFrom("machine_likes").where("user_id", "=", viewerId).where("machine_id", "=", machineId).execute();
+    await unnotify(db, m.owner_id, viewerId, "like", machineId);
+  }
   const n = await db.selectFrom("machine_likes").select((eb) => eb.fn.countAll<string>().as("n")).where("machine_id", "=", machineId).executeTakeFirstOrThrow();
   return { liked: on, likes: Number(n.n) };
 }

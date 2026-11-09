@@ -1,9 +1,10 @@
 import {
   badgesFor, benchForSpec, computeScores, isLaptop, measuredRender, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
-  tierOf, VERIFIABLE_KINDS, type BenchDevice, type BenchResult, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
+  tierOf, TIERS, VERIFIABLE_KINDS, type BenchDevice, type BenchResult, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
 } from "@f2m/shared";
 import { sql } from "kysely";
 import type { DB } from "../db.js";
+import { dropRecent, logActivity, logChange } from "./activity.js";
 
 /** Linh kiện vừa thêm rồi bỏ trong khoảng này coi là sửa nhầm */
 export const CORRECTION_MS = 30 * 60_000;
@@ -165,7 +166,10 @@ export async function loadMachines(db: DB, userId: string) {
  */
 export async function saveSpec(db: DB, userId: string, machineId: string | null, spec: MachineSpec, name?: string, opts: { loose?: boolean } = {}) {
   resolveMachine(specToInput(spec)); // kiểm tra tên linh kiện có trong danh mục trước khi ghi
-  return db.transaction().execute(async (tx) => {
+  // CPU / card trước khi lưu — để ghi "đổi linh kiện" lên bảng tin
+  const before = machineId ? await db.selectFrom("machine_parts").select(["kind", "label"]).where("machine_id", "=", machineId)
+    .where("status", "=", "in_use").where("kind", "in", ["cpu", "gpu"]).execute() : [];
+  const id = await db.transaction().execute(async (tx) => {
     const t = tx as unknown as DB;
     const input = specToInput(spec);
     const laptop = isLaptop(spec);
@@ -228,9 +232,17 @@ export async function saveSpec(db: DB, userId: string, machineId: string | null,
       if (replaced.length) await t.updateTable("machine_parts").set({ status: "replaced", replaced_at: new Date() }).where("id", "in", replaced).execute();
     }
 
-    await upsertScores(t, id, spec);
+    await upsertScores(t, id, spec, { userId });
     return id;
   });
+  // bảng tin (ngoài transaction: lỗi ghi bảng tin không làm hỏng việc lưu máy)
+  const mname = name ?? (await db.selectFrom("machines").select("name").where("id", "=", id).executeTakeFirst())?.name ?? "";
+  if (!machineId) await logActivity(db, userId, "machine_added", { machineId: id, name: mname, cpu: spec.cpu, gpu: spec.gpu, laptop: isLaptop(spec) });
+  else for (const kind of ["cpu", "gpu"] as const) {
+    const was = before.find((p) => p.kind === kind)?.label;
+    if (was && was !== spec[kind]) await logChange(db, userId, "part_changed", `${id}:${kind}`, was, spec[kind], { kind, machineId: id, name: mname });
+  }
+  return id;
 }
 
 /**
@@ -256,10 +268,18 @@ export async function rescoreMachine(db: DB, machineId: string) {
   if (built) await upsertScores(db, machineId, built.spec);
 }
 
-async function upsertScores(db: DB, machineId: string, spec: MachineSpec) {
-  const bench = await db.selectFrom("machines").select("bench").where("id", "=", machineId).executeTakeFirst();
-  const cfg = configOf(spec, bench?.bench);
+/** opts.userId: người vừa sửa máy → ghi "lên hạng" lên bảng tin (máy chính). Tính lại hàng loạt lúc khởi động thì không ghi. */
+async function upsertScores(db: DB, machineId: string, spec: MachineSpec, opts: { userId?: string } = {}) {
+  const m = await db.selectFrom("machines").select(["bench", "is_primary"]).where("id", "=", machineId).executeTakeFirst();
+  const cfg = configOf(spec, m?.bench);
   const s = computeScores(cfg);
+  if (opts.userId && m?.is_primary) {
+    const prev = await db.selectFrom("machine_scores").select("tier").where("machine_id", "=", machineId).where("scale_version", "=", SCALE_VERSION).executeTakeFirst();
+    const rank = (code?: string | null) => TIERS.findIndex((x) => x.code === code);
+    const now = tierOf(s.power).code;
+    if (prev && rank(now) > rank(prev.tier)) await logChange(db, opts.userId, "tier_up", `${machineId}:tier`, prev.tier, now, { power: Math.round(s.power), machineId });
+    else if (prev && rank(now) < rank(prev.tier)) await dropRecent(db, opts.userId, "tier_up", `${machineId}:tier`);
+  }
   const row = {
     gaming: Math.round(s.gaming), render: Math.round(s.render), ai: Math.round(s.ai), office: Math.round(s.office),
     power: Math.round(s.power), tier: tierOf(s.power).code, badges: badgesFor(cfg, s).map((b) => b.code),

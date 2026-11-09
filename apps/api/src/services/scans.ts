@@ -5,6 +5,7 @@ import {
 import { sql } from "kysely";
 import QRCode from "qrcode";
 import type { DB } from "../db.js";
+import { logActivity } from "./activity.js";
 import { loadMachines, MachineError, rescoreMachine, saveSpec } from "./machines.js";
 
 export const SCAN_TTL_MS = 30 * 60_000;
@@ -152,6 +153,9 @@ export async function claimScan(db: DB, userId: string, rawCode: string, input: 
         }).execute();
       }
       await rescoreMachine(db, machineId);
+      const ok = (d: typeof result.bench.cpu) => (d?.trust === "verified" && d.pct != null ? { part: d.part, pct: d.pct } : null);
+      if (ok(result.bench.cpu) || ok(result.bench.gpu))
+        await logActivity(db, userId, "bench_verified", { machineId, cpu: ok(result.bench.cpu), gpu: ok(result.bench.gpu) });
     }
     await db.updateTable("scans").set({ claimed_machine: machineId }).where("code", "=", code).execute();
     return machineId;

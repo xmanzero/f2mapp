@@ -5,6 +5,7 @@
 import { SCALE_VERSION } from "@f2m/shared";
 import { z } from "zod";
 import type { DB } from "../db.js";
+import { logActivity } from "./activity.js";
 import { photoIds } from "./photos.js";
 
 export const LISTING_KINDS = ["cpu", "gpu", "mainboard", "ram", "storage", "psu"] as const;
@@ -192,7 +193,10 @@ export async function createListing(db: DB, userId: string, input: CreateListing
       province: input.province || null, description: input.description || null, contact: input.contact, sold_at: null,
       expires_at: expiryFrom(input.durationDays),
     }).returning("id").executeTakeFirstOrThrow();
-    return row.id;
+    return { id: row.id, name: mp.label, kind: mp.kind };
+  }).then(async (r) => {
+    await logActivity(db, userId, "listing_posted", { listingId: r.id, name: r.name, kind: r.kind, priceVnd: input.priceVnd, province: input.province || null });
+    return r.id;
   });
 }
 
