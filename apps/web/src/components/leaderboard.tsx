@@ -11,7 +11,7 @@ import { useSession } from "@/lib/session";
 import { useMachine } from "@/lib/use-machine";
 import { MachineDetail, type DetailTarget } from "./machine-detail";
 import { TierEmblem, tierVars } from "./tier";
-import { Gauge, Heart } from "lucide-react";
+import { Gauge, Heart, Plus } from "lucide-react";
 import { profilePath } from "@/lib/profile";
 
 type Filter = "all" | "legend" | "diamond" | "platinum" | "gold_down";
@@ -178,7 +178,8 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
           <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" style={{ height: 44, marginTop: 8 }} />)}</div>
         ) : shown.length === 0 ? (
           <p className="empty">{onlyFollowing ? t.profile.noneFollowed : kind === "laptop" && ranked.length === 0 ? T.noLaptop : T.none}</p>
-        ) : (
+        ) : null}
+        {real === null || shown.length === 0 ? null : (
           <div className="table-wrap">
             <table className="data board">
               <thead>
@@ -221,6 +222,13 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
               </tbody>
             </table>
           </div>
+        )}
+        {real !== null && kind === "laptop" && user && !ranked.some((r) => r.me) && !onlyFollowing && (
+          <p style={{ marginTop: 12 }}>
+            <Link href={lp("/may")} className="btn small" onClick={() => { try { sessionStorage.setItem("f2m.machineKind", "laptop"); } catch { /* bỏ qua */ } }}>
+              <Plus size={14} aria-hidden="true" /> {t.machine.addKind(true)}
+            </Link>
+          </p>
         )}
       </section>
       <MachineDetail target={open} myPower={me?.power ?? null} onClose={() => setOpen(null)} />

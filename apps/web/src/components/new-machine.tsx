@@ -20,13 +20,13 @@ const BLANK: Draft = { cpu: "", gpu: "", ramGb: "", ramChannels: "", storage: ""
  * Tài khoản chưa có máy (hoặc đang thêm máy thứ hai): không gán máy mẫu.
  * Người dùng quét bằng pcdex-scan, hoặc tự chọn từng linh kiện; chỉ lưu khi đã chọn đủ.
  */
-export function NewMachine({ name, first, browserSpec, onCreated, onCancel }: {
-  name: string; first: boolean; browserSpec: MachineSpec | null;
+export function NewMachine({ name, first, browserSpec, onCreated, onCancel, laptop: initialLaptop = false }: {
+  name: string; first: boolean; browserSpec: MachineSpec | null; laptop?: boolean;
   onCreated: () => Promise<unknown>; onCancel?: () => void;
 }) {
   const { t, p, locale } = useI18n();
   const T = t.newMachine;
-  const [laptop, setLaptop] = useState(false);
+  const [laptop, setLaptop] = useState(initialLaptop);
   // laptop: CPU / card bản laptop + đồ họa tích hợp; máy bàn: không có bản laptop
   const CPU_OPTIONS = CPUS.filter((c) => !!c.mobile === laptop).map((c) => ({ value: c.name, label: c.name, hint: laptop ? "" : c.socket }));
   const GPU_OPTIONS = GPUS.filter((g) => (laptop ? g.mobile || g.integrated : !g.mobile))

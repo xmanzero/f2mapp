@@ -84,8 +84,9 @@ function Section({ title, sub, part, canSell, children, action }: {
   );
 }
 
-export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
-  spec: MachineSpec; parts: PartView[]; onChange: (s: MachineSpec) => void; locked: boolean; canSell: boolean;
+/** typeSwitch: cho đổi loại máy ngay trong cấu hình (máy trên trình duyệt của khách). Máy trên tài khoản đổi bằng tab ở đầu trang. */
+export function ConfigEditor({ spec, parts, onChange, locked, canSell, typeSwitch = true }: {
+  spec: MachineSpec; parts: PartView[]; onChange: (s: MachineSpec) => void; locked: boolean; canSell: boolean; typeSwitch?: boolean;
 }) {
   const cfg = resolveMachine(specToInput(spec));
   const { t } = useI18n();
@@ -125,14 +126,14 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
 
   return (
     <div className="cfg">
-      <Section title={T.machineType} sub={laptop ? T.laptopNote : undefined} canSell={false}>
-        <div className="segmented" role="group" aria-label={T.machineType}>
+      {(typeSwitch || laptop) && <Section title={typeSwitch ? T.machineType : T.laptopModel} sub={laptop ? T.laptopNote : undefined} canSell={false}>
+        {typeSwitch && <div className="segmented" role="group" aria-label={T.machineType}>
           <button type="button" aria-pressed={!laptop} disabled={locked} onClick={() => switchType(false)}>{T.desktop}</button>
           <button type="button" aria-pressed={laptop} disabled={locked} onClick={() => switchType(true)}>{T.laptop}</button>
-        </div>
+        </div>}
         {laptop && <TextField label={T.laptopModel} value={spec.laptopModel ?? ""} placeholder={T.laptopModelPh} disabled={locked}
           onCommit={(v) => set({ laptopModel: v || null })} />}
-      </Section>
+      </Section>}
 
       <Section title="CPU" sub={`${cfg.cpu.socket} · ${ramType} · ${cfg.cpu.powerW} W`} part={inUse("cpu")[0]} canSell={canSell}>
         <Select label="CPU" value={spec.cpu} disabled={locked} wide onChange={(v) => set({ cpu: v })}>

@@ -849,3 +849,11 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .likes-inline { white-space: nowrap; }
 .likes-inline svg { display: inline-block; vertical-align: -1px; }
 .board-kind { margin-bottom: var(--gap); }
+
+/* tab loại máy ở Máy của tôi + ô trống có dấu + */
+.kind-tabs { margin-bottom: 14px; }
+.kind-empty { display: grid; place-items: center; min-height: 260px; }
+.kind-add { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 12px; padding: 36px 56px; border: 2px dashed var(--control); border-radius: var(--radius-card); color: var(--muted); font-weight: 600; }
+.kind-add svg { width: 44px; height: 44px; color: var(--accent); }
+.kind-add:hover { border-color: var(--accent); color: var(--text); }
+.kind-add:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

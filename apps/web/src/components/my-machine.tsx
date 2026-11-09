@@ -2,9 +2,11 @@
 
 import {
   benchForSpec, computeScores, estimateFps, isLaptop, measuredRender, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS, tierName, localizePartLabel,
-  type Finding, type MachineConfig, type MachineSpec, type Resolution, type Severity, type UpgradeSuggestion,
+  type FormFactor, type Finding, type MachineConfig, type MachineSpec, type Resolution, type Severity, type UpgradeSuggestion,
 } from "@f2m/shared";
-import { Star } from "lucide-react";
+import { Plus, Star } from "lucide-react";
+
+const KIND_KEY = "f2m.machineKind";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SAMPLE_MACHINES } from "@/data/sample";
@@ -43,6 +45,12 @@ export function MyMachine() {
   const { spec, save, isSample, ready, savedTo, saveState, user, machines, active } = m;
   const [preview, setPreview] = useState<UpgradeSuggestion | null>(null);
   const shownSpec = preview ? applySuggestion(spec, preview.next) : spec;
+  // tab loại máy (tài khoản): đang xem loại chưa có máy → ô trống có dấu +; không tự điền cấu hình gốc
+  const [emptyKind, setEmptyKind] = useState<FormFactor | null>(() => {
+    // "+ Thêm laptop" ở bảng xếp hạng: mở thẳng tab Laptop
+    try { const k = sessionStorage.getItem(KIND_KEY); sessionStorage.removeItem(KIND_KEY); return k === "laptop" || k === "desktop" ? k : null; } catch { return null; }
+  });
+  const [addKind, setAddKind] = useState<FormFactor>("desktop");
 
   const view = useMemo(() => {
     if (!ready) return null;
@@ -57,7 +65,37 @@ export function MyMachine() {
   if (!view) return <Loading />;
   if (m.empty || m.adding) return (
     <NewMachine first={m.empty} name={m.empty ? "Máy của tôi" : "Máy 2"} browserSpec={m.empty ? m.browserSpec : null}
-      onCreated={m.created} onCancel={m.adding && !m.empty ? m.cancelAdding : undefined} />
+      laptop={(m.empty ? emptyKind : addKind) === "laptop"}
+      onCreated={async () => { await m.created(); setEmptyKind(null); }} onCancel={m.adding && !m.empty ? m.cancelAdding : undefined} />
+  );
+  const account = !!user && !!machines[0]?.id;
+  const kindOf = (x: { spec: MachineSpec }): FormFactor => (isLaptop(x.spec) ? "laptop" : "desktop");
+  const hasKind = (k: FormFactor) => machines.some((x) => kindOf(x) === k);
+  const kind: FormFactor = account && emptyKind && !hasKind(emptyKind) ? emptyKind : kindOf(active);
+  const pickKind = (k: FormFactor) => {
+    const x = machines.find((y) => kindOf(y) === k);
+    if (x?.id) { m.setActiveId(x.id); setEmptyKind(null); } else setEmptyKind(k);
+  };
+  const add = (k: FormFactor) => { setAddKind(k); m.startAdding(); };
+  const kindTabs = account && (
+    <div className="segmented kind-tabs" role="group" aria-label={t.cfg.machineType}>
+      {(["desktop", "laptop"] as const).map((k) => (
+        <button key={k} type="button" aria-pressed={kind === k} onClick={() => pickKind(k)}>{k === "laptop" ? t.cfg.laptop : t.cfg.desktop}</button>
+      ))}
+    </div>
+  );
+  if (account && kind !== kindOf(active)) return (
+    <>
+      <div className="title-row"><div><h1>{kind === "laptop" ? T.myLaptop : T.myDesktop}</h1><p className="sub">{T.noKind(kind === "laptop")}</p></div></div>
+      {kindTabs}
+      <section className="panel kind-empty" aria-label={T.noKind(kind === "laptop")}>
+        {m.canAdd ? (
+          <button type="button" className="kind-add" onClick={() => add(kind)}>
+            <Plus aria-hidden="true" /><span>{T.addKind(kind === "laptop")}</span>
+          </button>
+        ) : <p className="muted">{T.kindFull(kind === "laptop")}</p>}
+      </section>
+    </>
   );
   const { cfg, r, upgrades } = view;
   const findings = [...specFindings(shownSpec, locale), ...r.findings].sort((a, b) => SEV_ORDER[a.severity] - SEV_ORDER[b.severity]);
@@ -79,8 +117,9 @@ export function MyMachine() {
         </span>
       </div>
 
+      {kindTabs}
       <div className="machine-actions">
-        {user && machines[0]?.id && <MachineTabs m={m} />}
+        {user && machines[0]?.id && <MachineTabs m={m} onAdd={() => add(kind)} />}
         <ExportMachine name={machines.length > 1 || active.id ? machineName(active.name, locale) : T.defaultName} spec={shownSpec} r={r}
           parts={active.parts} handle={user?.handle ?? null} account={!!active.id} />
       </div>
@@ -119,7 +158,7 @@ export function MyMachine() {
                 {T.scanCta(<a href="/tai/pcdex-scan.exe" download className="card-link">{T.downloadScan}</a>, <Link href={p("/quet")} className="card-link">{T.haveCode}</Link>)}
               </p>
             )}
-            <ConfigEditor spec={shownSpec} parts={active.parts} locked={!!preview} canSell={!!user && !!active.id} onChange={save} />
+            <ConfigEditor spec={shownSpec} parts={active.parts} locked={!!preview} canSell={!!user && !!active.id} onChange={save} typeSwitch={!account} />
           </section>
           <FindingsCard findings={[...specFindings(shownSpec, locale), ...hardwareFindings(cfg, locale)]} cfg={cfg} />
         </div>
@@ -129,7 +168,7 @@ export function MyMachine() {
 }
 
 /** Chuyển giữa 2 máy, thêm máy, đặt máy chính, đổi tên, xóa máy phụ */
-function MachineTabs({ m }: { m: ReturnType<typeof useMachine> }) {
+function MachineTabs({ m, onAdd }: { m: ReturnType<typeof useMachine>; onAdd: () => void }) {
   const { t, locale } = useI18n();
   const T = t.machine;
   const [naming, setNaming] = useState<string | null>(null);
@@ -163,7 +202,7 @@ function MachineTabs({ m }: { m: ReturnType<typeof useMachine> }) {
           <button className="btn small" onClick={() => setConfirmDelete(false)}>{T.keep}</button>
         </>
       ) : <button className="btn small" onClick={() => setConfirmDelete(true)}>{T.deleteThis}</button>)}
-      {m.canAdd && <button className="btn small" onClick={m.startAdding}>{T.addSecond}</button>}
+      {m.canAdd && <button className="btn small" onClick={onAdd}>{T.addSecond}</button>}
       {m.error && <span className="stamp" role="alert" style={{ color: "var(--negative)" }}>{m.error}</span>}
     </div>
   );
