@@ -187,8 +187,10 @@ namespace PcdexScan
             var list = new List<KeyValuePair<string, List<string>>>();
             void Row(string k, IEnumerable<string> values) =>
                 list.Add(new KeyValuePair<string, List<string>>(k, values.Where(v => !string.IsNullOrWhiteSpace(v)).ToList()));
+            if (r.Chassis == "laptop")
+                Row(L.T("Laptop", "Laptop"), new[] { r.System != null ? $"{Brand(r.System.Manufacturer)} {r.System.Model}".Trim() : L.T("Laptop", "Laptop") });
             Row("CPU", new[] { r.Cpu?.Name + (r.Cpu?.Cores > 0 ? L.T($"  ·  {r.Cpu.Cores} nhân / {r.Cpu.Threads} luồng", $"  ·  {r.Cpu.Cores} cores / {r.Cpu.Threads} threads") : "") });
-            Row(L.T("Card đồ họa", "Graphics card"), r.Gpus.OrderByDescending(g => g.VramBytes ?? 0).Select(g => g.Name + (g.VramBytes > 0 ? $"  ·  {Gb(g.VramBytes.Value, 1024)} GB" : "") + (g.PcieGen > 0 ? $"  ·  PCIe {g.PcieGen}.0" : "")));
+            Row(L.T("Card đồ họa", "Graphics card"), r.Gpus.OrderByDescending(g => g.VramBytes ?? 0).Select(g => g.Name + (g.VramBytes > 0 ? $"  ·  {Gb(g.VramBytes.Value, 1024)} GB" : "") + (g.PcieGen > 0 ? $"  ·  PCIe {g.PcieGen}.0" : "") + (g.TgpW > 0 ? $"  ·  {g.TgpW} W" : "")));
             Row("Mainboard", new[] { $"{Brand(r.Board?.Manufacturer)} {r.Board?.Product}".Trim() });
             Row("RAM", RamLines(r.Ram));
             Row(L.T("Ổ cứng", "Storage"), r.Disks.Where(d => d.BusType != 7 && d.SizeBytes > 16e9).Select(DiskLine));
@@ -196,7 +198,7 @@ namespace PcdexScan
             if (r.Bench != null)
                 Row(L.T("Hiệu năng", "Performance"), new[] { r.Bench.Cpu, r.Bench.Gpu }.Where(d => d != null)
                     .Select(d => (d.Type == "CPU" ? "CPU" : $"{d.Name} ({d.Type})") + L.T($"  ·  {d.Score:0} điểm Blender {r.Bench.Blender}", $"  ·  {d.Score:0} Blender {r.Bench.Blender} points")));
-            Row(PsuKey, new[] { L.T("Không đọc được — khai trên web", "Not detected — add it on the web") });
+            if (r.Chassis != "laptop") Row(PsuKey, new[] { L.T("Không đọc được — khai trên web", "Not detected — add it on the web") });
             return list;
         }
 

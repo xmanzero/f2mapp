@@ -3,7 +3,7 @@
 import { useI18n } from "@/i18n/client";
 
 import {
-  benchForSpec, evaluate, localizePartLabel, measuredRender, partLabel, resolveMachine, tierName, RESOLUTION_LABEL, specFromInput, specToInput,
+  benchForSpec, evaluate, isLaptop, localizePartLabel, measuredRender, partLabel, resolveMachine, tierName, RESOLUTION_LABEL, specFromInput, specToInput,
   type MachineInput, type MachineSpec, type PartKind,
 } from "@f2m/shared";
 import { X } from "lucide-react";
@@ -98,13 +98,16 @@ function Body({ target, data, myPower }: { target: DetailTarget; data: PublicMac
   const views: PartView[] = data.parts.map((p) => ({ id: null, kind: p.kind, label: p.label, status: "in_use", verified: p.verified, listingId: null, addedAt: null }));
   const diff = myPower && !target.me ? s.power / myPower - 1 : null;
 
+  const laptop = isLaptop(spec);
   const rows: { kind: PartKind; label: string; value: string; verified: boolean }[] = [
     { kind: "cpu", label: "CPU", value: spec.cpu, verified: ok("cpu") },
-    { kind: "gpu", label: K.gpu!, value: spec.gpu, verified: ok("gpu") },
-    { kind: "mainboard", label: K.mainboard!, value: localizePartLabel(partLabel.mainboard(spec.mainboard), locale), verified: ok("mainboard") },
+    { kind: "gpu", label: K.gpu!, value: spec.gpu + (laptop && spec.gpuTgpW ? ` · ${spec.gpuTgpW} W` : ""), verified: ok("gpu") },
+    laptop
+      ? { kind: "mainboard", label: t.cfg.laptopModel, value: spec.laptopModel ?? t.cfg.laptop, verified: false }
+      : { kind: "mainboard", label: K.mainboard!, value: localizePartLabel(partLabel.mainboard(spec.mainboard), locale), verified: ok("mainboard") },
     ...spec.ram.map((k, i) => ({ kind: "ram" as const, label: "RAM", value: partLabel.ram(k), verified: ok("ram", i) })),
     ...spec.drives.map((d, i) => ({ kind: "storage" as const, label: K.storage!, value: partLabel.drive(d) + (d.healthPct != null ? T.health(d.healthPct) : ""), verified: ok("storage", i) })),
-    { kind: "psu", label: K.psu!, value: localizePartLabel(partLabel.psu(spec.psu), locale), verified: false },
+    ...(laptop ? [] : [{ kind: "psu" as const, label: K.psu!, value: localizePartLabel(partLabel.psu(spec.psu), locale), verified: false }]),
   ];
 
   return (

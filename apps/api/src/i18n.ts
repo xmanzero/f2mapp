@@ -49,6 +49,7 @@ export const EXACT: Record<string, string> = {
   "Không tìm thấy linh kiện": "Part not found",
   "Không tìm thấy máy": "PC not found",
   "Không tự theo dõi chính mình được": "You can't follow yourself",
+  "CPU, card đồ họa và bo mạch của laptop hàn liền với nhau, không đăng bán rời được.": "A laptop's CPU, graphics and motherboard are soldered together and can't be sold separately.",
   "Không thích máy của chính mình được": "You can't like your own PC",
   "Không tìm thấy mã quét. Kiểm tra lại mã trên phần mềm.": "Scan code not found. Check the code shown in the app.",
   "Không tìm thấy người dùng": "User not found",

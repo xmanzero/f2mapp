@@ -218,7 +218,7 @@ Phương án ban đầu (để tham khảo): dựng trên [LibreHardwareMonitor]
 - [ ] Thay số ước tính bằng số đo: dùng kết quả "Đo hiệu năng" của người dùng (khi đủ lượt / chống giả mạo) để hiệu chỉnh mẫu `est`. Chọn danh sách theo [Steam Hardware Survey](https://store.steampowered.com/hwsurvey) (thống kê công khai linh kiện người chơi đang dùng), về sau theo chính cấu hình người dùng app khai báo.
 - [x] Hiệu chỉnh mô hình FPS theo số đo (xem mục 3).
 - [ ] **Bản quyền:** số FPS của Tom's Hardware chỉ dùng nội bộ để dựng và hiệu chỉnh thang điểm. App công khai hiển thị điểm và FPS ước tính của mô hình, không đăng lại bảng của họ. Về lâu dài thay bằng số đo từ tool xác minh của chính app.
-- [ ] Bổ sung danh mục laptop: CPU/GPU laptop là mục riêng, GPU ghi kèm mức công suất (TGP); chấm nguyên chiếc theo model.
+- [x] Danh mục laptop (09/11/2026): 58 CPU laptop (socket BGA), 25 card laptop (NVIDIA có dải TGP; hiệu năng = số ở TGP tối đa × (TGP/tối đa)^0,4; điểm render là trung vị Blender coi như ở TGP phổ biến), 9 đồ họa tích hợp đời mới. Gaming / đơn nhân ước tính; render từ Blender Open Data. Laptop chấm nguyên chiếc (không luật nguồn / PCIe, chỉ gợi ý RAM / ổ), xếp hạng riêng với máy bàn.
 - [x] Bỏ Văn phòng khỏi điểm sức mạnh, chỉ hiện mức đáp ứng (chốt 07/11/2026).
 - [x] Trọng số điểm sức mạnh: Gaming 50% · Đồ họa 30% · AI 20% (chốt 07/11/2026).
 - [ ] Chốt các mốc hạng.

@@ -31,6 +31,8 @@ export interface ApiRow {
   /** % so với trung bình cùng mẫu khi đã đo hiệu năng bằng pcdex-scan */
   bench?: { cpu: number | null; gpu: number | null } | null;
   likes?: number;
+  /** laptop (kèm tên model) — xếp hạng riêng với máy bàn */
+  laptop?: { model: string | null } | null;
 }
 interface Row {
   key: string; name: string; sub: string; cpu: string; gpu: string; ramGb: number; resolution: number;
@@ -39,6 +41,7 @@ interface Row {
   bench?: ApiRow["bench"];
   /** tên đăng nhập (máy thật) — link tới hồ sơ */
   handle?: string; likes?: number;
+  laptop: boolean; laptopModel?: string | null;
 }
 
 const res = (r: number) => (r === 2160 ? "4K" : `${r}p`);
@@ -57,6 +60,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
   // lọc "Đang theo dõi": id những người mình theo dõi (chỉ khi đã đăng nhập)
   const [followIds, setFollowIds] = useState<string[] | null>(null);
   const [onlyFollowing, setOnlyFollowing] = useState(false);
+  const [kind, setKind] = useState<"desktop" | "laptop">("desktop");
   useEffect(() => {
     if (!user) return;
     api<{ ids: string[] }>("/v1/me/following").then((r) => setFollowIds(r.ids)).catch(() => setFollowIds([]));
@@ -68,7 +72,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
 
   const rows = useMemo<Row[]>(() => {
     const list: Row[] = (real ?? []).filter((r) => r.cpu && r.gpu).map((r) => ({
-      key: r.userId, name: r.displayName, sub: [`@${r.handle}`, r.province].filter(Boolean).join(" · "), handle: r.handle, likes: r.likes ?? 0,
+      key: r.userId, name: r.displayName, sub: [`@${r.handle}`, r.province].filter(Boolean).join(" · "), handle: r.handle, likes: r.likes ?? 0, laptop: !!r.laptop, laptopModel: r.laptop?.model ?? null,
       cpu: r.cpu!, gpu: r.gpu!, ramGb: r.ramGb, resolution: r.resolution, power: r.power,
       tierCode: r.tier, tierName: tierName(r.tier), me: !!user && r.userId === user.id, sample: false,
       initial: r.displayName.trim()[0]?.toUpperCase() ?? "?", userId: r.userId, machine: null, bench: r.bench,
@@ -78,21 +82,26 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
       const p = computeScores(resolveMachine(machine)).power;
       list.push({ key: "local", name: T.yourPc, sub: T.localSub, cpu: machine.cpu, gpu: machine.gpu,
         ramGb: machine.ramGb, resolution: machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tn(tierOf(p), locale), me: true, sample: false, initial: "B",
-        userId: null, machine });
+        userId: null, machine, laptop: !!resolveMachine(machine).laptop });
     }
     if ((real?.length ?? 0) < MIN_REAL) {
       for (const s of SAMPLE_MACHINES) {
         const p = computeScores(resolveMachine(s.machine)).power;
         list.push({ key: `s-${s.handle}`, name: s.handle, sub: `${s.province} · ${T.samplePc}`, cpu: s.machine.cpu, gpu: s.machine.gpu,
           ramGb: s.machine.ramGb, resolution: s.machine.resolution, power: p, tierCode: tierOf(p).code, tierName: tn(tierOf(p), locale),
-          me: false, sample: true, initial: s.handle[0]!.toUpperCase(), userId: null, machine: s.machine });
+          me: false, sample: true, initial: s.handle[0]!.toUpperCase(), userId: null, machine: s.machine, laptop: false });
       }
     }
     return list.sort((a, b) => b.power - a.power);
   }, [real, user, machine, isSample, ready]);
 
-  const ranked = rows.map((r, i) => ({ ...r, rank: i + 1 }));
-  const me = ranked.find((r) => r.me);
+  // máy bàn và laptop xếp hạng riêng (máy mẫu đều là máy bàn)
+  const laptops = rows.filter((r) => r.laptop).length;
+  const ranked = rows.filter((r) => r.laptop === (kind === "laptop")).map((r, i) => ({ ...r, rank: i + 1 }));
+  // hạng của mình tính trong nhóm máy của mình (máy bàn / laptop), dù đang xem tab nào
+  const meRow = rows.find((r) => r.me);
+  const meList = meRow ? rows.filter((r) => r.laptop === meRow.laptop) : [];
+  const me = meRow ? { ...meRow, rank: meList.indexOf(meRow) + 1 } : undefined;
   const realCount = real?.length ?? 0;
   const test = FILTERS.find((f) => f[0] === filter)![1];
   const shown = ranked.filter((r) => test(r.tierCode) && (!onlyFollowing || (r.userId && followIds?.includes(r.userId)) || r.me));
@@ -110,7 +119,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
           <h1>{t.nav.board}</h1>
           <p className="sub">
             {real === null ? t.common.loading
-              : me ? T.meRank(n0(me.power), me.rank, ranked.length)
+              : me ? T.meRank(n0(me.power), me.rank, meList.length)
               : user ? T.noPc(<Link href={lp("/may")} className="card-link">{T.declare}</Link>)
               : T.guest(ranked.length, <Link href={`${lp("/dang-nhap")}?next=/xep-hang`} className="card-link">{t.common.login}</Link>)}
           </p>
@@ -118,6 +127,15 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
         <span className="stamp">
           {failed ? T.failed : T.realCount(realCount, realCount < MIN_REAL, SCALE_VERSION)}
         </span>
+      </div>
+
+      <div className="segmented board-kind" role="group" aria-label={T.kindLabel}>
+        <button type="button" aria-pressed={kind === "desktop"} onClick={() => setKind("desktop")}>
+          {T.kindDesktop} <span className="num faint">{rows.length - laptops}</span>
+        </button>
+        <button type="button" aria-pressed={kind === "laptop"} onClick={() => setKind("laptop")}>
+          {T.kindLaptop} <span className="num faint">{laptops}</span>
+        </button>
       </div>
 
       {real !== null && ranked.length >= 3 && (
@@ -159,7 +177,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
         {real === null ? (
           <div aria-busy="true">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton" style={{ height: 44, marginTop: 8 }} />)}</div>
         ) : shown.length === 0 ? (
-          <p className="empty">{onlyFollowing ? t.profile.noneFollowed : T.none}</p>
+          <p className="empty">{onlyFollowing ? t.profile.noneFollowed : kind === "laptop" && ranked.length === 0 ? T.noLaptop : T.none}</p>
         ) : (
           <div className="table-wrap">
             <table className="data board">
@@ -190,7 +208,7 @@ export function Leaderboard({ initial }: { initial?: ApiRow[] } = {}) {
                     </td>
                     <td className="hide-sm">
                       <div><span className="nw">{r.cpu}</span> + <span className="nw">{r.gpu}</span></div>
-                      <div className="faint" style={{ fontSize: 13 }}>{T.ramScreen(r.ramGb, res(r.resolution))}</div>
+                      <div className="faint" style={{ fontSize: 13 }}>{r.laptopModel ? `${r.laptopModel} · ` : ""}{T.ramScreen(r.ramGb, res(r.resolution))}</div>
                       {r.bench && <BenchBadge b={r.bench} />}
                     </td>
                     <td className="r">

@@ -5,7 +5,7 @@
  */
 import { tr, type Lang } from "./lang";
 import { z } from "zod";
-import { findCpu } from "./catalog";
+import { findCpu, findGpu } from "./catalog";
 import { SOCKET_MEMORY } from "./scoring";
 import type { MachineInput } from "./schemas";
 import type { Finding, PcieGen, Resolution, StorageKind } from "./types";
@@ -38,14 +38,22 @@ export interface Drive { interface: StorageKind; capacityGb: number; model: stri
 export interface Mainboard { model: string | null; chipset: string | null; pcieGen: PcieGen }
 export interface Psu { wattage: number; model: string | null; rating: string | null }
 
+export type FormFactor = "desktop" | "laptop";
 export interface MachineSpec {
   cpu: string;
   gpu: string;
   mainboard: Mainboard;
   ram: RamKit[];
   drives: Drive[];
+  /** Máy bàn: nguồn. Laptop: sạc (không tính vào điểm) */
   psu: Psu;
   resolution: Resolution;
+  /** Không có = máy bàn */
+  formFactor?: FormFactor;
+  /** Laptop: TGP thực tế của card (W); không có = mức phổ biến của mẫu */
+  gpuTgpW?: number | null;
+  /** Laptop: tên model (VD "ASUS TUF Gaming A15 FA507NV") */
+  laptopModel?: string | null;
 }
 
 const optText = (max: number) => z.string().trim().max(max).transform((s) => s || null).nullable().default(null);
@@ -73,8 +81,11 @@ export const machineSpecSchema = z.object({
   mainboard: z.object({ model: optText(60), chipset: optText(20), pcieGen: z.union([z.literal(3), z.literal(4), z.literal(5)]) }),
   ram: z.array(ramKitSchema).min(1, "Khai báo ít nhất một bộ RAM").max(4),
   drives: z.array(driveSchema).min(1, "Khai báo ít nhất một ổ cứng").max(8),
-  psu: z.object({ wattage: z.number().int().min(200).max(2000), model: optText(60), rating: optText(20) }),
+  psu: z.object({ wattage: z.number().int().min(30).max(2000), model: optText(60), rating: optText(20) }),
   resolution: z.union([z.literal(1080), z.literal(1440), z.literal(2160)]),
+  formFactor: z.enum(["desktop", "laptop"]).optional(),
+  gpuTgpW: z.number().int().min(10).max(250).nullable().optional(),
+  laptopModel: optText(80).optional(),
 }).refine((s) => s.ram.reduce((n, k) => n + k.sticks, 0) <= 8, { message: "Tối đa 8 thanh RAM", path: ["ram"] });
 
 export const totalRamGb = (s: Pick<MachineSpec, "ram">) => s.ram.reduce((n, k) => n + k.sticks * k.perStickGb, 0);
@@ -86,7 +97,14 @@ export function specToInput(s: MachineSpec): MachineInput {
   return {
     cpu: s.cpu, gpu: s.gpu, ramGb: Math.max(2, totalRamGb(s)), ramChannels: sticks >= 2 ? 2 : 1,
     storage: bootDrive(s)?.interface ?? "sata", pcieGen: s.mainboard.pcieGen, psuW: s.psu.wattage, resolution: s.resolution,
+    ...(s.formFactor === "laptop" ? { laptop: true } : {}),
+    ...(s.formFactor === "laptop" && s.gpuTgpW ? { gpuTgpW: s.gpuTgpW } : {}),
   };
+}
+
+/** Máy là laptop (khai rõ, hoặc CPU / card là bản laptop) */
+export function isLaptop(s: Pick<MachineSpec, "cpu" | "gpu" | "formFactor">) {
+  return s.formFactor === "laptop" || !!findCpu(s.cpu)?.mobile || !!findGpu(s.gpu)?.mobile;
 }
 
 /** Loại RAM đoán theo socket CPU (AM5, LGA1851 chỉ DDR5) */
@@ -102,10 +120,11 @@ export function specFromInput(m: MachineInput): MachineSpec {
   return {
     cpu: m.cpu, gpu: m.gpu,
     mainboard: { model: null, chipset: null, pcieGen: m.pcieGen },
-    ram: [{ sticks, perStickGb: per, type: defaultRamType(m.cpu), speedMhz: null, model: null, formFactor: "dimm", ecc: false, registered: false }],
+    ram: [{ sticks, perStickGb: per, type: defaultRamType(m.cpu), speedMhz: null, model: null, formFactor: m.laptop ? "sodimm" : "dimm", ecc: false, registered: false }],
     drives: [{ interface: m.storage, capacityGb: m.storage === "hdd" ? 1000 : 512, model: null, healthPct: null, isBoot: true }],
     psu: { wattage: m.psuW, model: null, rating: null },
     resolution: m.resolution,
+    ...(m.laptop ? { formFactor: "laptop" as const, gpuTgpW: m.gpuTgpW ?? null, laptopModel: null } : {}),
   };
 }
 
@@ -137,7 +156,8 @@ export const partKey = {
  * Kiểm tra RAM có hợp với máy không (máy bàn). Trả về cảnh báo theo mức:
  * critical = không chạy được; warning = chạy nhưng thiệt; info = cần biết.
  */
-export function ramFindings(spec: Pick<MachineSpec, "cpu" | "ram">, lang: Lang = "vi"): Finding[] {
+export function ramFindings(spec: Pick<MachineSpec, "cpu" | "ram"> & Partial<Pick<MachineSpec, "gpu" | "formFactor">>, lang: Lang = "vi"): Finding[] {
+  const laptop = spec.formFactor === "laptop" || !!findCpu(spec.cpu)?.mobile;
   const T = (vi: string, en: string) => tr(lang, vi, en);
   const out: Finding[] = [];
   const cpu = findCpu(spec.cpu);
@@ -148,7 +168,10 @@ export function ramFindings(spec: Pick<MachineSpec, "cpu" | "ram">, lang: Lang =
   for (const t of types)
     if (mem && mem !== "DDR4/DDR5" && t !== mem)
       out.push({ code: "ram_type_platform", severity: "critical", message: T(`${spec.cpu} (${cpu!.socket}) chỉ dùng ${mem}, không lắp được RAM ${t}.`, `${spec.cpu} (${cpu!.socket}) only takes ${mem}; ${t} RAM won't fit.`) });
-  if (spec.ram.some((k) => k.formFactor === "sodimm"))
+  if (laptop) {
+    if (spec.ram.some((k) => k.formFactor === "dimm"))
+      out.push({ code: "ram_dimm_laptop", severity: "warning", message: T("Laptop dùng RAM SO-DIMM (hoặc hàn sẵn), không lắp được thanh DIMM của máy bàn.", "Laptops use SO-DIMM (or soldered) RAM; desktop DIMM sticks won't fit.") });
+  } else if (spec.ram.some((k) => k.formFactor === "sodimm"))
     out.push({ code: "ram_sodimm", severity: "critical", message: T("RAM SO-DIMM là RAM laptop, không lắp được khe RAM máy bàn.", "SO-DIMM is laptop RAM and won't fit desktop RAM slots.") });
   if (spec.ram.some((k) => k.registered))
     out.push({ code: "ram_registered", severity: "critical", message: T("RAM RDIMM là RAM máy chủ, không chạy trên mainboard phổ thông.", "RDIMM is server RAM and won't run on consumer motherboards.") });

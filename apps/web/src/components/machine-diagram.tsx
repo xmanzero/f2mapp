@@ -1,5 +1,5 @@
 import { useI18n } from "@/i18n/client";
-import { capacityLabel, type MachineSpec } from "@f2m/shared";
+import { capacityLabel, isLaptop, type MachineSpec } from "@f2m/shared";
 import type { PartView } from "@/lib/use-machine";
 
 /**
@@ -17,13 +17,14 @@ export function MachineDiagram({ spec, parts }: { spec: MachineSpec; parts: Part
   const cpuShort = spec.cpu.replace(/^(Core|Ryzen) /, "").replace(/^Ultra /, "U");
   const totalGb = sticks.reduce((n, s) => n + s.gb, 0);
   const { t } = useI18n();
+  const laptop = isLaptop(spec);
   const summary = t.diagram.summary(spec.cpu, sticks.length, totalGb, spec.gpu, spec.drives.length, spec.psu.wattage);
 
   return (
     <svg className="diagram" viewBox="0 0 300 220" role="img" aria-label={summary}>
       {/* bo mạch */}
       <rect x="8" y="8" width="196" height="204" rx="10" fill="var(--raised)" stroke="var(--border)" />
-      <text x="20" y="26" className="dg-cap">{spec.mainboard.chipset ?? "Mainboard"}</text>
+      <text x="20" y="26" className="dg-cap">{laptop ? "Laptop" : spec.mainboard.chipset ?? "Mainboard"}</text>
 
       {/* CPU */}
       <rect x="24" y="36" width="62" height="62" rx="6" fill="var(--surface)" stroke={stroke(ok("cpu"))} strokeWidth={ok("cpu") ? 2 : 1.25} />
@@ -60,9 +61,11 @@ export function MachineDiagram({ spec, parts }: { spec: MachineSpec; parts: Part
           <text x="253" y={32 + i * 34} textAnchor="middle" className="dg-small">{d.interface === "hdd" ? "HDD" : "SSD"} {capacityLabel(d.capacityGb)}</text>
         </g>
       ))}
-      <rect x="216" y="172" width="74" height="40" rx="4" fill="var(--surface)" stroke="var(--control)" strokeDasharray="3 3" />
-      <text x="253" y="190" textAnchor="middle" className="dg-strong">PSU</text>
-      <text x="253" y="204" textAnchor="middle" className="dg-small">{spec.psu.wattage} W</text>
+      {!laptop && <>
+        <rect x="216" y="172" width="74" height="40" rx="4" fill="var(--surface)" stroke="var(--control)" strokeDasharray="3 3" />
+        <text x="253" y="190" textAnchor="middle" className="dg-strong">PSU</text>
+        <text x="253" y="204" textAnchor="middle" className="dg-small">{spec.psu.wattage} W</text>
+      </>}
     </svg>
   );
 }

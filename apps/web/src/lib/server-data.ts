@@ -38,6 +38,7 @@ export interface BoardRow {
   userId: string; handle: string; displayName: string; province: string | null;
   cpu: string | null; gpu: string | null; ramGb: number; resolution: number; power: number; tier: string;
   bench?: { cpu: number | null; gpu: number | null } | null; likes?: number;
+  laptop?: { model: string | null } | null;
 }
 /** Bảng xếp hạng */
 export async function publicBoard(): Promise<BoardRow[]> {

@@ -24,7 +24,7 @@ export function ramScore(gb: RamGb): number {
 const lowRam = (gb: RamGb) => gb <= 8;
 export const STORAGE_SCORE: Record<StorageKind, number> = { hdd: 2000, sata: 7000, nvme3: 10000, nvme4: 12000, nvme5: 13000 };
 export const SOCKET_MEMORY: Record<Socket, "DDR4" | "DDR5" | "DDR4/DDR5"> = {
-  LGA1151: "DDR4", LGA1200: "DDR4", LGA1700: "DDR4/DDR5", LGA1851: "DDR5", AM4: "DDR4", AM5: "DDR5",
+  BGA: "DDR4/DDR5", LGA1151: "DDR4", LGA1200: "DDR4", LGA1700: "DDR4/DDR5", LGA1851: "DDR5", AM4: "DDR4", AM5: "DDR5",
 };
 
 /** i5-12400F nuôi ~120 FPS ở 1080p Ultra (bộ game Tom's Hardware 2026) */
@@ -39,8 +39,10 @@ const harmonic = (pairs: [number, number][]) => 1 / pairs.reduce((s, [v, w]) => 
 const softMin = (a: number, b: number) => (Math.max(a, 1) ** -6 + Math.max(b, 1) ** -6) ** (-1 / 6);
 const ANCHOR_FPS = softMin(GPU_FPS_ANCHOR, CPU_FPS_ANCHOR);
 
-export function pcieFactor(cfg: Pick<MachineConfig, "gpu" | "pcieGen">): number {
+export function pcieFactor(cfg: Pick<MachineConfig, "gpu" | "pcieGen" | "laptop">): number {
   const { gpu, pcieGen } = cfg;
+  // laptop: card nối thẳng trên bo, nhà sản xuất đã tính sẵn
+  if (cfg.laptop || gpu.mobile || gpu.integrated) return 1;
   if (pcieGen >= 4) return 1;
   if (gpu.pcieLanes === 4) return 0.8;
   if (gpu.pcieLanes === 8) return gpu.vramGb <= 8 ? 0.94 : 0.97;
@@ -97,7 +99,7 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 export function hardwareFindings(cfg: MachineConfig, lang: Lang = "vi"): Finding[] {
   const out: Finding[] = [];
   const need = psuNeeded(cfg);
-  if (cfg.psuW < need)
+  if (!cfg.laptop && cfg.psuW < need)
     out.push({
       code: "psu_low", severity: cfg.psuW < need - 100 ? "critical" : "warning",
       message: tr(lang, `Nguồn ${cfg.psuW} W thiếu công suất. CPU (${cfg.cpu.powerW} W) + ${cfg.gpu.name} (${cfg.gpu.boardPowerW} W) cần nguồn từ ${need} W. Máy có thể tắt đột ngột khi chơi game nặng.`,
@@ -128,8 +130,11 @@ export function bottleneckFinding(cfg: MachineConfig, lang: Lang = "vi"): Findin
       `CPU bottleneck at ${r}: ${cfg.cpu.name} can only feed about ${pct(1 - b.loss)} of the frames ${cfg.gpu.name} could render.`) };
   if (b.loss <= 0.1) return { code: "balanced", severity: "ok", message: tr(lang, `Cân bằng ở ${r}: CPU và card đồ họa tương xứng nhau.`, `Balanced at ${r}: CPU and graphics card are well matched.`) };
   if (b.side === "gpu")
-    return { code: "gpu_bound", severity: "info", message: tr(lang, `Card đồ họa chạy hết công suất ở ${r}, đây là trạng thái bình thường khi chơi game. Muốn tăng FPS thì nâng card.`,
-      `The graphics card runs at full load at ${r}, which is normal for gaming. For more FPS, upgrade the card.`) };
+    return { code: "gpu_bound", severity: "info", message: cfg.laptop
+      ? tr(lang, `Card đồ họa chạy hết công suất ở ${r}, đây là trạng thái bình thường khi chơi game. Card laptop không thay được — muốn thêm FPS thì hạ thiết lập đồ họa hoặc bật DLSS / FSR.`,
+        `The graphics card runs at full load at ${r}, which is normal for gaming. Laptop graphics can't be swapped — lower settings or turn on DLSS / FSR for more FPS.`)
+      : tr(lang, `Card đồ họa chạy hết công suất ở ${r}, đây là trạng thái bình thường khi chơi game. Muốn tăng FPS thì nâng card.`,
+        `The graphics card runs at full load at ${r}, which is normal for gaming. For more FPS, upgrade the card.`) };
   return { code: "cpu_slightly_bound", severity: "info", message: tr(lang, `CPU hơi đuối ở ${r} (chênh ${pct(b.loss)}), chưa đáng lo.`, `The CPU is slightly behind at ${r} (${pct(b.loss)} gap), nothing to worry about yet.`) };
 }
 
@@ -206,7 +211,7 @@ export function compareUpgrade(current: MachineConfig, next: MachineConfig, lang
         `Different socket (${current.cpu.socket} → ${next.cpu.socket}): needs a new motherboard${toDdr5 ? " and DDR5 RAM" : ""}.`) });
   }
   const need = psuNeeded(next);
-  if (next.psuW < need) warnings.push({ code: "psu_low", severity: "warning", message: tr(lang, `Cần nguồn từ ${need} W cho cấu hình mới (đang ${next.psuW} W).`, `The new build needs a ${need} W+ PSU (currently ${next.psuW} W).`) });
+  if (!next.laptop && next.psuW < need) warnings.push({ code: "psu_low", severity: "warning", message: tr(lang, `Cần nguồn từ ${need} W cho cấu hình mới (đang ${next.psuW} W).`, `The new build needs a ${need} W+ PSU (currently ${next.psuW} W).`) });
   const pf = pcieFactor(next);
   if (pf < 1) warnings.push({ code: "pcie_gen3", severity: "warning", message: tr(lang, `${next.gpu.name} chạy x${next.gpu.pcieLanes}, cắm khe PCIe 3.0 mất khoảng ${pct(1 - pf)}.`, `${next.gpu.name} runs at x${next.gpu.pcieLanes}; in a PCIe 3.0 slot it loses about ${pct(1 - pf)}.`) });
   return {

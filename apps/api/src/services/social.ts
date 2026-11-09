@@ -16,12 +16,13 @@ async function userByHandle(db: DB, handle: string) {
 }
 
 /** Hạng của máy chính giữa các máy thành viên (bảng xếp hạng có thể trộn thêm máy mẫu khi còn ít người) */
-async function rankOf(db: DB, power: number) {
+async function rankOf(db: DB, power: number, formFactor: "desktop" | "laptop") {
+  // xếp riêng máy bàn và laptop (như bảng xếp hạng)
   const r = await db.selectFrom("machines as m").innerJoin("users as u", "u.id", "m.owner_id")
     .innerJoin("machine_scores as s", (j) => j.onRef("s.machine_id", "=", "m.id").on("s.scale_version", "=", SCALE_VERSION))
     .select([sql<number>`count(*) filter (where s.power > ${power})`.as("above"), sql<number>`count(*)`.as("total")])
-    .where("m.is_primary", "=", true).where("u.banned_at", "is", null).executeTakeFirstOrThrow();
-  return { rank: Number(r.above) + 1, of: Number(r.total) };
+    .where("m.is_primary", "=", true).where("u.banned_at", "is", null).where("m.form_factor", "=", formFactor).executeTakeFirstOrThrow();
+  return { rank: Number(r.above) + 1, of: Number(r.total), laptop: formFactor === "laptop" };
 }
 
 /**
@@ -49,7 +50,7 @@ export async function profile(db: DB, handle: string, viewerId: string | null) {
     following,
     followers: await count("followee_id"),
     followingCount: await count("follower_id"),
-    rank: primary?.power != null ? await rankOf(db, primary.power) : null,
+    rank: primary?.power != null ? await rankOf(db, primary.power, primary.spec.formFactor === "laptop" ? "laptop" : "desktop") : null,
     machines: machines.map((m) => ({
       ...m,
       likes: Number(likes.find((l) => l.machine_id === m.id)?.n ?? 0),

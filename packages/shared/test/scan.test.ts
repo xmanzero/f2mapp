@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   chipsetOf, drivesFrom, interpretScan, mainboardFrom, matchCpu, matchGpu, pcieGenOfChipset, primaryGpu, ramKitsFrom, resolutionOf,
-  sameScannedPart, scanReportSchema, specFromScan, benchForSpec, BLENDER_REF, BENCH_OFFICIAL, measuredRender, resolveMachine,
+  sameScannedPart, scanReportSchema, specFromScan, benchForSpec, BLENDER_REF, BENCH_OFFICIAL, measuredRender, resolveMachine, hardwareFindings, suggestUpgrades,
 } from "../src";
 
 const GB = 2 ** 30;
@@ -228,5 +228,48 @@ describe("xác minh số đo hiệu năng", () => {
     const hi = resolveMachine({ ...base12400, cpu: "Core i5-12400F", gpu: "RTX 3060 12GB" }, { cpu: 99999, gpu: 1 });
     expect(hi.cpu.render).toBe(12500);
     expect(hi.gpu.render).toBe(7500);
+  });
+});
+
+describe("laptop", () => {
+  it("nhận diện CPU / card laptop và đồ họa tích hợp đời mới", () => {
+    expect(matchCpu("13th Gen Intel(R) Core(TM) i7-13620H").name).toBe("Core i7-13620H");
+    expect(matchCpu("AMD Ryzen 7 7840HS w/ Radeon 780M Graphics").name).toBe("Ryzen 7 7840HS");
+    expect(matchCpu("AMD Ryzen AI 9 HX 370 w/ Radeon 890M").name).toBe("Ryzen AI 9 HX 370");
+    expect(matchCpu("Intel(R) Core(TM) Ultra 7 155H").name).toBe("Core Ultra 7 155H");
+    expect(matchGpu("NVIDIA GeForce RTX 4060 Laptop GPU", 8).name).toBe("RTX 4060 Laptop");
+    expect(matchGpu("AMD Radeon RX 7600S", 8).name).toBe("RX 7600S");
+    expect(matchGpu("AMD Radeon 780M Graphics", null).name).toBe("Radeon 780M");
+    expect(matchGpu("Intel(R) Arc(TM) Graphics", null).name).toBe("Arc Graphics");
+    expect(matchGpu("Intel(R) Iris(R) Xe Graphics", null).name).toBe("Iris Xe Graphics");
+    expect(matchGpu("Intel(R) UHD Graphics 770", null).name).toBe("Đồ họa tích hợp (iGPU)");
+    // CPU laptop chưa có thì gợi ý CPU laptop, máy bàn thì gợi ý máy bàn
+    expect(matchCpu("Intel(R) Core(TM) i5-12400").name).toBe("Core i5-12400F");
+  });
+  it("bản quét laptop: tên model, TGP đọc được trong dải của mẫu", () => {
+    const s = interpretScan(scanReportSchema.parse({
+      tool: "pcdex-scan/0.6.0", chassis: "laptop", system: { manufacturer: "ASUSTeK COMPUTER INC.", model: "TUF Gaming A15 FA507NV_FA507NV" },
+      cpu: { name: "AMD Ryzen 7 7735HS with Radeon Graphics", cores: 8, threads: 16 },
+      gpus: [{ name: "AMD Radeon(TM) Graphics", vramBytes: 512 * 2 ** 20 }, { name: "NVIDIA GeForce RTX 4060 Laptop GPU", vramBytes: 8 * GB, tgpW: 140 }],
+      board: { manufacturer: "ASUSTeK COMPUTER INC.", product: "FA507NV" }, ram: [], disks: [],
+    }));
+    expect(s.cpu.name).toBe("Ryzen 7 7735HS");
+    expect(s.gpu.name).toBe("RTX 4060 Laptop");
+    expect(s.laptop).toEqual({ model: "ASUS TUF Gaming A15 FA507NV_FA507NV", gpuTgpW: 140 });
+    expect(s.notes).not.toContain("Chưa nhận ra chipset mainboard, tạm tính khe card PCIe 4.0 — sửa lại ở trang cấu hình nếu sai.");
+    const spec = specFromScan(s, { cpu: s.cpu.name!, gpu: s.gpu.name!, psu: { wattage: 200, model: null, rating: null } });
+    expect(spec).toMatchObject({ formFactor: "laptop", gpuTgpW: 140 });
+  });
+  it("TGP thấp → yếu hơn; laptop không có luật nguồn, chỉ gợi ý RAM / ổ", () => {
+    const base = { cpu: "Core i7-13620H", gpu: "RTX 4060 Laptop", ramGb: 8, ramChannels: 1 as const, storage: "nvme4" as const, pcieGen: 4 as const, psuW: 120, resolution: 1080 as const, laptop: true };
+    const hi = resolveMachine({ ...base, gpuTgpW: 140 }), lo = resolveMachine({ ...base, gpuTgpW: 60 });
+    expect(lo.gpu.fps["1080"]).toBeLessThan(hi.gpu.fps["1080"] * 0.75);
+    expect(lo.gpu.fps["1080"]).toBeGreaterThan(hi.gpu.fps["1080"] * 0.65);
+    expect(hi.laptop).toBe(true);
+    expect(hardwareFindings(hi).map((f) => f.code)).not.toContain("psu_low");
+    expect(suggestUpgrades(hi).map((x) => x.kind)).toEqual(["ram"]);
+    // máy bàn không được gợi ý card / CPU laptop
+    const desk = suggestUpgrades(resolveMachine({ cpu: "Core i3-10100F", gpu: "GTX 1650", ramGb: 16, ramChannels: 2, storage: "nvme3", pcieGen: 3, psuW: 650, resolution: 1080 }));
+    expect(desk.every((x) => !x.next.gpu.mobile && !x.next.cpu.mobile)).toBe(true);
   });
 });

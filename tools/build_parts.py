@@ -103,6 +103,65 @@ CPU = [
     ("Ryzen 9 7950X3D", "AM5", None, None, 157, 124, 162, 2023),
 ]
 
+
+# ---------- laptop (09/11/2026) ----------
+# CPU laptop hàn trên bo (socket "BGA"): tên, gaming ước tính, đơn nhân ước tính (% của 12400F), công suất duy trì W, năm.
+# Gaming / đơn nhân ước tính theo tương quan với bản máy bàn cùng kiến trúc (xung thấp hơn, giới hạn điện năng); render lấy Blender Open Data.
+CPU_LAPTOP = [
+    ("Core i5-10300H", 62, 68, 45, 2020), ("Core i7-10750H", 66, 70, 45, 2020),
+    ("Core i5-11400H", 76, 82, 45, 2021), ("Core i7-11800H", 80, 85, 45, 2021),
+    ("Core i5-1135G7", 55, 75, 28, 2020), ("Core i7-1165G7", 58, 80, 28, 2020),
+    ("Core i5-1235U", 60, 82, 15, 2022), ("Core i7-1255U", 63, 86, 15, 2022),
+    ("Core i5-1335U", 62, 85, 15, 2023), ("Core i7-1355U", 65, 88, 15, 2023),
+    ("Core i5-12450H", 80, 88, 45, 2023), ("Core i5-12500H", 86, 95, 45, 2022),
+    ("Core i7-12650H", 88, 96, 45, 2023), ("Core i7-12700H", 92, 100, 45, 2022), ("Core i9-12900H", 96, 105, 45, 2022),
+    ("Core i5-13420H", 84, 94, 45, 2023), ("Core i5-13500H", 90, 100, 45, 2023),
+    ("Core i7-13620H", 94, 104, 45, 2023), ("Core i7-13700H", 96, 106, 45, 2023),
+    ("Core i5-13450HX", 94, 100, 55, 2023), ("Core i7-13650HX", 106, 108, 55, 2023), ("Core i9-13900HX", 118, 118, 55, 2023),
+    ("Core i7-14650HX", 110, 110, 55, 2024), ("Core i7-14700HX", 114, 112, 55, 2024), ("Core i9-14900HX", 122, 122, 55, 2024),
+    ("Core Ultra 5 125U", 62, 88, 15, 2023), ("Core Ultra 7 155U", 65, 90, 15, 2023),
+    ("Core Ultra 5 125H", 82, 95, 28, 2023), ("Core Ultra 7 155H", 88, 100, 28, 2023), ("Core Ultra 9 185H", 92, 104, 45, 2023),
+    ("Core Ultra 5 226V", 76, 96, 17, 2024), ("Core Ultra 7 258V", 80, 100, 17, 2024),
+    ("Core Ultra 5 225H", 88, 102, 28, 2025), ("Core Ultra 7 255H", 94, 108, 28, 2025),
+    ("Core Ultra 7 255HX", 118, 120, 55, 2025), ("Core Ultra 9 275HX", 125, 125, 55, 2025),
+    ("Ryzen 5 5500U", 55, 70, 15, 2021), ("Ryzen 7 5700U", 58, 72, 15, 2021),
+    ("Ryzen 5 7530U", 62, 82, 15, 2023), ("Ryzen 7 7730U", 64, 84, 15, 2023),
+    ("Ryzen 5 4600H", 62, 68, 45, 2020), ("Ryzen 7 4800H", 66, 70, 45, 2020),
+    ("Ryzen 5 5600H", 76, 84, 45, 2021), ("Ryzen 7 5800H", 80, 86, 45, 2021), ("Ryzen 9 5900HX", 84, 90, 45, 2021),
+    ("Ryzen 5 6600H", 80, 88, 45, 2022), ("Ryzen 7 6800H", 86, 92, 45, 2022),
+    ("Ryzen 5 7535HS", 80, 88, 35, 2023), ("Ryzen 7 7735HS", 86, 92, 35, 2023),
+    ("Ryzen 5 7640HS", 90, 100, 35, 2023), ("Ryzen 7 7840HS", 96, 104, 35, 2023), ("Ryzen 9 7940HS", 98, 106, 35, 2023),
+    ("Ryzen 5 8645HS", 92, 100, 35, 2024), ("Ryzen 7 8845HS", 98, 106, 35, 2024),
+    ("Ryzen 9 7945HX", 125, 118, 55, 2023), ("Ryzen 9 8945HX", 126, 120, 55, 2025),
+    ("Ryzen AI 7 350", 94, 108, 28, 2025), ("Ryzen AI 9 HX 370", 100, 112, 28, 2024),
+]
+# Card laptop: tên, sức mạnh ở TGP tối đa (RTX 3060 máy bàn = 1), RT, VRAM, TGP tối thiểu / tối đa / phổ biến (W, gồm Dynamic Boost), năm.
+# AMD không công bố dải TGP rõ → None (không chỉnh theo công suất).
+GPU_LAPTOP = [
+    ("RTX 5090 Laptop", 2.10, 2.30, 24, 95, 175, 175, 2025), ("RTX 5080 Laptop", 1.85, 2.00, 16, 80, 175, 175, 2025),
+    ("RTX 5070 Ti Laptop", 1.55, 1.60, 12, 60, 140, 140, 2025), ("RTX 5070 Laptop", 1.25, 1.30, 8, 50, 115, 115, 2025),
+    ("RTX 5060 Laptop", 1.15, 1.20, 8, 45, 115, 115, 2025), ("RTX 5050 Laptop", 0.95, 0.95, 8, 50, 100, 100, 2025),
+    ("RTX 4090 Laptop", 1.95, 2.10, 16, 80, 175, 175, 2023), ("RTX 4080 Laptop", 1.70, 1.80, 12, 60, 175, 175, 2023),
+    ("RTX 4070 Laptop", 1.20, 1.25, 8, 35, 140, 140, 2023), ("RTX 4060 Laptop", 1.10, 1.15, 8, 35, 140, 140, 2023),
+    ("RTX 4050 Laptop", 0.92, 0.95, 6, 35, 140, 140, 2023),
+    ("RTX 3080 Ti Laptop", 1.40, 1.45, 16, 80, 175, 175, 2022), ("RTX 3080 Laptop", 1.25, 1.30, 8, 80, 165, 150, 2021),
+    ("RTX 3070 Ti Laptop", 1.18, 1.20, 8, 80, 150, 150, 2022), ("RTX 3070 Laptop", 1.08, 1.10, 8, 80, 125, 125, 2021),
+    ("RTX 3060 Laptop", 0.90, 0.90, 6, 60, 130, 130, 2021),
+    ("RTX 3050 Ti Laptop", 0.55, 0.50, 4, 35, 80, 80, 2021), ("RTX 3050 Laptop", 0.52, 0.48, 4, 35, 80, 80, 2021),
+    ("RTX 2060 Laptop", 0.70, 0.65, 6, 80, 115, 115, 2019),
+    ("GTX 1650 Ti Laptop", 0.44, None, 4, 50, 55, 55, 2020), ("GTX 1650 Laptop", 0.40, None, 4, 35, 50, 50, 2019),
+    ("RX 7600S", 0.98, 0.70, 8, None, None, None, 2023),
+    ("RX 6800M", 1.30, 0.90, 12, None, None, None, 2021), ("RX 6700M", 1.12, 0.75, 10, None, None, None, 2021),
+    ("RX 6600M", 0.98, 0.65, 8, None, None, None, 2021),
+]
+# Đồ họa tích hợp đời mới (chung RAM hệ thống): tên, sức mạnh (RTX 3060 = 1), năm. Tên khác → "Đồ họa tích hợp (iGPU)".
+IGPU = [
+    ("Radeon 890M", 0.45, 2024), ("Radeon 880M", 0.40, 2024), ("Radeon 780M", 0.36, 2023), ("Radeon 760M", 0.30, 2023),
+    ("Radeon 680M", 0.30, 2022), ("Arc 140V", 0.40, 2024), ("Arc 130V", 0.34, 2024), ("Arc Graphics", 0.32, 2023),
+    ("Iris Xe Graphics", 0.18, 2020),
+]
+TGP_EXP = 0.4  # hiệu năng ~ (TGP / TGP tối đa)^0,4 (càng lên cao càng ít lợi)
+
 # ---------- GPU ----------
 R1440 = 0.70  # FPS 1440p ≈ 0,70 × FPS 1080p khi card không bị CPU giới hạn
 REF_1440, REF_RT1440 = 41.9, 20.7  # RTX 3060 12GB
@@ -210,11 +269,19 @@ def norm(s):
 blender = json.load(open(ROOT / "data/blender-render-4.5.json", encoding="utf-8"))["rows"]
 
 
+def _bkey(name):
+    """Tên so khớp với dữ liệu Blender: bỏ đuôi "Six-Core", "w/ 780M", "GPU", "(16GB)", "Graphics", tiền tố Radeon"""
+    n = re.sub(r"\s+(w/.*|\w+-Core)$", "", name)
+    n = re.sub(r"\s*\(\d+GB\)$", "", n)
+    n = re.sub(r"\s+(GPU|Graphics)$", "", n)
+    n = re.sub(r"^Radeon\s+", "", n)
+    return norm(n)
+
+
 def blender_points(kind, name):
-    key = norm(re.sub(r" (6|8|10|12|16)GB$", "", name))
+    key = _bkey(re.sub(r" (6|8|10|12|16)GB$", "", name))
     for r in blender:
-        # tên trong dữ liệu Blender có đuôi: "Ryzen 5 2600 Six-Core", "Ryzen 7 8700G w/ 780M"
-        if r["kind"] == kind and norm(re.sub(r"\s+(w/.*|\w+-Core)$", "", r["name"])) == key:
+        if r["kind"] == kind and _bkey(r["name"]) == key:
             return r["points"]
     return None
 
@@ -247,6 +314,13 @@ for n, sock, gm_t, st_t, gm_e, st_e, w, y in CPU:
         src={"gm": "toms" if gm_t else "est", "st": "toms" if st_t else "est",
              "mt": "blender" if bp else "measured" if ("cpu", n) in calib else "est"}))
 
+for n, gm_e, st_e, w, y in CPU_LAPTOP:
+    bp = blender_points("cpu", n)
+    st = st_e * 100
+    cpus.append(dict(n=n, s="BGA", w=w, y=y, gm=gm_e * 100, st=st, m=True,
+                     mt=bp or calib.get(("cpu", n)) or round(st * 0.75),
+                     src={"gm": "est", "st": "est", "mt": "blender" if bp else "measured" if ("cpu", n) in calib else "est"}))
+
 gpus = []
 for n, t, v, lanes, tbp, rec, y in GPU:
     f1080, f1440, f2160 = raster[t]
@@ -272,6 +346,21 @@ for n, rel, rtrel, v, lanes, tbp, rec, y in GPU_OLD:
                      lanes=lanes, tbp=tbp, rec=rec, y=y, src="est",
                      rsrc="blender" if blender_points("gpu", n) else "measured" if ("gpu", n) in calib else "est"))
 
+for n, rel, rtrel, v, tmin, tmax, tdef, y in GPU_LAPTOP:
+    vf = [1, 0.85 if v <= 6 else 1, 0.6 if v <= 6 else 1]
+    bp = blender_points("gpu", n)
+    # trung vị Blender của card laptop đã ngang bản máy bàn (đa số máy đo chạy TGP cao) → coi như ở TGP phổ biến, không quy đổi thêm
+    gpus.append(dict(n=n, f=[round(b * rel * k, 1) for b, k in zip(base, vf)], r=round(rel * 10000),
+                     rt=None if rtrel is None else round(rtrel * 10000),
+                     rd=bp or calib.get(("gpu", n)) or render_est(n, rel), v=v, lanes=16, tbp=tmax or 100, rec=0, y=y,
+                     src="est", rsrc="blender" if bp else "measured" if ("gpu", n) in calib else "est", m=True,
+                     tgp=None if tmax is None else {"min": tmin, "max": tmax, "default": tdef}))
+for n, rel, y in IGPU:
+    bp = blender_points("gpu", n)
+    gpus.append(dict(n=n, f=[round(b * rel * k, 1) for b, k in zip(base, [1, 0.85, 0.6])], r=round(rel * 10000), rt=None,
+                     rd=bp or calib.get(("gpu", n)) or round(rel * 10000 * 0.5), v=2, lanes=16, tbp=0, rec=0, y=y,
+                     src="est", rsrc="blender" if bp else "measured" if ("gpu", n) in calib else "est", ig=True))
+
 missing_cpu = [c["n"] for c in cpus if c["mt"] is None]
 missing_gpu = [g["n"] for g in gpus if g["rd"] is None]
 out = ROOT / "prototype/parts.js"
@@ -284,11 +373,11 @@ print(f"{len(cpus)} CPU, {len(gpus)} GPU → {out}")
 shared = {
     "scaleVersion": "0.5",
     "cpus": [dict(name=c["n"], socket=c["s"], powerW=c["w"], releaseYear=c["y"], gaming=c["gm"], single=c["st"],
-                  render=c["mt"], source=c["src"]) for c in cpus],
+                  render=c["mt"], source=c["src"], mobile=bool(c.get("m"))) for c in cpus],
     "gpus": [dict(name=g["n"], fps={"1080": g["f"][0], "1440": g["f"][1], "2160": g["f"][2]}, raster=g["r"],
                   rayTracing=g["rt"], render=g["rd"], renderSource=g["rsrc"], vramGb=g["v"], pcieLanes=g["lanes"], boardPowerW=g["tbp"],
-                  psuRecommendedW=g["rec"], releaseYear=g["y"], integrated=g["n"].startswith("Đồ họa tích hợp"),
-                  source=g["src"]) for g in gpus],
+                  psuRecommendedW=g["rec"], releaseYear=g["y"], integrated=bool(g.get("ig")) or g["n"].startswith("Đồ họa tích hợp"),
+                  source=g["src"], mobile=bool(g.get("m")), tgp=g.get("tgp")) for g in gpus],
 }
 out2 = ROOT / "packages/shared/src/data/parts.json"
 out2.parent.mkdir(parents=True, exist_ok=True)

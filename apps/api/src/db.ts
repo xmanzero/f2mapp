@@ -53,6 +53,9 @@ export interface Database {
     resolution: number;
     verified_at: Date | null;
     last_scan_at: Generated<Date | null>;
+    form_factor: Generated<"desktop" | "laptop">;
+    gpu_tgp_w: number | null;
+    laptop_model: string | null;
     /** Đo hiệu năng Blender gần nhất (BenchResult + at) */
     bench: Generated<unknown | null>;
     created_at: Generated<Date>;

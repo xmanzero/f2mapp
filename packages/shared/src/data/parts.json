@@ -13,7 +13,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i3-10100F",
@@ -27,7 +28,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-10400F",
@@ -41,7 +43,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-11400F",
@@ -55,7 +58,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i3-12100F",
@@ -69,7 +73,8 @@
     "gm": "est",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i3-13100F",
@@ -83,7 +88,8 @@
     "gm": "est",
     "st": "toms",
     "mt": "est"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-12400F",
@@ -97,7 +103,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-13400F",
@@ -111,7 +118,8 @@
     "gm": "est",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-14400F",
@@ -125,7 +133,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-12600K",
@@ -139,7 +148,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-13600K",
@@ -153,7 +163,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-14600K",
@@ -167,7 +178,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-12700K",
@@ -181,7 +193,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-13700K",
@@ -195,7 +208,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-14700K",
@@ -209,7 +223,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-14700",
@@ -223,7 +238,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-14700F",
@@ -237,7 +253,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i9-13900K",
@@ -251,7 +268,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i9-14900K",
@@ -265,7 +283,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core Ultra 5 245K",
@@ -279,7 +298,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core Ultra 7 265K",
@@ -293,7 +313,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core Ultra 9 285K",
@@ -307,7 +328,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 3600",
@@ -321,7 +343,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 5500",
@@ -335,7 +358,8 @@
     "gm": "est",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 5600",
@@ -349,7 +373,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 5700X",
@@ -363,7 +388,8 @@
     "gm": "est",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 5800X3D",
@@ -377,7 +403,8 @@
     "gm": "est",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 7500F",
@@ -391,7 +418,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 7600",
@@ -405,7 +433,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 7600X",
@@ -419,7 +448,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 7700",
@@ -433,7 +463,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 7700X",
@@ -447,7 +478,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 7800X3D",
@@ -461,7 +493,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 7950X",
@@ -475,7 +508,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 9600X",
@@ -489,7 +523,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 9700X",
@@ -503,7 +538,8 @@
     "gm": "est",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 9800X3D",
@@ -517,7 +553,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 9850X3D",
@@ -531,7 +568,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 9900X",
@@ -545,7 +583,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 9950X",
@@ -559,7 +598,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 9950X3D",
@@ -573,7 +613,8 @@
     "gm": "toms",
     "st": "toms",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-8400",
@@ -587,7 +628,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i3-9100F",
@@ -601,7 +643,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-9400F",
@@ -615,7 +658,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-8700K",
@@ -629,7 +673,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-9700K",
@@ -643,7 +688,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i9-9900K",
@@ -657,7 +703,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-10600K",
@@ -671,7 +718,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-10700F",
@@ -685,7 +733,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-10700K",
@@ -699,7 +748,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i9-10900K",
@@ -713,7 +763,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i5-11600K",
@@ -727,7 +778,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-11700F",
@@ -741,7 +793,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-11700K",
@@ -755,7 +808,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i9-11900K",
@@ -769,7 +823,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i3-14100F",
@@ -783,7 +838,8 @@
     "gm": "est",
     "st": "est",
     "mt": "est"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-12700F",
@@ -797,7 +853,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i7-13700F",
@@ -811,7 +868,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Core i9-12900K",
@@ -825,7 +883,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 1600",
@@ -839,7 +898,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 2600",
@@ -853,7 +913,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 2700X",
@@ -867,7 +928,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 3700X",
@@ -881,7 +943,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 3900X",
@@ -895,7 +958,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 4500",
@@ -909,7 +973,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 5600G",
@@ -923,7 +988,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 5600X",
@@ -937,7 +1003,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 5700G",
@@ -951,7 +1018,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 5800X",
@@ -965,7 +1033,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 5900X",
@@ -979,7 +1048,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 5950X",
@@ -993,7 +1063,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 5 8600G",
@@ -1007,7 +1078,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 7 8700G",
@@ -1021,7 +1093,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 7900",
@@ -1035,7 +1108,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 7900X",
@@ -1049,7 +1123,8 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
   },
   {
    "name": "Ryzen 9 7950X3D",
@@ -1063,7 +1138,878 @@
     "gm": "est",
     "st": "est",
     "mt": "blender"
-   }
+   },
+   "mobile": false
+  },
+  {
+   "name": "Core i5-10300H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2020,
+   "gaming": 6200,
+   "single": 6800,
+   "render": 4092,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-10750H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2020,
+   "gaming": 6600,
+   "single": 7000,
+   "render": 5965,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-11400H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2021,
+   "gaming": 7600,
+   "single": 8200,
+   "render": 6733,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-11800H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2021,
+   "gaming": 8000,
+   "single": 8500,
+   "render": 8189,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-1135G7",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2020,
+   "gaming": 5500,
+   "single": 7500,
+   "render": 3115,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-1165G7",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2020,
+   "gaming": 5800,
+   "single": 8000,
+   "render": 3486,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-1235U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2022,
+   "gaming": 6000,
+   "single": 8200,
+   "render": 4018,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-1255U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2022,
+   "gaming": 6300,
+   "single": 8600,
+   "render": 4819,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-1335U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2023,
+   "gaming": 6200,
+   "single": 8500,
+   "render": 6375,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "est"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-1355U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2023,
+   "gaming": 6500,
+   "single": 8800,
+   "render": 5819,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-12450H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2023,
+   "gaming": 8000,
+   "single": 8800,
+   "render": 7140,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-12500H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2022,
+   "gaming": 8600,
+   "single": 9500,
+   "render": 9083,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-12650H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2023,
+   "gaming": 8800,
+   "single": 9600,
+   "render": 9804,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-12700H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2022,
+   "gaming": 9200,
+   "single": 10000,
+   "render": 11033,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i9-12900H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2022,
+   "gaming": 9600,
+   "single": 10500,
+   "render": 11224,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-13420H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2023,
+   "gaming": 8400,
+   "single": 9400,
+   "render": 7752,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-13500H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2023,
+   "gaming": 9000,
+   "single": 10000,
+   "render": 9907,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-13620H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2023,
+   "gaming": 9400,
+   "single": 10400,
+   "render": 10100,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-13700H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2023,
+   "gaming": 9600,
+   "single": 10600,
+   "render": 11493,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i5-13450HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2023,
+   "gaming": 9400,
+   "single": 10000,
+   "render": 13279,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-13650HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2023,
+   "gaming": 10600,
+   "single": 10800,
+   "render": 13650,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i9-13900HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2023,
+   "gaming": 11800,
+   "single": 11800,
+   "render": 23601,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-14650HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2024,
+   "gaming": 11000,
+   "single": 11000,
+   "render": 18184,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i7-14700HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2024,
+   "gaming": 11400,
+   "single": 11200,
+   "render": 21479,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core i9-14900HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2024,
+   "gaming": 12200,
+   "single": 12200,
+   "render": 21429,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 5 125U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2023,
+   "gaming": 6200,
+   "single": 8800,
+   "render": 5230,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 7 155U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2023,
+   "gaming": 6500,
+   "single": 9000,
+   "render": 5454,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 5 125H",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2023,
+   "gaming": 8200,
+   "single": 9500,
+   "render": 9361,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 7 155H",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2023,
+   "gaming": 8800,
+   "single": 10000,
+   "render": 9832,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 9 185H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2023,
+   "gaming": 9200,
+   "single": 10400,
+   "render": 13244,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 5 226V",
+   "socket": "BGA",
+   "powerW": 17,
+   "releaseYear": 2024,
+   "gaming": 7600,
+   "single": 9600,
+   "render": 6572,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 7 258V",
+   "socket": "BGA",
+   "powerW": 17,
+   "releaseYear": 2024,
+   "gaming": 8000,
+   "single": 10000,
+   "render": 8060,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 5 225H",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2025,
+   "gaming": 8800,
+   "single": 10200,
+   "render": 12661,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 7 255H",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2025,
+   "gaming": 9400,
+   "single": 10800,
+   "render": 13804,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 7 255HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2025,
+   "gaming": 11800,
+   "single": 12000,
+   "render": 25553,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Core Ultra 9 275HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2025,
+   "gaming": 12500,
+   "single": 12500,
+   "render": 29355,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 5500U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2021,
+   "gaming": 5500,
+   "single": 7000,
+   "render": 6029,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 5700U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2021,
+   "gaming": 5800,
+   "single": 7200,
+   "render": 7509,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 7530U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2023,
+   "gaming": 6200,
+   "single": 8200,
+   "render": 5151,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 7730U",
+   "socket": "BGA",
+   "powerW": 15,
+   "releaseYear": 2023,
+   "gaming": 6400,
+   "single": 8400,
+   "render": 8233,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 4600H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2020,
+   "gaming": 6200,
+   "single": 6800,
+   "render": 6679,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 4800H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2020,
+   "gaming": 6600,
+   "single": 7000,
+   "render": 9209,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 5600H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2021,
+   "gaming": 7600,
+   "single": 8400,
+   "render": 7747,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 5800H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2021,
+   "gaming": 8000,
+   "single": 8600,
+   "render": 9774,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 9 5900HX",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2021,
+   "gaming": 8400,
+   "single": 9000,
+   "render": 10247,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 6600H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2022,
+   "gaming": 8000,
+   "single": 8800,
+   "render": 7882,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 6800H",
+   "socket": "BGA",
+   "powerW": 45,
+   "releaseYear": 2022,
+   "gaming": 8600,
+   "single": 9200,
+   "render": 10213,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 7535HS",
+   "socket": "BGA",
+   "powerW": 35,
+   "releaseYear": 2023,
+   "gaming": 8000,
+   "single": 8800,
+   "render": 8333,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 7735HS",
+   "socket": "BGA",
+   "powerW": 35,
+   "releaseYear": 2023,
+   "gaming": 8600,
+   "single": 9200,
+   "render": 11132,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 7640HS",
+   "socket": "BGA",
+   "powerW": 35,
+   "releaseYear": 2023,
+   "gaming": 9000,
+   "single": 10000,
+   "render": 10898,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 7840HS",
+   "socket": "BGA",
+   "powerW": 35,
+   "releaseYear": 2023,
+   "gaming": 9600,
+   "single": 10400,
+   "render": 16536,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 9 7940HS",
+   "socket": "BGA",
+   "powerW": 35,
+   "releaseYear": 2023,
+   "gaming": 9800,
+   "single": 10600,
+   "render": 14890,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 5 8645HS",
+   "socket": "BGA",
+   "powerW": 35,
+   "releaseYear": 2024,
+   "gaming": 9200,
+   "single": 10000,
+   "render": 10118,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 7 8845HS",
+   "socket": "BGA",
+   "powerW": 35,
+   "releaseYear": 2024,
+   "gaming": 9800,
+   "single": 10600,
+   "render": 13900,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 9 7945HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2023,
+   "gaming": 12500,
+   "single": 11800,
+   "render": 31183,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen 9 8945HX",
+   "socket": "BGA",
+   "powerW": 55,
+   "releaseYear": 2025,
+   "gaming": 12600,
+   "single": 12000,
+   "render": 32062,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen AI 7 350",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2025,
+   "gaming": 9400,
+   "single": 10800,
+   "render": 12529,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
+  },
+  {
+   "name": "Ryzen AI 9 HX 370",
+   "socket": "BGA",
+   "powerW": 28,
+   "releaseYear": 2024,
+   "gaming": 10000,
+   "single": 11200,
+   "render": 19330,
+   "source": {
+    "gm": "est",
+    "st": "est",
+    "mt": "blender"
+   },
+   "mobile": true
   }
  ],
  "gpus": [
@@ -1084,7 +2030,9 @@
    "psuRecommendedW": 1000,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4090",
@@ -1103,7 +2051,9 @@
    "psuRecommendedW": 850,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 5080",
@@ -1122,7 +2072,9 @@
    "psuRecommendedW": 850,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 7900 XTX",
@@ -1141,7 +2093,9 @@
    "psuRecommendedW": 800,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4080 Super",
@@ -1160,7 +2114,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2024,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4080",
@@ -1179,7 +2135,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 5070 Ti",
@@ -1198,7 +2156,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 9070 XT",
@@ -1217,7 +2177,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 7900 XT",
@@ -1236,7 +2198,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4070 Ti Super",
@@ -1255,7 +2219,9 @@
    "psuRecommendedW": 700,
    "releaseYear": 2024,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 9070",
@@ -1274,7 +2240,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3090 Ti",
@@ -1293,7 +2261,9 @@
    "psuRecommendedW": 850,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4070 Ti",
@@ -1312,7 +2282,9 @@
    "psuRecommendedW": 700,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 5070",
@@ -1331,7 +2303,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3090",
@@ -1350,7 +2324,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4070 Super",
@@ -1369,7 +2345,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2024,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6950 XT",
@@ -1388,7 +2366,9 @@
    "psuRecommendedW": 850,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3080 Ti",
@@ -1407,7 +2387,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2021,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 9070 GRE",
@@ -1426,7 +2408,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 7800 XT",
@@ -1445,7 +2429,9 @@
    "psuRecommendedW": 700,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6900 XT",
@@ -1464,7 +2450,9 @@
    "psuRecommendedW": 850,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3080 10GB",
@@ -1483,7 +2471,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6800 XT",
@@ -1502,7 +2492,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4070",
@@ -1521,7 +2513,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 5060 Ti 16GB",
@@ -1540,7 +2534,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 7700 XT",
@@ -1559,7 +2555,9 @@
    "psuRecommendedW": 700,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 9060 XT 16GB",
@@ -1578,7 +2576,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 5060 Ti 8GB",
@@ -1597,7 +2597,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3070 Ti",
@@ -1616,7 +2618,9 @@
    "psuRecommendedW": 750,
    "releaseYear": 2021,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 9060 XT 8GB",
@@ -1635,7 +2639,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4060 Ti 16GB",
@@ -1654,7 +2660,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 7600 XT",
@@ -1673,7 +2681,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2024,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3070",
@@ -1692,7 +2702,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4060 Ti 8GB",
@@ -1711,7 +2723,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6750 XT",
@@ -1730,7 +2744,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 5060",
@@ -1749,7 +2765,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6700 XT",
@@ -1768,7 +2786,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2021,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "Arc B580",
@@ -1787,7 +2807,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2024,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3060 Ti",
@@ -1806,7 +2828,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 4060",
@@ -1825,7 +2849,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 7600",
@@ -1844,7 +2870,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2023,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 5050",
@@ -1863,7 +2891,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "Arc B570",
@@ -1882,7 +2912,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2025,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3060 12GB",
@@ -1901,7 +2933,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2021,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6650 XT",
@@ -1920,7 +2954,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6600 XT",
@@ -1939,7 +2975,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2021,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6600",
@@ -1958,7 +2996,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2021,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3050 8GB",
@@ -1977,7 +3017,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "toms"
+   "source": "toms",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2080 Ti",
@@ -1996,7 +3038,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2018,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2080 Super",
@@ -2015,7 +3059,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2080",
@@ -2034,7 +3080,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2018,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2070 Super",
@@ -2053,7 +3101,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2070",
@@ -2072,7 +3122,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2018,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2060 Super",
@@ -2091,7 +3143,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2060 12GB",
@@ -2110,7 +3164,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2021,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3060 8GB",
@@ -2129,7 +3185,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 3050 6GB",
@@ -2148,7 +3206,9 @@
    "psuRecommendedW": 300,
    "releaseYear": 2024,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 7900 GRE",
@@ -2167,7 +3227,9 @@
    "psuRecommendedW": 700,
    "releaseYear": 2024,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6800",
@@ -2186,7 +3248,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 5700 XT",
@@ -2205,7 +3269,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 5700",
@@ -2224,7 +3290,9 @@
    "psuRecommendedW": 550,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 5600 XT",
@@ -2243,7 +3311,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2020,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "Arc A770",
@@ -2262,7 +3332,9 @@
    "psuRecommendedW": 650,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "Arc A750",
@@ -2281,7 +3353,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1080 Ti",
@@ -2300,7 +3374,9 @@
    "psuRecommendedW": 600,
    "releaseYear": 2017,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1080",
@@ -2319,7 +3395,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2016,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1070 Ti",
@@ -2338,7 +3416,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2017,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1070",
@@ -2357,7 +3437,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2016,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RTX 2060",
@@ -2376,7 +3458,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1660 Super",
@@ -2395,7 +3479,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1660 Ti",
@@ -2414,7 +3500,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1660",
@@ -2433,7 +3521,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6500 XT",
@@ -2452,7 +3542,9 @@
    "psuRecommendedW": 400,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1060 6GB",
@@ -2471,7 +3563,9 @@
    "psuRecommendedW": 400,
    "releaseYear": 2016,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1650 Super",
@@ -2490,7 +3584,9 @@
    "psuRecommendedW": 350,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 590",
@@ -2509,7 +3605,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2018,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 580 8GB",
@@ -2528,7 +3626,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2017,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 5500 XT",
@@ -2547,7 +3647,9 @@
    "psuRecommendedW": 400,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1060 3GB",
@@ -2566,7 +3668,9 @@
    "psuRecommendedW": 400,
    "releaseYear": 2016,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 580 2048SP",
@@ -2585,7 +3689,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2018,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 570",
@@ -2604,7 +3710,9 @@
    "psuRecommendedW": 450,
    "releaseYear": 2017,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 970",
@@ -2623,7 +3731,9 @@
    "psuRecommendedW": 500,
    "releaseYear": 2014,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "Arc A380",
@@ -2642,7 +3752,9 @@
    "psuRecommendedW": 300,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "RX 6400",
@@ -2661,7 +3773,9 @@
    "psuRecommendedW": 300,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1650",
@@ -2680,7 +3794,9 @@
    "psuRecommendedW": 300,
    "releaseYear": 2019,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1050 Ti",
@@ -2699,7 +3815,9 @@
    "psuRecommendedW": 300,
    "releaseYear": 2016,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1050",
@@ -2718,7 +3836,9 @@
    "psuRecommendedW": 300,
    "releaseYear": 2016,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "GTX 1630",
@@ -2737,7 +3857,9 @@
    "psuRecommendedW": 300,
    "releaseYear": 2022,
    "integrated": false,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   },
   {
    "name": "Đồ họa tích hợp (iGPU)",
@@ -2756,7 +3878,807 @@
    "psuRecommendedW": 300,
    "releaseYear": null,
    "integrated": true,
-   "source": "est"
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "RTX 5090 Laptop",
+   "fps": {
+    "1080": 129.2,
+    "1440": 88.0,
+    "2160": 46.6
+   },
+   "raster": 21000,
+   "rayTracing": 23000,
+   "render": 36631,
+   "renderSource": "blender",
+   "vramGb": 24,
+   "pcieLanes": 16,
+   "boardPowerW": 175,
+   "psuRecommendedW": 0,
+   "releaseYear": 2025,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 95,
+    "max": 175,
+    "default": 175
+   }
+  },
+  {
+   "name": "RTX 5080 Laptop",
+   "fps": {
+    "1080": 113.8,
+    "1440": 77.5,
+    "2160": 41.1
+   },
+   "raster": 18500,
+   "rayTracing": 20000,
+   "render": 30363,
+   "renderSource": "blender",
+   "vramGb": 16,
+   "pcieLanes": 16,
+   "boardPowerW": 175,
+   "psuRecommendedW": 0,
+   "releaseYear": 2025,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 80,
+    "max": 175,
+    "default": 175
+   }
+  },
+  {
+   "name": "RTX 5070 Ti Laptop",
+   "fps": {
+    "1080": 95.3,
+    "1440": 64.9,
+    "2160": 34.4
+   },
+   "raster": 15500,
+   "rayTracing": 16000,
+   "render": 23214,
+   "renderSource": "blender",
+   "vramGb": 12,
+   "pcieLanes": 16,
+   "boardPowerW": 140,
+   "psuRecommendedW": 0,
+   "releaseYear": 2025,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 60,
+    "max": 140,
+    "default": 140
+   }
+  },
+  {
+   "name": "RTX 5070 Laptop",
+   "fps": {
+    "1080": 76.9,
+    "1440": 52.4,
+    "2160": 27.8
+   },
+   "raster": 12500,
+   "rayTracing": 13000,
+   "render": 18640,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 115,
+   "psuRecommendedW": 0,
+   "releaseYear": 2025,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 50,
+    "max": 115,
+    "default": 115
+   }
+  },
+  {
+   "name": "RTX 5060 Laptop",
+   "fps": {
+    "1080": 70.7,
+    "1440": 48.2,
+    "2160": 25.5
+   },
+   "raster": 11500,
+   "rayTracing": 12000,
+   "render": 16244,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 115,
+   "psuRecommendedW": 0,
+   "releaseYear": 2025,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 45,
+    "max": 115,
+    "default": 115
+   }
+  },
+  {
+   "name": "RTX 5050 Laptop",
+   "fps": {
+    "1080": 58.4,
+    "1440": 39.8,
+    "2160": 21.1
+   },
+   "raster": 9500,
+   "rayTracing": 9500,
+   "render": 13742,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 100,
+   "psuRecommendedW": 0,
+   "releaseYear": 2025,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 50,
+    "max": 100,
+    "default": 100
+   }
+  },
+  {
+   "name": "RTX 4090 Laptop",
+   "fps": {
+    "1080": 119.9,
+    "1440": 81.7,
+    "2160": 43.3
+   },
+   "raster": 19500,
+   "rayTracing": 21000,
+   "render": 31934,
+   "renderSource": "blender",
+   "vramGb": 16,
+   "pcieLanes": 16,
+   "boardPowerW": 175,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 80,
+    "max": 175,
+    "default": 175
+   }
+  },
+  {
+   "name": "RTX 4080 Laptop",
+   "fps": {
+    "1080": 104.5,
+    "1440": 71.2,
+    "2160": 37.7
+   },
+   "raster": 17000,
+   "rayTracing": 18000,
+   "render": 25177,
+   "renderSource": "blender",
+   "vramGb": 12,
+   "pcieLanes": 16,
+   "boardPowerW": 175,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 60,
+    "max": 175,
+    "default": 175
+   }
+  },
+  {
+   "name": "RTX 4070 Laptop",
+   "fps": {
+    "1080": 73.8,
+    "1440": 50.3,
+    "2160": 26.6
+   },
+   "raster": 12000,
+   "rayTracing": 12500,
+   "render": 16521,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 140,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 35,
+    "max": 140,
+    "default": 140
+   }
+  },
+  {
+   "name": "RTX 4060 Laptop",
+   "fps": {
+    "1080": 67.7,
+    "1440": 46.1,
+    "2160": 24.4
+   },
+   "raster": 11000,
+   "rayTracing": 11500,
+   "render": 15225,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 140,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 35,
+    "max": 140,
+    "default": 140
+   }
+  },
+  {
+   "name": "RTX 4050 Laptop",
+   "fps": {
+    "1080": 56.6,
+    "1440": 32.8,
+    "2160": 12.3
+   },
+   "raster": 9200,
+   "rayTracing": 9500,
+   "render": 11996,
+   "renderSource": "blender",
+   "vramGb": 6,
+   "pcieLanes": 16,
+   "boardPowerW": 140,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 35,
+    "max": 140,
+    "default": 140
+   }
+  },
+  {
+   "name": "RTX 3080 Ti Laptop",
+   "fps": {
+    "1080": 86.1,
+    "1440": 58.7,
+    "2160": 31.1
+   },
+   "raster": 14000,
+   "rayTracing": 14500,
+   "render": 13931,
+   "renderSource": "blender",
+   "vramGb": 16,
+   "pcieLanes": 16,
+   "boardPowerW": 175,
+   "psuRecommendedW": 0,
+   "releaseYear": 2022,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 80,
+    "max": 175,
+    "default": 175
+   }
+  },
+  {
+   "name": "RTX 3080 Laptop",
+   "fps": {
+    "1080": 76.9,
+    "1440": 52.4,
+    "2160": 27.8
+   },
+   "raster": 12500,
+   "rayTracing": 13000,
+   "render": 13297,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 165,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 80,
+    "max": 165,
+    "default": 150
+   }
+  },
+  {
+   "name": "RTX 3070 Ti Laptop",
+   "fps": {
+    "1080": 72.6,
+    "1440": 49.4,
+    "2160": 26.2
+   },
+   "raster": 11800,
+   "rayTracing": 12000,
+   "render": 13153,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 150,
+   "psuRecommendedW": 0,
+   "releaseYear": 2022,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 80,
+    "max": 150,
+    "default": 150
+   }
+  },
+  {
+   "name": "RTX 3070 Laptop",
+   "fps": {
+    "1080": 66.4,
+    "1440": 45.3,
+    "2160": 24.0
+   },
+   "raster": 10800,
+   "rayTracing": 11000,
+   "render": 12646,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 125,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 80,
+    "max": 125,
+    "default": 125
+   }
+  },
+  {
+   "name": "RTX 3060 Laptop",
+   "fps": {
+    "1080": 55.4,
+    "1440": 32.1,
+    "2160": 12.0
+   },
+   "raster": 9000,
+   "rayTracing": 9000,
+   "render": 9896,
+   "renderSource": "blender",
+   "vramGb": 6,
+   "pcieLanes": 16,
+   "boardPowerW": 130,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 60,
+    "max": 130,
+    "default": 130
+   }
+  },
+  {
+   "name": "RTX 3050 Ti Laptop",
+   "fps": {
+    "1080": 33.8,
+    "1440": 19.6,
+    "2160": 7.3
+   },
+   "raster": 5500,
+   "rayTracing": 5000,
+   "render": 5911,
+   "renderSource": "blender",
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 80,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 35,
+    "max": 80,
+    "default": 80
+   }
+  },
+  {
+   "name": "RTX 3050 Laptop",
+   "fps": {
+    "1080": 32.0,
+    "1440": 18.5,
+    "2160": 6.9
+   },
+   "raster": 5200,
+   "rayTracing": 4800,
+   "render": 5356,
+   "renderSource": "blender",
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 80,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 35,
+    "max": 80,
+    "default": 80
+   }
+  },
+  {
+   "name": "RTX 2060 Laptop",
+   "fps": {
+    "1080": 43.0,
+    "1440": 24.9,
+    "2160": 9.3
+   },
+   "raster": 7000,
+   "rayTracing": 6500,
+   "render": 8050,
+   "renderSource": "est",
+   "vramGb": 6,
+   "pcieLanes": 16,
+   "boardPowerW": 115,
+   "psuRecommendedW": 0,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 80,
+    "max": 115,
+    "default": 115
+   }
+  },
+  {
+   "name": "GTX 1650 Ti Laptop",
+   "fps": {
+    "1080": 27.1,
+    "1440": 15.7,
+    "2160": 5.9
+   },
+   "raster": 4400,
+   "rayTracing": null,
+   "render": 1980,
+   "renderSource": "est",
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 55,
+   "psuRecommendedW": 0,
+   "releaseYear": 2020,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 50,
+    "max": 55,
+    "default": 55
+   }
+  },
+  {
+   "name": "GTX 1650 Laptop",
+   "fps": {
+    "1080": 24.6,
+    "1440": 14.2,
+    "2160": 5.3
+   },
+   "raster": 4000,
+   "rayTracing": null,
+   "render": 1800,
+   "renderSource": "est",
+   "vramGb": 4,
+   "pcieLanes": 16,
+   "boardPowerW": 50,
+   "psuRecommendedW": 0,
+   "releaseYear": 2019,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": {
+    "min": 35,
+    "max": 50,
+    "default": 50
+   }
+  },
+  {
+   "name": "RX 7600S",
+   "fps": {
+    "1080": 60.3,
+    "1440": 41.1,
+    "2160": 21.8
+   },
+   "raster": 9800,
+   "rayTracing": 7000,
+   "render": 4403,
+   "renderSource": "blender",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 100,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": null
+  },
+  {
+   "name": "RX 6800M",
+   "fps": {
+    "1080": 80.0,
+    "1440": 54.5,
+    "2160": 28.9
+   },
+   "raster": 13000,
+   "rayTracing": 9000,
+   "render": 6201,
+   "renderSource": "blender",
+   "vramGb": 12,
+   "pcieLanes": 16,
+   "boardPowerW": 100,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": null
+  },
+  {
+   "name": "RX 6700M",
+   "fps": {
+    "1080": 68.9,
+    "1440": 46.9,
+    "2160": 24.9
+   },
+   "raster": 11200,
+   "rayTracing": 7500,
+   "render": 6720,
+   "renderSource": "est",
+   "vramGb": 10,
+   "pcieLanes": 16,
+   "boardPowerW": 100,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": null
+  },
+  {
+   "name": "RX 6600M",
+   "fps": {
+    "1080": 60.3,
+    "1440": 41.1,
+    "2160": 21.8
+   },
+   "raster": 9800,
+   "rayTracing": 6500,
+   "render": 5880,
+   "renderSource": "est",
+   "vramGb": 8,
+   "pcieLanes": 16,
+   "boardPowerW": 100,
+   "psuRecommendedW": 0,
+   "releaseYear": 2021,
+   "integrated": false,
+   "source": "est",
+   "mobile": true,
+   "tgp": null
+  },
+  {
+   "name": "Radeon 890M",
+   "fps": {
+    "1080": 27.7,
+    "1440": 16.0,
+    "2160": 6.0
+   },
+   "raster": 4500,
+   "rayTracing": null,
+   "render": 1410,
+   "renderSource": "blender",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2024,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Radeon 880M",
+   "fps": {
+    "1080": 24.6,
+    "1440": 14.2,
+    "2160": 5.3
+   },
+   "raster": 4000,
+   "rayTracing": null,
+   "render": 844,
+   "renderSource": "blender",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2024,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Radeon 780M",
+   "fps": {
+    "1080": 22.1,
+    "1440": 12.8,
+    "2160": 4.8
+   },
+   "raster": 3600,
+   "rayTracing": null,
+   "render": 1113,
+   "renderSource": "blender",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Radeon 760M",
+   "fps": {
+    "1080": 18.4,
+    "1440": 10.7,
+    "2160": 4.0
+   },
+   "raster": 3000,
+   "rayTracing": null,
+   "render": 955,
+   "renderSource": "blender",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Radeon 680M",
+   "fps": {
+    "1080": 18.4,
+    "1440": 10.7,
+    "2160": 4.0
+   },
+   "raster": 3000,
+   "rayTracing": null,
+   "render": 1500,
+   "renderSource": "est",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2022,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Arc 140V",
+   "fps": {
+    "1080": 24.6,
+    "1440": 14.2,
+    "2160": 5.3
+   },
+   "raster": 4000,
+   "rayTracing": null,
+   "render": 2933,
+   "renderSource": "blender",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2024,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Arc 130V",
+   "fps": {
+    "1080": 20.9,
+    "1440": 12.1,
+    "2160": 4.5
+   },
+   "raster": 3400,
+   "rayTracing": null,
+   "render": 2729,
+   "renderSource": "blender",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2024,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Arc Graphics",
+   "fps": {
+    "1080": 19.7,
+    "1440": 11.4,
+    "2160": 4.3
+   },
+   "raster": 3200,
+   "rayTracing": null,
+   "render": 2396,
+   "renderSource": "blender",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2023,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
+  },
+  {
+   "name": "Iris Xe Graphics",
+   "fps": {
+    "1080": 11.1,
+    "1440": 6.4,
+    "2160": 2.4
+   },
+   "raster": 1800,
+   "rayTracing": null,
+   "render": 900,
+   "renderSource": "est",
+   "vramGb": 2,
+   "pcieLanes": 16,
+   "boardPowerW": 0,
+   "psuRecommendedW": 0,
+   "releaseYear": 2020,
+   "integrated": true,
+   "source": "est",
+   "mobile": false,
+   "tgp": null
   }
  ]
 }

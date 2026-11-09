@@ -3,7 +3,7 @@
 import { useI18n } from "@/i18n/client";
 
 import {
-  CPUS, GPUS, psuNeeded, resolveMachine, SOCKET_MEMORY, specToInput,
+  CPUS, GPUS, isLaptop, psuNeeded, resolveMachine, SOCKET_MEMORY, specToInput,
   type Drive, type MachineSpec, type PartKind, type RamKit,
 } from "@f2m/shared";
 import { ChevronDown, Plus, X } from "lucide-react";
@@ -95,28 +95,67 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
   const setRam = (i: number, patch: Partial<RamKit>) => set({ ram: spec.ram.map((k, j) => (j === i ? { ...k, ...patch } : k)) });
   const setDrive = (i: number, patch: Partial<Drive>) =>
     set({ drives: spec.drives.map((d, j) => (j === i ? { ...d, ...patch } : patch.isBoot ? { ...d, isBoot: false } : d)) });
-  const sockets = [...new Set(CPUS.map((c) => c.socket))];
+  // laptop: chỉ CPU / card laptop và đồ họa tích hợp; máy bàn: không có bản laptop
+  const laptop = isLaptop(spec);
+  const cpuList = CPUS.filter((c) => !!c.mobile === laptop || c.name === spec.cpu);
+  const gpuList = GPUS.filter((g) => (laptop ? g.mobile || g.integrated : !g.mobile) || g.name === spec.gpu);
+  const sockets = [...new Set(cpuList.map((c) => c.socket))];
+  const cpuGroups: [string, (c: (typeof CPUS)[number]) => boolean][] = laptop
+    ? [["Intel", (c) => c.name.startsWith("Core")], ["AMD", (c) => c.name.startsWith("Ryzen")]]
+    : sockets.map((s) => [`${s} · ${SOCKET_MEMORY[s]}`, (c) => c.socket === s]);
   const gpuGroups: [string, (g: (typeof GPUS)[number]) => boolean][] = [
-    ["NVIDIA", (g) => /^(RTX|GTX)/.test(g.name)], ["AMD", (g) => g.name.startsWith("RX")],
-    ["Intel", (g) => g.name.startsWith("Arc")], [T.other, (g) => g.integrated],
+    ["NVIDIA", (g) => !g.integrated && /^(RTX|GTX)/.test(g.name)], ["AMD", (g) => !g.integrated && g.name.startsWith("RX")],
+    ["Intel", (g) => !g.integrated && g.name.startsWith("Arc")], [T.other, (g) => g.integrated],
   ];
   const ramType = SOCKET_MEMORY[cfg.cpu.socket];
+  const tgp = cfg.gpu.tgp;
+  /** Đổi loại máy: giữ RAM / ổ / màn hình; CPU / card không hợp loại thì đổi sang mẫu gần sức nhất của loại kia */
+  const switchType = (toLaptop: boolean) => {
+    if (toLaptop === laptop) return;
+    const near = <T extends { name: string }>(list: T[], score: (x: T) => number, cur: number) =>
+      list.reduce((a, b) => (Math.abs(score(b) - cur) < Math.abs(score(a) - cur) ? b : a)).name;
+    const cpus = CPUS.filter((c) => !!c.mobile === toLaptop), gpus = GPUS.filter((g) => (toLaptop ? g.mobile : !g.mobile && !g.integrated));
+    const cpu = cpus.some((c) => c.name === spec.cpu) ? spec.cpu : near(cpus, (c) => c.gaming, cfg.cpu.gaming);
+    const gpu = gpus.some((g) => g.name === spec.gpu) || cfg.gpu.integrated ? spec.gpu : near(gpus, (g) => g.raster, cfg.gpu.raster);
+    onChange({
+      ...spec, cpu, gpu, formFactor: toLaptop ? "laptop" : "desktop", gpuTgpW: null, laptopModel: toLaptop ? spec.laptopModel ?? null : null,
+      ram: spec.ram.map((k) => ({ ...k, formFactor: toLaptop ? "sodimm" : "dimm" })),
+    });
+  };
 
   return (
     <div className="cfg">
+      <Section title={T.machineType} sub={laptop ? T.laptopNote : undefined} canSell={false}>
+        <div className="segmented" role="group" aria-label={T.machineType}>
+          <button type="button" aria-pressed={!laptop} disabled={locked} onClick={() => switchType(false)}>{T.desktop}</button>
+          <button type="button" aria-pressed={laptop} disabled={locked} onClick={() => switchType(true)}>{T.laptop}</button>
+        </div>
+        {laptop && <TextField label={T.laptopModel} value={spec.laptopModel ?? ""} placeholder={T.laptopModelPh} disabled={locked}
+          onCommit={(v) => set({ laptopModel: v || null })} />}
+      </Section>
+
       <Section title="CPU" sub={`${cfg.cpu.socket} · ${ramType} · ${cfg.cpu.powerW} W`} part={inUse("cpu")[0]} canSell={canSell}>
         <Select label="CPU" value={spec.cpu} disabled={locked} wide onChange={(v) => set({ cpu: v })}>
-          {sockets.map((s) => <optgroup key={s} label={`${s} · ${SOCKET_MEMORY[s]}`}>{CPUS.filter((c) => c.socket === s).map((c) => <option key={c.name}>{c.name}</option>)}</optgroup>)}
+          {cpuGroups.map(([g, f]) => <optgroup key={g} label={g}>{cpuList.filter(f).map((c) => <option key={c.name}>{c.name}</option>)}</optgroup>)}
         </Select>
       </Section>
 
       <Section title={T.gpu} sub={cfg.gpu.integrated ? T.sharedRam : `${cfg.gpu.vramGb} GB · PCIe x${cfg.gpu.pcieLanes} · ${cfg.gpu.boardPowerW} W`} part={inUse("gpu")[0]} canSell={canSell}>
-        <Select label={T.gpu} value={spec.gpu} disabled={locked} wide onChange={(v) => set({ gpu: v })}>
-          {gpuGroups.map(([g, f]) => <optgroup key={g} label={g}>{GPUS.filter(f).map((x) => <option key={x.name}>{x.name}</option>)}</optgroup>)}
+        <Select label={T.gpu} value={spec.gpu} disabled={locked} wide onChange={(v) => set({ gpu: v, gpuTgpW: null })}>
+          {gpuGroups.map(([g, f]) => <optgroup key={g} label={g}>{gpuList.filter(f).map((x) => <option key={x.name}>{x.name}</option>)}</optgroup>)}
         </Select>
       </Section>
 
-      <Section title={t.listing.kind.mainboard} sub={T.mainboardSub} part={inUse("mainboard")[0]} canSell={canSell}>
+      {laptop && tgp && (
+        <Section title={T.tgp} sub={T.tgpSub(tgp.min, tgp.max)} canSell={false}>
+          <Select label={T.tgp} value={spec.gpuTgpW ?? tgp.default} disabled={locked} onChange={(v) => set({ gpuTgpW: Number(v) === tgp.default ? null : Number(v) })}>
+            {[...new Set([...Array.from({ length: Math.floor((tgp.max - tgp.min) / 5) + 1 }, (_, i) => tgp.min + i * 5), tgp.max, tgp.default, spec.gpuTgpW ?? tgp.default])]
+              .sort((a, b) => b - a).map((w) => <option key={w} value={w}>{w === tgp.default ? T.tgpDefault(w) : `${w} W`}</option>)}
+          </Select>
+        </Section>
+      )}
+
+      {!laptop && <Section title={t.listing.kind.mainboard} sub={T.mainboardSub} part={inUse("mainboard")[0]} canSell={canSell}>
         <TextField label={T.mbModel} value={spec.mainboard.model ?? ""} placeholder={T.mbModelPh} disabled={locked}
           onCommit={(v) => set({ mainboard: { ...spec.mainboard, model: v || null } })} />
         <TextField label="Chipset" value={spec.mainboard.chipset ?? ""} placeholder="B660" disabled={locked} width={88}
@@ -124,7 +163,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         <Select label={T.gpuSlot} value={spec.mainboard.pcieGen} disabled={locked} onChange={(v) => set({ mainboard: { ...spec.mainboard, pcieGen: Number(v) as 3 | 4 | 5 } })}>
           {[3, 4, 5].map((g) => <option key={g} value={g}>{T.pcieSlot(g)}</option>)}
         </Select>
-      </Section>
+      </Section>}
 
       {spec.ram.map((k, i) => (
         <Section key={`ram${i}`} title={spec.ram.length > 1 ? T.ramN(i + 1) : "RAM"} part={inUse("ram")[i]} canSell={canSell}
@@ -152,7 +191,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         </Section>
       ))}
       {!locked && spec.ram.length < 4 && (
-        <button type="button" className="add-btn" onClick={() => set({ ram: [...spec.ram, { sticks: 2, perStickGb: 8, type: ramType === "DDR5" ? "DDR5" : "DDR4", speedMhz: null, model: null, formFactor: "dimm", ecc: false, registered: false }] })}>
+        <button type="button" className="add-btn" onClick={() => set({ ram: [...spec.ram, { sticks: 2, perStickGb: 8, type: ramType === "DDR5" ? "DDR5" : "DDR4", speedMhz: null, model: null, formFactor: laptop ? "sodimm" : "dimm", ecc: false, registered: false }] })}>
           <Plus aria-hidden="true" /> {T.addRam}
         </button>
       )}
@@ -180,7 +219,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         </button>
       )}
 
-      <Section title={T.psu} sub={T.psuSub(psuNeeded(cfg))} part={inUse("psu")[0]} canSell={canSell}>
+      {!laptop && <Section title={T.psu} sub={T.psuSub(psuNeeded(cfg))} part={inUse("psu")[0]} canSell={canSell}>
         <Select label={T.psuWatt} value={spec.psu.wattage} disabled={locked} onChange={(v) => set({ psu: { ...spec.psu, wattage: Number(v) } })}>
           {[...new Set([...PSU_OPTIONS, spec.psu.wattage])].sort((a, b) => a - b).map((w) => <option key={w} value={w}>{w} W</option>)}
         </Select>
@@ -189,7 +228,7 @@ export function ConfigEditor({ spec, parts, onChange, locked, canSell }: {
         </Select>
         <TextField label={T.psuModel} value={spec.psu.model ?? ""} placeholder={T.optionalModel} disabled={locked}
           onCommit={(v) => set({ psu: { ...spec.psu, model: v || null } })} />
-      </Section>
+      </Section>}
 
       <Section title={T.screen} canSell={false}>
         <Select label={T.screen} value={spec.resolution} disabled={locked} onChange={(v) => set({ resolution: Number(v) as MachineSpec["resolution"] })}>

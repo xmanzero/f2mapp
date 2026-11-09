@@ -10,7 +10,7 @@ export interface ProfileMachine {
 }
 export interface PublicProfile {
   user: { id: string; handle: string; displayName: string; province: string | null; joinedAt: string };
-  me: boolean; following: boolean; followers: number; followingCount: number; rank: { rank: number; of: number } | null;
+  me: boolean; following: boolean; followers: number; followingCount: number; rank: { rank: number; of: number; laptop: boolean } | null;
   machines: ProfileMachine[];
   listings: Listing[];
 }

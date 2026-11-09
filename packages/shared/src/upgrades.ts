@@ -36,7 +36,7 @@ function cpuSuggestion(cfg: MachineConfig, lang: Lang): UpgradeSuggestion | null
   if (b.side !== "cpu" || b.loss <= 0.15) return null;
   // CPU nuôi được ≥ 90% FPS của card thì coi là hết nghẽn
   const enough = (cpu: (typeof CPUS)[number]) => bottleneck({ ...cfg, cpu }).loss <= 0.1 || bottleneck({ ...cfg, cpu }).side === "gpu";
-  const better = CPUS.filter((c) => c.gaming > cfg.cpu.gaming).sort((a, b2) => a.gaming - b2.gaming);
+  const better = CPUS.filter((c) => !c.mobile && c.gaming > cfg.cpu.gaming).sort((a, b2) => a.gaming - b2.gaming);
   const sameSocket = better.filter((c) => c.socket === cfg.cpu.socket);
   const pick = sameSocket.find(enough) ?? better.find(enough) ?? sameSocket.at(-1);
   if (!pick) return null;
@@ -49,7 +49,7 @@ function cpuSuggestion(cfg: MachineConfig, lang: Lang): UpgradeSuggestion | null
 
 function gpuSuggestion(cfg: MachineConfig, lang: Lang): UpgradeSuggestion | null {
   const fps = estimateFps(cfg);
-  const candidates = GPUS.filter((g) => !g.integrated && g.raster > cfg.gpu.raster)
+  const candidates = GPUS.filter((g) => !g.integrated && !g.mobile && g.raster > cfg.gpu.raster)
     .map((gpu) => ({ gpu, fps: estimateFps({ ...cfg, gpu }) }))
     .filter((x) => x.fps >= fps * GPU_STEP)
     .sort((a, b) => a.gpu.raster - b.gpu.raster);
@@ -67,7 +67,8 @@ function gpuSuggestion(cfg: MachineConfig, lang: Lang): UpgradeSuggestion | null
 export function suggestUpgrades(cfg: MachineConfig, lang: Lang = "vi"): UpgradeSuggestion[] {
   const out: UpgradeSuggestion[] = [];
   const need = psuNeeded(cfg);
-  if (cfg.psuW < need)
+  // laptop: CPU, card, nguồn không thay được — chỉ gợi ý RAM và ổ cứng
+  if (!cfg.laptop && cfg.psuW < need)
     out.push(build("psu", tr(lang, `Thay nguồn ${need} W`, `Get a ${need} W PSU`), tr(lang, `Nguồn ${cfg.psuW} W thiếu cho cấu hình hiện tại.`, `A ${cfg.psuW} W PSU is too weak for this build.`), cfg, { ...cfg, psuW: need }, lang));
   if (cfg.ramChannels === 1 || cfg.ramGb <= 8) {
     const ramGb = cfg.ramGb <= 8 ? 16 : cfg.ramGb;
@@ -77,6 +78,7 @@ export function suggestUpgrades(cfg: MachineConfig, lang: Lang = "vi"): UpgradeS
   }
   if (cfg.storage === "hdd")
     out.push(build("storage", tr(lang, "Chuyển hệ điều hành sang SSD", "Move the OS to an SSD"), tr(lang, "Khởi động và mở ứng dụng nhanh hơn rõ rệt.", "Much faster booting and app launches."), cfg, { ...cfg, storage: "sata" }, lang));
+  if (cfg.laptop) return out;
   const cpu = cpuSuggestion(cfg, lang);
   const gpu = gpuSuggestion(cfg, lang);
   // CPU nghẽn thì gợi ý CPU trước card

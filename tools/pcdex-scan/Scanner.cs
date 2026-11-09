@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
@@ -22,7 +23,58 @@ namespace PcdexScan
             r.Ram = Try(ReadRam) ?? new List<RamInfo>();
             r.Disks = Try(ReadDisks) ?? new List<DiskInfo>();
             r.Display = Try(ReadDisplay);
+            r.Chassis = Try(ReadChassis);
+            r.System = Try(ReadSystem);
+            Try(() => ReadTgp(r.Gpus));
             return r;
+        }
+
+        // ---------- laptop ----------
+        /// <summary>Laptop nếu vỏ máy là loại xách tay (ChassisTypes 8–14, 30–32) hoặc có pin</summary>
+        static string ReadChassis()
+        {
+            var portable = new HashSet<int> { 8, 9, 10, 11, 12, 14, 30, 31, 32 };
+            var types = Query("SELECT ChassisTypes FROM Win32_SystemEnclosure")
+                .SelectMany(o => (o["ChassisTypes"] as ushort[]) ?? new ushort[0]).Select(x => (int)x).ToList();
+            if (types.Any(portable.Contains)) return "laptop";
+            if (Query("SELECT Name FROM Win32_Battery").Any()) return "laptop";
+            return types.Count > 0 ? "desktop" : null;
+        }
+
+        /// <summary>Hãng + model máy (tên laptop, VD "ASUS TUF Gaming A15 FA507NV") — không có số serial</summary>
+        static SystemInfo ReadSystem()
+        {
+            var c = Query("SELECT Manufacturer, Model FROM Win32_ComputerSystem").FirstOrDefault();
+            if (c == null) return null;
+            var model = Clean(Str(c, "Model"));
+            return string.IsNullOrEmpty(model) ? null : new SystemInfo { Manufacturer = Clean(Str(c, "Manufacturer")) ?? "", Model = model };
+        }
+
+        /// <summary>
+        /// Card NVIDIA: giới hạn công suất tối đa từ nvidia-smi (có sẵn khi cài driver). Với laptop đây là TGP (gồm Dynamic Boost).
+        /// Không có nvidia-smi / không đọc được thì bỏ qua (dùng mức phổ biến của mẫu).
+        /// </summary>
+        static void ReadTgp(List<GpuInfo> gpus)
+        {
+            if (!gpus.Any(g => g.Name != null && g.Name.IndexOf("NVIDIA", StringComparison.OrdinalIgnoreCase) >= 0)) return;
+            var exe = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "nvidia-smi.exe");
+            if (!File.Exists(exe)) return;
+            var psi = new System.Diagnostics.ProcessStartInfo(exe, "--query-gpu=name,power.max_limit --format=csv,noheader,nounits")
+            { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true };
+            using (var p = System.Diagnostics.Process.Start(psi))
+            {
+                var outp = p.StandardOutput.ReadToEnd();
+                if (!p.WaitForExit(5000)) { try { p.Kill(); } catch { } return; }
+                foreach (var line in outp.Split('\n'))
+                {
+                    var parts = line.Split(',');
+                    if (parts.Length < 2) continue;
+                    var name = parts[0].Trim();
+                    if (!double.TryParse(parts[1].Trim(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var w) || w <= 0) continue;
+                    var g = gpus.FirstOrDefault(x => x.Name != null && x.Name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0);
+                    if (g != null) g.TgpW = Math.Round(w);
+                }
+            }
         }
 
         // ---------- CPU ----------

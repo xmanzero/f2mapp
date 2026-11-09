@@ -1064,6 +1064,876 @@ window.PARTS = {
 "st": "est",
 "mt": "blender"
 }
+},
+{
+"n": "Core i5-10300H",
+"s": "BGA",
+"w": 45,
+"y": 2020,
+"gm": 6200,
+"st": 6800,
+"m": true,
+"mt": 4092,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-10750H",
+"s": "BGA",
+"w": 45,
+"y": 2020,
+"gm": 6600,
+"st": 7000,
+"m": true,
+"mt": 5965,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-11400H",
+"s": "BGA",
+"w": 45,
+"y": 2021,
+"gm": 7600,
+"st": 8200,
+"m": true,
+"mt": 6733,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-11800H",
+"s": "BGA",
+"w": 45,
+"y": 2021,
+"gm": 8000,
+"st": 8500,
+"m": true,
+"mt": 8189,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-1135G7",
+"s": "BGA",
+"w": 28,
+"y": 2020,
+"gm": 5500,
+"st": 7500,
+"m": true,
+"mt": 3115,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-1165G7",
+"s": "BGA",
+"w": 28,
+"y": 2020,
+"gm": 5800,
+"st": 8000,
+"m": true,
+"mt": 3486,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-1235U",
+"s": "BGA",
+"w": 15,
+"y": 2022,
+"gm": 6000,
+"st": 8200,
+"m": true,
+"mt": 4018,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-1255U",
+"s": "BGA",
+"w": 15,
+"y": 2022,
+"gm": 6300,
+"st": 8600,
+"m": true,
+"mt": 4819,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-1335U",
+"s": "BGA",
+"w": 15,
+"y": 2023,
+"gm": 6200,
+"st": 8500,
+"m": true,
+"mt": 6375,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "est"
+}
+},
+{
+"n": "Core i7-1355U",
+"s": "BGA",
+"w": 15,
+"y": 2023,
+"gm": 6500,
+"st": 8800,
+"m": true,
+"mt": 5819,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-12450H",
+"s": "BGA",
+"w": 45,
+"y": 2023,
+"gm": 8000,
+"st": 8800,
+"m": true,
+"mt": 7140,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-12500H",
+"s": "BGA",
+"w": 45,
+"y": 2022,
+"gm": 8600,
+"st": 9500,
+"m": true,
+"mt": 9083,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-12650H",
+"s": "BGA",
+"w": 45,
+"y": 2023,
+"gm": 8800,
+"st": 9600,
+"m": true,
+"mt": 9804,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-12700H",
+"s": "BGA",
+"w": 45,
+"y": 2022,
+"gm": 9200,
+"st": 10000,
+"m": true,
+"mt": 11033,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i9-12900H",
+"s": "BGA",
+"w": 45,
+"y": 2022,
+"gm": 9600,
+"st": 10500,
+"m": true,
+"mt": 11224,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-13420H",
+"s": "BGA",
+"w": 45,
+"y": 2023,
+"gm": 8400,
+"st": 9400,
+"m": true,
+"mt": 7752,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-13500H",
+"s": "BGA",
+"w": 45,
+"y": 2023,
+"gm": 9000,
+"st": 10000,
+"m": true,
+"mt": 9907,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-13620H",
+"s": "BGA",
+"w": 45,
+"y": 2023,
+"gm": 9400,
+"st": 10400,
+"m": true,
+"mt": 10100,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-13700H",
+"s": "BGA",
+"w": 45,
+"y": 2023,
+"gm": 9600,
+"st": 10600,
+"m": true,
+"mt": 11493,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i5-13450HX",
+"s": "BGA",
+"w": 55,
+"y": 2023,
+"gm": 9400,
+"st": 10000,
+"m": true,
+"mt": 13279,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-13650HX",
+"s": "BGA",
+"w": 55,
+"y": 2023,
+"gm": 10600,
+"st": 10800,
+"m": true,
+"mt": 13650,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i9-13900HX",
+"s": "BGA",
+"w": 55,
+"y": 2023,
+"gm": 11800,
+"st": 11800,
+"m": true,
+"mt": 23601,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-14650HX",
+"s": "BGA",
+"w": 55,
+"y": 2024,
+"gm": 11000,
+"st": 11000,
+"m": true,
+"mt": 18184,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i7-14700HX",
+"s": "BGA",
+"w": 55,
+"y": 2024,
+"gm": 11400,
+"st": 11200,
+"m": true,
+"mt": 21479,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core i9-14900HX",
+"s": "BGA",
+"w": 55,
+"y": 2024,
+"gm": 12200,
+"st": 12200,
+"m": true,
+"mt": 21429,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 5 125U",
+"s": "BGA",
+"w": 15,
+"y": 2023,
+"gm": 6200,
+"st": 8800,
+"m": true,
+"mt": 5230,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 7 155U",
+"s": "BGA",
+"w": 15,
+"y": 2023,
+"gm": 6500,
+"st": 9000,
+"m": true,
+"mt": 5454,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 5 125H",
+"s": "BGA",
+"w": 28,
+"y": 2023,
+"gm": 8200,
+"st": 9500,
+"m": true,
+"mt": 9361,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 7 155H",
+"s": "BGA",
+"w": 28,
+"y": 2023,
+"gm": 8800,
+"st": 10000,
+"m": true,
+"mt": 9832,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 9 185H",
+"s": "BGA",
+"w": 45,
+"y": 2023,
+"gm": 9200,
+"st": 10400,
+"m": true,
+"mt": 13244,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 5 226V",
+"s": "BGA",
+"w": 17,
+"y": 2024,
+"gm": 7600,
+"st": 9600,
+"m": true,
+"mt": 6572,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 7 258V",
+"s": "BGA",
+"w": 17,
+"y": 2024,
+"gm": 8000,
+"st": 10000,
+"m": true,
+"mt": 8060,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 5 225H",
+"s": "BGA",
+"w": 28,
+"y": 2025,
+"gm": 8800,
+"st": 10200,
+"m": true,
+"mt": 12661,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 7 255H",
+"s": "BGA",
+"w": 28,
+"y": 2025,
+"gm": 9400,
+"st": 10800,
+"m": true,
+"mt": 13804,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 7 255HX",
+"s": "BGA",
+"w": 55,
+"y": 2025,
+"gm": 11800,
+"st": 12000,
+"m": true,
+"mt": 25553,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Core Ultra 9 275HX",
+"s": "BGA",
+"w": 55,
+"y": 2025,
+"gm": 12500,
+"st": 12500,
+"m": true,
+"mt": 29355,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 5500U",
+"s": "BGA",
+"w": 15,
+"y": 2021,
+"gm": 5500,
+"st": 7000,
+"m": true,
+"mt": 6029,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 5700U",
+"s": "BGA",
+"w": 15,
+"y": 2021,
+"gm": 5800,
+"st": 7200,
+"m": true,
+"mt": 7509,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 7530U",
+"s": "BGA",
+"w": 15,
+"y": 2023,
+"gm": 6200,
+"st": 8200,
+"m": true,
+"mt": 5151,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 7730U",
+"s": "BGA",
+"w": 15,
+"y": 2023,
+"gm": 6400,
+"st": 8400,
+"m": true,
+"mt": 8233,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 4600H",
+"s": "BGA",
+"w": 45,
+"y": 2020,
+"gm": 6200,
+"st": 6800,
+"m": true,
+"mt": 6679,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 4800H",
+"s": "BGA",
+"w": 45,
+"y": 2020,
+"gm": 6600,
+"st": 7000,
+"m": true,
+"mt": 9209,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 5600H",
+"s": "BGA",
+"w": 45,
+"y": 2021,
+"gm": 7600,
+"st": 8400,
+"m": true,
+"mt": 7747,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 5800H",
+"s": "BGA",
+"w": 45,
+"y": 2021,
+"gm": 8000,
+"st": 8600,
+"m": true,
+"mt": 9774,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 9 5900HX",
+"s": "BGA",
+"w": 45,
+"y": 2021,
+"gm": 8400,
+"st": 9000,
+"m": true,
+"mt": 10247,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 6600H",
+"s": "BGA",
+"w": 45,
+"y": 2022,
+"gm": 8000,
+"st": 8800,
+"m": true,
+"mt": 7882,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 6800H",
+"s": "BGA",
+"w": 45,
+"y": 2022,
+"gm": 8600,
+"st": 9200,
+"m": true,
+"mt": 10213,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 7535HS",
+"s": "BGA",
+"w": 35,
+"y": 2023,
+"gm": 8000,
+"st": 8800,
+"m": true,
+"mt": 8333,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 7735HS",
+"s": "BGA",
+"w": 35,
+"y": 2023,
+"gm": 8600,
+"st": 9200,
+"m": true,
+"mt": 11132,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 7640HS",
+"s": "BGA",
+"w": 35,
+"y": 2023,
+"gm": 9000,
+"st": 10000,
+"m": true,
+"mt": 10898,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 7840HS",
+"s": "BGA",
+"w": 35,
+"y": 2023,
+"gm": 9600,
+"st": 10400,
+"m": true,
+"mt": 16536,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 9 7940HS",
+"s": "BGA",
+"w": 35,
+"y": 2023,
+"gm": 9800,
+"st": 10600,
+"m": true,
+"mt": 14890,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 5 8645HS",
+"s": "BGA",
+"w": 35,
+"y": 2024,
+"gm": 9200,
+"st": 10000,
+"m": true,
+"mt": 10118,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 7 8845HS",
+"s": "BGA",
+"w": 35,
+"y": 2024,
+"gm": 9800,
+"st": 10600,
+"m": true,
+"mt": 13900,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 9 7945HX",
+"s": "BGA",
+"w": 55,
+"y": 2023,
+"gm": 12500,
+"st": 11800,
+"m": true,
+"mt": 31183,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen 9 8945HX",
+"s": "BGA",
+"w": 55,
+"y": 2025,
+"gm": 12600,
+"st": 12000,
+"m": true,
+"mt": 32062,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen AI 7 350",
+"s": "BGA",
+"w": 28,
+"y": 2025,
+"gm": 9400,
+"st": 10800,
+"m": true,
+"mt": 12529,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
+},
+{
+"n": "Ryzen AI 9 HX 370",
+"s": "BGA",
+"w": 28,
+"y": 2024,
+"gm": 10000,
+"st": 11200,
+"m": true,
+"mt": 19330,
+"src": {
+"gm": "est",
+"st": "est",
+"mt": "blender"
+}
 }
 ],
 "gpus": [
@@ -2668,6 +3538,761 @@ window.PARTS = {
 "y": null,
 "src": "est",
 "rsrc": "est"
+},
+{
+"n": "RTX 5090 Laptop",
+"f": [
+129.2,
+88.0,
+46.6
+],
+"r": 21000,
+"rt": 23000,
+"rd": 36631,
+"v": 24,
+"lanes": 16,
+"tbp": 175,
+"rec": 0,
+"y": 2025,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 95,
+"max": 175,
+"default": 175
+}
+},
+{
+"n": "RTX 5080 Laptop",
+"f": [
+113.8,
+77.5,
+41.1
+],
+"r": 18500,
+"rt": 20000,
+"rd": 30363,
+"v": 16,
+"lanes": 16,
+"tbp": 175,
+"rec": 0,
+"y": 2025,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 80,
+"max": 175,
+"default": 175
+}
+},
+{
+"n": "RTX 5070 Ti Laptop",
+"f": [
+95.3,
+64.9,
+34.4
+],
+"r": 15500,
+"rt": 16000,
+"rd": 23214,
+"v": 12,
+"lanes": 16,
+"tbp": 140,
+"rec": 0,
+"y": 2025,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 60,
+"max": 140,
+"default": 140
+}
+},
+{
+"n": "RTX 5070 Laptop",
+"f": [
+76.9,
+52.4,
+27.8
+],
+"r": 12500,
+"rt": 13000,
+"rd": 18640,
+"v": 8,
+"lanes": 16,
+"tbp": 115,
+"rec": 0,
+"y": 2025,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 50,
+"max": 115,
+"default": 115
+}
+},
+{
+"n": "RTX 5060 Laptop",
+"f": [
+70.7,
+48.2,
+25.5
+],
+"r": 11500,
+"rt": 12000,
+"rd": 16244,
+"v": 8,
+"lanes": 16,
+"tbp": 115,
+"rec": 0,
+"y": 2025,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 45,
+"max": 115,
+"default": 115
+}
+},
+{
+"n": "RTX 5050 Laptop",
+"f": [
+58.4,
+39.8,
+21.1
+],
+"r": 9500,
+"rt": 9500,
+"rd": 13742,
+"v": 8,
+"lanes": 16,
+"tbp": 100,
+"rec": 0,
+"y": 2025,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 50,
+"max": 100,
+"default": 100
+}
+},
+{
+"n": "RTX 4090 Laptop",
+"f": [
+119.9,
+81.7,
+43.3
+],
+"r": 19500,
+"rt": 21000,
+"rd": 31934,
+"v": 16,
+"lanes": 16,
+"tbp": 175,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 80,
+"max": 175,
+"default": 175
+}
+},
+{
+"n": "RTX 4080 Laptop",
+"f": [
+104.5,
+71.2,
+37.7
+],
+"r": 17000,
+"rt": 18000,
+"rd": 25177,
+"v": 12,
+"lanes": 16,
+"tbp": 175,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 60,
+"max": 175,
+"default": 175
+}
+},
+{
+"n": "RTX 4070 Laptop",
+"f": [
+73.8,
+50.3,
+26.6
+],
+"r": 12000,
+"rt": 12500,
+"rd": 16521,
+"v": 8,
+"lanes": 16,
+"tbp": 140,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 35,
+"max": 140,
+"default": 140
+}
+},
+{
+"n": "RTX 4060 Laptop",
+"f": [
+67.7,
+46.1,
+24.4
+],
+"r": 11000,
+"rt": 11500,
+"rd": 15225,
+"v": 8,
+"lanes": 16,
+"tbp": 140,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 35,
+"max": 140,
+"default": 140
+}
+},
+{
+"n": "RTX 4050 Laptop",
+"f": [
+56.6,
+32.8,
+12.3
+],
+"r": 9200,
+"rt": 9500,
+"rd": 11996,
+"v": 6,
+"lanes": 16,
+"tbp": 140,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 35,
+"max": 140,
+"default": 140
+}
+},
+{
+"n": "RTX 3080 Ti Laptop",
+"f": [
+86.1,
+58.7,
+31.1
+],
+"r": 14000,
+"rt": 14500,
+"rd": 13931,
+"v": 16,
+"lanes": 16,
+"tbp": 175,
+"rec": 0,
+"y": 2022,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 80,
+"max": 175,
+"default": 175
+}
+},
+{
+"n": "RTX 3080 Laptop",
+"f": [
+76.9,
+52.4,
+27.8
+],
+"r": 12500,
+"rt": 13000,
+"rd": 13297,
+"v": 8,
+"lanes": 16,
+"tbp": 165,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 80,
+"max": 165,
+"default": 150
+}
+},
+{
+"n": "RTX 3070 Ti Laptop",
+"f": [
+72.6,
+49.4,
+26.2
+],
+"r": 11800,
+"rt": 12000,
+"rd": 13153,
+"v": 8,
+"lanes": 16,
+"tbp": 150,
+"rec": 0,
+"y": 2022,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 80,
+"max": 150,
+"default": 150
+}
+},
+{
+"n": "RTX 3070 Laptop",
+"f": [
+66.4,
+45.3,
+24.0
+],
+"r": 10800,
+"rt": 11000,
+"rd": 12646,
+"v": 8,
+"lanes": 16,
+"tbp": 125,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 80,
+"max": 125,
+"default": 125
+}
+},
+{
+"n": "RTX 3060 Laptop",
+"f": [
+55.4,
+32.1,
+12.0
+],
+"r": 9000,
+"rt": 9000,
+"rd": 9896,
+"v": 6,
+"lanes": 16,
+"tbp": 130,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 60,
+"max": 130,
+"default": 130
+}
+},
+{
+"n": "RTX 3050 Ti Laptop",
+"f": [
+33.8,
+19.6,
+7.3
+],
+"r": 5500,
+"rt": 5000,
+"rd": 5911,
+"v": 4,
+"lanes": 16,
+"tbp": 80,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 35,
+"max": 80,
+"default": 80
+}
+},
+{
+"n": "RTX 3050 Laptop",
+"f": [
+32.0,
+18.5,
+6.9
+],
+"r": 5200,
+"rt": 4800,
+"rd": 5356,
+"v": 4,
+"lanes": 16,
+"tbp": 80,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": {
+"min": 35,
+"max": 80,
+"default": 80
+}
+},
+{
+"n": "RTX 2060 Laptop",
+"f": [
+43.0,
+24.9,
+9.3
+],
+"r": 7000,
+"rt": 6500,
+"rd": 8050,
+"v": 6,
+"lanes": 16,
+"tbp": 115,
+"rec": 0,
+"y": 2019,
+"src": "est",
+"rsrc": "est",
+"m": true,
+"tgp": {
+"min": 80,
+"max": 115,
+"default": 115
+}
+},
+{
+"n": "GTX 1650 Ti Laptop",
+"f": [
+27.1,
+15.7,
+5.9
+],
+"r": 4400,
+"rt": null,
+"rd": 1980,
+"v": 4,
+"lanes": 16,
+"tbp": 55,
+"rec": 0,
+"y": 2020,
+"src": "est",
+"rsrc": "est",
+"m": true,
+"tgp": {
+"min": 50,
+"max": 55,
+"default": 55
+}
+},
+{
+"n": "GTX 1650 Laptop",
+"f": [
+24.6,
+14.2,
+5.3
+],
+"r": 4000,
+"rt": null,
+"rd": 1800,
+"v": 4,
+"lanes": 16,
+"tbp": 50,
+"rec": 0,
+"y": 2019,
+"src": "est",
+"rsrc": "est",
+"m": true,
+"tgp": {
+"min": 35,
+"max": 50,
+"default": 50
+}
+},
+{
+"n": "RX 7600S",
+"f": [
+60.3,
+41.1,
+21.8
+],
+"r": 9800,
+"rt": 7000,
+"rd": 4403,
+"v": 8,
+"lanes": 16,
+"tbp": 100,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": null
+},
+{
+"n": "RX 6800M",
+"f": [
+80.0,
+54.5,
+28.9
+],
+"r": 13000,
+"rt": 9000,
+"rd": 6201,
+"v": 12,
+"lanes": 16,
+"tbp": 100,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "blender",
+"m": true,
+"tgp": null
+},
+{
+"n": "RX 6700M",
+"f": [
+68.9,
+46.9,
+24.9
+],
+"r": 11200,
+"rt": 7500,
+"rd": 6720,
+"v": 10,
+"lanes": 16,
+"tbp": 100,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "est",
+"m": true,
+"tgp": null
+},
+{
+"n": "RX 6600M",
+"f": [
+60.3,
+41.1,
+21.8
+],
+"r": 9800,
+"rt": 6500,
+"rd": 5880,
+"v": 8,
+"lanes": 16,
+"tbp": 100,
+"rec": 0,
+"y": 2021,
+"src": "est",
+"rsrc": "est",
+"m": true,
+"tgp": null
+},
+{
+"n": "Radeon 890M",
+"f": [
+27.7,
+16.0,
+6.0
+],
+"r": 4500,
+"rt": null,
+"rd": 1410,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2024,
+"src": "est",
+"rsrc": "blender",
+"ig": true
+},
+{
+"n": "Radeon 880M",
+"f": [
+24.6,
+14.2,
+5.3
+],
+"r": 4000,
+"rt": null,
+"rd": 844,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2024,
+"src": "est",
+"rsrc": "blender",
+"ig": true
+},
+{
+"n": "Radeon 780M",
+"f": [
+22.1,
+12.8,
+4.8
+],
+"r": 3600,
+"rt": null,
+"rd": 1113,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"ig": true
+},
+{
+"n": "Radeon 760M",
+"f": [
+18.4,
+10.7,
+4.0
+],
+"r": 3000,
+"rt": null,
+"rd": 955,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"ig": true
+},
+{
+"n": "Radeon 680M",
+"f": [
+18.4,
+10.7,
+4.0
+],
+"r": 3000,
+"rt": null,
+"rd": 1500,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2022,
+"src": "est",
+"rsrc": "est",
+"ig": true
+},
+{
+"n": "Arc 140V",
+"f": [
+24.6,
+14.2,
+5.3
+],
+"r": 4000,
+"rt": null,
+"rd": 2933,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2024,
+"src": "est",
+"rsrc": "blender",
+"ig": true
+},
+{
+"n": "Arc 130V",
+"f": [
+20.9,
+12.1,
+4.5
+],
+"r": 3400,
+"rt": null,
+"rd": 2729,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2024,
+"src": "est",
+"rsrc": "blender",
+"ig": true
+},
+{
+"n": "Arc Graphics",
+"f": [
+19.7,
+11.4,
+4.3
+],
+"r": 3200,
+"rt": null,
+"rd": 2396,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2023,
+"src": "est",
+"rsrc": "blender",
+"ig": true
+},
+{
+"n": "Iris Xe Graphics",
+"f": [
+11.1,
+6.4,
+2.4
+],
+"r": 1800,
+"rt": null,
+"rd": 900,
+"v": 2,
+"lanes": 16,
+"tbp": 0,
+"rec": 0,
+"y": 2020,
+"src": "est",
+"rsrc": "est",
+"ig": true
 }
 ]
 };

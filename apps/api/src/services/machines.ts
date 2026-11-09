@@ -1,5 +1,5 @@
 import {
-  badgesFor, benchForSpec, computeScores, measuredRender, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
+  badgesFor, benchForSpec, computeScores, isLaptop, measuredRender, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
   tierOf, VERIFIABLE_KINDS, type BenchDevice, type BenchResult, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
 } from "@f2m/shared";
 import { sql } from "kysely";
@@ -59,7 +59,10 @@ const keyOf = (row: { kind: PartKind; label: string; details: unknown }): string
   }
 };
 
-type MachineRow = { id: string; name: string; is_primary: boolean; ram_gb: number; ram_channels: number; storage: string; pcie_gen: number; psu_w: number; resolution: number; last_scan_at: Date | null; bench: unknown };
+type MachineRow = {
+  id: string; name: string; is_primary: boolean; ram_gb: number; ram_channels: number; storage: string; pcie_gen: number; psu_w: number; resolution: number;
+  last_scan_at: Date | null; bench: unknown; form_factor: "desktop" | "laptop"; gpu_tgp_w: number | null; laptop_model: string | null;
+};
 /** Số đo hiệu năng còn đúng với CPU / card đang lắp */
 const benchOf = (m: MachineRow, spec: MachineSpec) => benchForSpec(m.bench as BenchResult | null, spec);
 /** Cấu hình để tính điểm: điểm render theo số đo đã xác minh của chính máy (nếu có) */
@@ -68,6 +71,7 @@ const configOf = (spec: MachineSpec, bench: unknown) =>
 const summaryOf = (m: MachineRow, cpu: string, gpu: string): MachineInput => ({
   cpu, gpu, ramGb: m.ram_gb, ramChannels: m.ram_channels as 1 | 2, storage: m.storage as MachineInput["storage"],
   pcieGen: m.pcie_gen as 3 | 4 | 5, psuW: m.psu_w, resolution: m.resolution as MachineInput["resolution"],
+  ...(m.form_factor === "laptop" ? { laptop: true, ...(m.gpu_tgp_w ? { gpuTgpW: m.gpu_tgp_w } : {}) } : {}),
 });
 
 async function partsOf(db: DB, machineId: string) {
@@ -103,6 +107,7 @@ function buildSpec(m: MachineRow, parts: Awaited<ReturnType<typeof partsOf>>) {
     drives: drives.length ? drives : legacy.drives,
     psu: psu ? (psu.details as MachineSpec["psu"]) : legacy.psu,
     resolution: m.resolution as MachineSpec["resolution"],
+    ...(m.form_factor === "laptop" ? { formFactor: "laptop" as const, gpuTgpW: m.gpu_tgp_w, laptopModel: m.laptop_model } : {}),
   };
   return { spec, missing };
 }
@@ -121,7 +126,7 @@ async function materializeLegacy(db: DB, machineId: string, spec: MachineSpec, p
   return wants.length > 0;
 }
 
-const machineCols = ["id", "name", "is_primary", "ram_gb", "ram_channels", "storage", "pcie_gen", "psu_w", "resolution", "last_scan_at", "bench"] as const;
+const machineCols = ["id", "name", "is_primary", "ram_gb", "ram_channels", "storage", "pcie_gen", "psu_w", "resolution", "last_scan_at", "bench", "form_factor", "gpu_tgp_w", "laptop_model"] as const;
 
 /** Các máy của người dùng (tối đa 2), kèm linh kiện, trạng thái xác thực và điểm */
 export async function loadMachines(db: DB, userId: string) {
@@ -163,7 +168,12 @@ export async function saveSpec(db: DB, userId: string, machineId: string | null,
   return db.transaction().execute(async (tx) => {
     const t = tx as unknown as DB;
     const input = specToInput(spec);
-    const summary = { ram_gb: input.ramGb, ram_channels: input.ramChannels, storage: input.storage, pcie_gen: input.pcieGen, psu_w: input.psuW, resolution: input.resolution };
+    const laptop = isLaptop(spec);
+    const summary = {
+      ram_gb: input.ramGb, ram_channels: input.ramChannels, storage: input.storage, pcie_gen: input.pcieGen, psu_w: input.psuW, resolution: input.resolution,
+      form_factor: laptop ? "laptop" as const : "desktop" as const,
+      gpu_tgp_w: laptop ? spec.gpuTgpW ?? null : null, laptop_model: laptop ? spec.laptopModel ?? null : null,
+    };
     let id = machineId;
     if (id) {
       const own = await t.selectFrom("machines").select("id").where("id", "=", id).where("owner_id", "=", userId).executeTakeFirst();
@@ -314,7 +324,7 @@ export async function leaderboard(db: DB, limit = 100) {
   const rows = await db.selectFrom("machines as m")
     .innerJoin("users as u", "u.id", "m.owner_id")
     .innerJoin("machine_scores as s", (j) => j.onRef("s.machine_id", "=", "m.id").on("s.scale_version", "=", SCALE_VERSION))
-    .select(["u.id as userId", "u.handle", "u.display_name", "u.province", "m.id as machineId", "m.ram_gb", "m.resolution", "m.bench", "s.power", "s.tier"])
+    .select(["u.id as userId", "u.handle", "u.display_name", "u.province", "m.id as machineId", "m.ram_gb", "m.resolution", "m.bench", "m.form_factor", "m.laptop_model", "s.power", "s.tier"])
     .where("m.is_primary", "=", true).where("u.banned_at", "is", null).orderBy("s.power", "desc").limit(limit).execute();
   const parts = rows.length === 0 ? [] : await db.selectFrom("machine_parts")
     .select(["machine_id", "kind", "label", "verified_at"]).where("status", "=", "in_use").where("kind", "in", ["cpu", "gpu"])
@@ -335,6 +345,7 @@ export async function leaderboard(db: DB, limit = 100) {
       verified: mine.length === 2 && mine.every((p) => p.verified_at),
       bench: b,
       likes: Number(likes.find((l) => l.machine_id === r.machineId)?.n ?? 0),
+      laptop: r.form_factor === "laptop" ? { model: r.laptop_model } : null,
     };
   });
 }

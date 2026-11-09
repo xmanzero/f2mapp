@@ -17,6 +17,9 @@ namespace PcdexScan
         [DataMember(Name = "ram", Order = 6)] public List<RamInfo> Ram = new List<RamInfo>();
         [DataMember(Name = "disks", Order = 7)] public List<DiskInfo> Disks = new List<DiskInfo>();
         [DataMember(Name = "display", Order = 8, EmitDefaultValue = false)] public DisplayInfo Display;
+        /// <summary>"laptop" / "desktop" theo loại vỏ máy</summary>
+        [DataMember(Name = "chassis", Order = 10, EmitDefaultValue = false)] public string Chassis;
+        [DataMember(Name = "system", Order = 11, EmitDefaultValue = false)] public SystemInfo System;
         /// <summary>Đo hiệu năng Blender (nếu người dùng bấm "Đo hiệu năng")</summary>
         [DataMember(Name = "bench", Order = 9, EmitDefaultValue = false)] public BenchReport Bench;
     }
@@ -35,6 +38,15 @@ namespace PcdexScan
         [DataMember(Name = "name")] public string Name;
         [DataMember(Name = "vramBytes", EmitDefaultValue = false)] public double? VramBytes;
         [DataMember(Name = "pcieGen", EmitDefaultValue = false)] public int? PcieGen;
+        /// <summary>Card NVIDIA: power.max_limit (W) — với laptop là TGP</summary>
+        [DataMember(Name = "tgpW", EmitDefaultValue = false)] public double? TgpW;
+    }
+
+    [DataContract]
+    public class SystemInfo
+    {
+        [DataMember(Name = "manufacturer")] public string Manufacturer;
+        [DataMember(Name = "model")] public string Model;
     }
 
     [DataContract]

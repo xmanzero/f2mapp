@@ -848,3 +848,4 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .handle-link { color: inherit; text-decoration: none; } .handle-link:hover { text-decoration: underline; color: var(--text); }
 .likes-inline { white-space: nowrap; }
 .likes-inline svg { display: inline-block; vertical-align: -1px; }
+.board-kind { margin-bottom: var(--gap); }

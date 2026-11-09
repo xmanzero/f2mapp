@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  benchForSpec, computeScores, estimateFps, measuredRender, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS, tierName, localizePartLabel,
+  benchForSpec, computeScores, estimateFps, isLaptop, measuredRender, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS, tierName, localizePartLabel,
   type Finding, type MachineConfig, type MachineSpec, type Resolution, type Severity, type UpgradeSuggestion,
 } from "@f2m/shared";
 import { Star } from "lucide-react";
@@ -106,7 +106,7 @@ export function MyMachine() {
           {active.bench && !preview && <BenchCard bench={active.bench} />}
           <OsdCard cfg={cfg} bottlenecks={r.bottlenecks} />
           <NeedsCard needs={r.needs} />
-          <UpgradesCard items={upgrades} active={preview} onPreview={setPreview} />
+          <UpgradesCard items={upgrades} active={preview} onPreview={setPreview} laptop={cfg.laptop} />
         </div>
         <div className="col col-r">
           <section className="panel" aria-labelledby="h-config">
@@ -264,7 +264,8 @@ function ScoreCard({ r, verified, isAccount, spec, parts }: { r: Result; verifie
             </p>
           )}
           <TierProgress power={s.power} />
-          <RankLine power={s.power} />
+          {/* máy mẫu đều là máy bàn: laptop không so hạng với chúng (xem tab Laptop trên bảng xếp hạng) */}
+          {!isLaptop(spec) && <RankLine power={s.power} />}
         </div>
         <figure className="score-figure">
           <MachineDiagram spec={spec} parts={parts} />
@@ -339,7 +340,8 @@ function TargetLine({ cfg }: { cfg: MachineConfig }) {
   const { t } = useI18n();
   const order: Resolution[] = [1080, 1440, 2160];
   const res = estimateFps(cfg) < 60 ? cfg.resolution : order[order.indexOf(cfg.resolution) + 1];
-  if (!res) return null;
+  // laptop không thay card được: không gợi ý card mục tiêu
+  if (!res || cfg.laptop) return null;
   const pick = GPUS.filter((g) => !g.integrated)
     .map((gpu) => ({ gpu, fps: estimateFps({ ...cfg, gpu, resolution: res }) }))
     .filter((x) => x.fps >= 60).sort((a, b) => a.gpu.raster - b.gpu.raster)[0];
@@ -371,7 +373,7 @@ function NeedsCard({ needs }: { needs: Result["needs"] }) {
   );
 }
 
-function UpgradesCard({ items, active, onPreview }: { items: UpgradeSuggestion[]; active: UpgradeSuggestion | null; onPreview: (s: UpgradeSuggestion | null) => void }) {
+function UpgradesCard({ items, active, onPreview, laptop }: { laptop?: boolean; items: UpgradeSuggestion[]; active: UpgradeSuggestion | null; onPreview: (s: UpgradeSuggestion | null) => void }) {
   const { t, signedPct } = useI18n();
   const T = t.machine;
   return (
@@ -381,7 +383,7 @@ function UpgradesCard({ items, active, onPreview }: { items: UpgradeSuggestion[]
         <span className="meta">{T.upgradesMeta}</span>
       </header>
       {items.length === 0 ? (
-        <p className="empty">{T.noUpgrades}</p>
+        <p className="empty">{laptop ? T.noUpgradesLaptop : T.noUpgrades}</p>
       ) : (
         <ul className="rows">
           {items.map((s) => {
@@ -414,7 +416,7 @@ function FindingsCard({ findings, cfg }: { findings: Finding[]; cfg: MachineConf
     <section className="panel s5" aria-labelledby="h-find">
       <header><h2 id="h-find">{t.machine.checks}</h2></header>
       {findings.length === 0 ? (
-        <p className="empty">{t.machine.noFindings(cfg.psuW, cfg.ramChannels === 2, cfg.pcieGen)}</p>
+        <p className="empty">{cfg.laptop ? t.machine.noFindingsLaptop(cfg.ramChannels === 2) : t.machine.noFindings(cfg.psuW, cfg.ramChannels === 2, cfg.pcieGen)}</p>
       ) : (
         <ul className="rows">
           {findings.map((f) => (

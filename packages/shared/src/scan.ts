@@ -64,6 +64,8 @@ export const scanReportSchema = z.object({
     vramBytes: optNum,
     /** Thế hệ PCIe tối đa của card (1–5), nếu đọc được */
     pcieGen: optNum,
+    /** Card NVIDIA: giới hạn công suất tối đa (nvidia-smi power.max_limit, W) — với laptop là TGP */
+    tgpW: optNum,
   })).max(8),
   board: z.object({ manufacturer: text(80), product: text(80) }),
   ram: z.array(z.object({
@@ -92,6 +94,10 @@ export const scanReportSchema = z.object({
     pcieGen: optNum,
   })).max(16),
   display: z.object({ width: z.number().int().positive(), height: z.number().int().positive() }).nullable().optional().transform((d) => d ?? null),
+  /** Loại vỏ máy theo Win32_SystemEnclosure / pin (pcdex-scan 0.6+) */
+  chassis: z.enum(["desktop", "laptop"]).optional(),
+  /** Hãng + model máy (Win32_ComputerSystem) — laptop dùng làm tên máy */
+  system: z.object({ manufacturer: text(80), model: text(80) }).optional(),
   /** Đo hiệu năng (tùy chọn, người dùng bấm "Đo hiệu năng" trong phần mềm) */
   bench: benchReportSchema.nullable().optional().transform((b) => b ?? null),
 });
@@ -99,8 +105,10 @@ export type ScanReport = z.infer<typeof scanReportSchema>;
 
 // ---------- nhận diện CPU / card ----------
 const fold = (s: string) => s.toLowerCase()
+  .replace(/\s(w\/|with)\s.*$/, " ")
+  .replace(/\blaptop gpu\b/, "laptop")
   .replace(/\((r|tm|c)\)|®|™/g, " ")
-  .replace(/\b(\d+(st|nd|rd|th) gen|intel|amd|nvidia|geforce|radeon|processor|graphics|cpu|with|series|[a-z0-9]+-core|\d+ cores?)\b/g, " ")
+  .replace(/\b(\d+(st|nd|rd|th) gen|intel|amd|nvidia|geforce|radeon|processor|graphics|cpu|gpu|with|series|[a-z0-9]+-core|\d+ cores?)\b/g, " ")
   .replace(/@.*$/, " ")
   .replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
 /** Tên trong danh mục, bỏ đuôi dung lượng VRAM ("RTX 3060 12GB" → "rtx 3060") */
@@ -147,7 +155,9 @@ export function matchCpu(raw: string): PartMatch {
   // bản F (không iGPU) và bản thường: cùng nhân, cùng xung → dùng chung số liệu (i5-12400 ↔ i5-12400F)
   const f = /\d(k?)f$/.test(q) ? CPUS.find((c) => baseOf(c.name) === q.slice(0, -1)) : CPUS.find((c) => baseOf(c.name) === q + "f");
   if (f) return { name: f.name, raw, suggestion: null, equivalent: true };
-  return { name: null, raw, suggestion: closest(q, CPUS.map((c) => c.name)) };
+  // gợi ý cùng loại: tên đuôi H / HX / HS / U / V / G7 hay "Ryzen AI" là CPU laptop
+  const mobile = /\d(h|hx|hs|u|v|g\d)$/.test(q) || /^ryzen ai\b/.test(q);
+  return { name: null, raw, suggestion: closest(q, CPUS.filter((c) => !!c.mobile === mobile).map((c) => c.name)) };
 }
 
 const isIntegrated = (raw: string) => {
@@ -156,7 +166,10 @@ const isIntegrated = (raw: string) => {
 };
 
 export function matchGpu(raw: string, vramGb: number | null): PartMatch {
-  if (isIntegrated(raw)) return { name: GPUS.find((g) => g.integrated)?.name ?? null, raw, suggestion: null };
+  // đồ họa tích hợp có mẫu riêng (Radeon 780M, Arc 140V, Iris Xe…); còn lại về "Đồ họa tích hợp (iGPU)"
+  const ig = GPUS.find((g) => g.integrated && baseOf(g.name) === baseOf(raw));
+  if (ig) return { name: ig.name, raw, suggestion: null };
+  if (isIntegrated(raw)) return { name: GPUS.find((g) => g.integrated && g.name.startsWith("Đồ họa"))?.name ?? null, raw, suggestion: null };
   // tên có ghi VRAM ("GTX 1060 3GB") so như tên gốc, chọn bản theo VRAM bên dưới
   const q = baseOf(raw);
   const same = GPUS.filter((g) => !g.integrated && baseOf(g.name) === q);
@@ -171,7 +184,7 @@ export function matchGpu(raw: string, vramGb: number | null): PartMatch {
 }
 
 /** Card chính: card rời có VRAM lớn nhất, không có thì đồ họa tích hợp */
-export function primaryGpu(gpus: ScanReport["gpus"]) {
+export function primaryGpu<T extends { name: string; vramBytes: number | null }>(gpus: T[]): T | null {
   const real = gpus.filter((g) => !/^(microsoft basic|parsec|virtual|meta|oray|citrix)/i.test(g.name));
   const discrete = real.filter((g) => !isIntegrated(g.name));
   const pool = discrete.length ? discrete : real;
@@ -273,6 +286,8 @@ export interface ScanResult {
   notes: string[];
   /** Kết quả đo hiệu năng (bản quét cũ không có trường này) */
   bench?: BenchResult | null;
+  /** Laptop: theo loại vỏ máy, hoặc CPU / card là bản laptop */
+  laptop?: { model: string | null; gpuTgpW: number | null } | null;
 }
 
 // ---------- đo hiệu năng (Blender Benchmark) ----------
@@ -421,7 +436,10 @@ export function interpretScan(r: ScanReport, opts: { nonceOk?: boolean } = {}): 
   const vramGb = g?.vramBytes ? Math.round(g.vramBytes / 2 ** 30) : null;
   const gpu = { ...(g ? matchGpu(g.name, vramGb) : { name: GPUS.find((x) => x.integrated)?.name ?? null, raw: "Không thấy card", suggestion: null }), vramGb };
   const mb = mainboardFrom(r.board);
-  if (!mb.pcieKnown) notes.push("Chưa nhận ra chipset mainboard, tạm tính khe card PCIe 4.0 — sửa lại ở trang cấu hình nếu sai.");
+  const cpuCat = cpu.name ? CPUS.find((c) => c.name === cpu.name) : undefined;
+  const gpuCat = gpu.name ? GPUS.find((x) => x.name === gpu.name) : undefined;
+  const laptop = r.chassis === "laptop" || !!cpuCat?.mobile || !!gpuCat?.mobile;
+  if (!mb.pcieKnown && !laptop) notes.push("Chưa nhận ra chipset mainboard, tạm tính khe card PCIe 4.0 — sửa lại ở trang cấu hình nếu sai.");
   const cpuInfo = cpu.name ? CPUS.find((c) => c.name === cpu.name) : undefined;
   const hint: RamType | null = cpuInfo?.socket === "AM5" || cpuInfo?.socket === "LGA1851" ? "DDR5" : null;
   const ram = ramKitsFrom(r.ram, hint);
@@ -433,7 +451,24 @@ export function interpretScan(r: ScanReport, opts: { nonceOk?: boolean } = {}): 
     cpu, gpu, mainboard: { ...mb, raw: `${r.board.manufacturer} ${r.board.product}`.trim() }, ram, drives,
     resolution: resolutionOf(r.display), display: r.display ? `${r.display.width}×${r.display.height}` : null, notes,
     bench: interpretBench(r.bench, cpu, gpu, { threads: r.cpu.threads, nonceOk: opts.nonceOk }),
+    laptop: laptop ? { model: laptopModel(r.system), gpuTgpW: tgpOf(g?.tgpW ?? null, gpuCat) } : null,
   };
+}
+
+/** Tên laptop gọn: bỏ chữ "To Be Filled", tên hãng dài */
+function laptopModel(sys: ScanReport["system"]): string | null {
+  if (!sys?.model || /to be filled|default string|system product name/i.test(sys.model)) return null;
+  const brand = BOARD_BRAND.find(([re]) => re.test(sys.manufacturer))?.[1]
+    ?? [[/^lenovo/i, "Lenovo"], [/^hp|hewlett/i, "HP"], [/^dell/i, "Dell"], [/^acer/i, "Acer"], [/^apple/i, "Apple"], [/^microsoft/i, "Microsoft"], [/^razer/i, "Razer"], [/^samsung/i, "Samsung"], [/^huawei/i, "Huawei"]]
+      .find(([re]) => (re as RegExp).test(sys.manufacturer))?.[1] as string | undefined;
+  const model = sys.model.trim();
+  return (brand && !model.toLowerCase().startsWith(brand.toLowerCase()) ? `${brand} ${model}` : model).slice(0, 80);
+}
+/** TGP đọc được (nvidia-smi) nằm trong dải của mẫu thì dùng, không thì để mức phổ biến */
+function tgpOf(w: number | null, gpu: (typeof GPUS)[number] | undefined): number | null {
+  if (!w || !gpu?.tgp) return null;
+  const t = Math.round(w);
+  return t >= gpu.tgp.min * 0.9 && t <= gpu.tgp.max * 1.1 ? Math.min(gpu.tgp.max, Math.max(gpu.tgp.min, t)) : null;
 }
 
 /** Ghép kết quả quét với phần người dùng chọn / phần không quét được (nguồn) thành cấu hình đầy đủ */
@@ -444,6 +479,7 @@ export function specFromScan(s: ScanResult, pick: { cpu: string; gpu: string; ps
     ram: s.ram.length ? s.ram : [{ sticks: 2, perStickGb: 8, type: "DDR4", speedMhz: null, model: null, formFactor: "dimm", ecc: false, registered: false }],
     drives: s.drives.length ? s.drives : [{ interface: "nvme3", capacityGb: 512, model: null, healthPct: null, isBoot: true }],
     psu: pick.psu, resolution: s.resolution,
+    ...(s.laptop ? { formFactor: "laptop" as const, gpuTgpW: s.laptop.gpuTgpW, laptopModel: s.laptop.model } : {}),
   };
 }
 

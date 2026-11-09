@@ -1,6 +1,6 @@
 "use client";
 
-import { localizePartLabel, partLabel, TIERS, tierName, type PartKind } from "@f2m/shared";
+import { isLaptop, localizePartLabel, partLabel, TIERS, tierName, type PartKind } from "@f2m/shared";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -115,13 +115,15 @@ function MachineCard({ m, rank, canLike, loggedIn, handle, onLike }: {
   const ok = (kind: PartKind, i = 0) => m.parts.filter((x) => x.kind === kind)[i]?.verified ?? false;
   const verified = m.parts.filter((x) => x.kind !== "psu").length > 0 && m.parts.filter((x) => x.kind !== "psu").every((x) => x.verified);
   const s = m.spec;
+  const laptop = isLaptop(s);
   const rows: { key: string; label: string; value: string; verified: boolean }[] = [
+    ...(laptop ? [{ key: "model", label: t.cfg.laptopModel, value: s.laptopModel ?? t.cfg.laptop, verified: false }] : []),
     { key: "cpu", label: "CPU", value: s.cpu, verified: ok("cpu") },
-    { key: "gpu", label: K.gpu!, value: s.gpu, verified: ok("gpu") },
-    { key: "mb", label: K.mainboard!, value: localizePartLabel(partLabel.mainboard(s.mainboard), locale), verified: ok("mainboard") },
+    { key: "gpu", label: K.gpu!, value: s.gpu + (laptop && s.gpuTgpW ? ` · ${s.gpuTgpW} W` : ""), verified: ok("gpu") },
+    ...(laptop ? [] : [{ key: "mb", label: K.mainboard!, value: localizePartLabel(partLabel.mainboard(s.mainboard), locale), verified: ok("mainboard") }]),
     ...s.ram.map((k, i) => ({ key: `ram${i}`, label: "RAM", value: partLabel.ram(k), verified: ok("ram", i) })),
     ...s.drives.map((d, i) => ({ key: `d${i}`, label: K.storage!, value: partLabel.drive(d), verified: ok("storage", i) })),
-    { key: "psu", label: K.psu!, value: localizePartLabel(partLabel.psu(s.psu), locale), verified: false },
+    ...(laptop ? [] : [{ key: "psu", label: K.psu!, value: localizePartLabel(partLabel.psu(s.psu), locale), verified: false }]),
   ];
   const b = m.bench;
   const benched = b && [b.cpu, b.gpu].filter((d) => d?.trust === "verified" && d.pct != null);
@@ -138,7 +140,7 @@ function MachineCard({ m, rank, canLike, loggedIn, handle, onLike }: {
   return (
     <section className="panel score-card profile-machine" style={m.tier ? tierVars(m.tier) : undefined} aria-label={m.name}>
       <header>
-        <h2>{m.name} <span className="faint small">· {m.isPrimary ? T.primary : T.secondary}</span></h2>
+        <h2>{m.name} <span className="faint small">· {m.isPrimary ? T.primary : T.secondary}{laptop ? ` · ${t.cfg.laptop}` : ""}</span></h2>
         {canLike && (loggedIn
           ? <button type="button" className={`btn small like-btn${m.liked ? " on" : ""}`} aria-pressed={m.liked} disabled={busy} onClick={like}>
               <Heart size={14} aria-hidden="true" fill={m.liked ? "currentColor" : "none"} />{m.liked ? T.liked : T.like}<span className="num"> · {n0(m.likes)}</span>
@@ -153,7 +155,7 @@ function MachineCard({ m, rank, canLike, loggedIn, handle, onLike }: {
           <TierEmblem code={tier.code} label={tierName(tier, locale)} />
           <div>
             <div className="answer num tier-ink">{n0(m.power)}</div>
-            <div className="tier-name">{M.tier(tierName(tier, locale))}{rank ? ` · ${T.rank(rank.rank, rank.of)}` : ""}</div>
+            <div className="tier-name">{M.tier(tierName(tier, locale))}{rank ? ` · ${T.rank(rank.rank, rank.of, rank.laptop)}` : ""}</div>
           </div>
         </div>
       )}

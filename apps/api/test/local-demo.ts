@@ -21,6 +21,16 @@ await call("POST", "/v1/me/machines", { spec: spec({ cpu: "Ryzen 7 7800X3D", gpu
 await call("POST", "/v1/me/machines", { spec: spec({ cpu: "Core i5-12400F", gpu: "RTX 3060 12GB" }), name: "Máy làm việc" }, a.token);
 await call("POST", "/v1/me/machines", { spec: spec({ cpu: "Core i7-14700", gpu: "GTX 1660 Ti" }) }, b.token);
 await call("POST", "/v1/me/machines", { spec: spec() }, c.token);
+// hai laptop (bảng xếp hạng riêng)
+const d = await user("huy.demo@pcdex.invalid", "Huy Lê", "TP.HCM");
+const e = await user("an.demo@pcdex.invalid", "An Nguyễn", "Cần Thơ");
+const lap = (cpu: string, gpu: string, tgp: number | null, model: string) => spec({
+  cpu, gpu, formFactor: "laptop", gpuTgpW: tgp, laptopModel: model, mainboard: { model: null, chipset: null, pcieGen: 4 },
+  psu: { wattage: 240, model: null, rating: null }, ram: [{ sticks: 2, perStickGb: 8, type: "DDR5", speedMhz: 4800, model: null, formFactor: "sodimm" }],
+});
+await call("POST", "/v1/me/machines", { spec: lap("Core i7-13650HX", "RTX 4060 Laptop", 140, "Lenovo Legion 5 16IRX9") }, d.token);
+await call("POST", "/v1/me/machines", { spec: lap("Ryzen 7 7840HS", "Radeon 780M", null, "ASUS Zenbook 14 OLED") }, e.token);
+console.log("LAPTOP_TOKEN", d.token);
 const pa = await call("GET", `/v1/users/${a.handle}`);
 for (const tk of [b.token, c.token]) {
   await call("POST", `/v1/users/${a.handle}/follow`, {}, tk);

@@ -1,4 +1,5 @@
-export type Socket = "LGA1151" | "LGA1200" | "LGA1700" | "LGA1851" | "AM4" | "AM5";
+/** BGA = CPU laptop hàn trên bo (không thay được) */
+export type Socket = "BGA" | "LGA1151" | "LGA1200" | "LGA1700" | "LGA1851" | "AM4" | "AM5";
 export type Resolution = 1080 | 1440 | 2160;
 /** Tổng dung lượng RAM (GB) */
 export type RamGb = number;
@@ -18,6 +19,8 @@ export interface Cpu {
   /** Đa nhân / render (Blender). i5-12400F = 10.000 */
   render: number;
   source: { gm: DataSource; st: DataSource; mt: DataSource };
+  /** CPU laptop */
+  mobile?: boolean;
 }
 
 export interface Gpu {
@@ -38,6 +41,13 @@ export interface Gpu {
   releaseYear: number | null;
   integrated: boolean;
   source: DataSource;
+  /** Card laptop */
+  mobile?: boolean;
+  /**
+   * Dải công suất (TGP, W — gồm Dynamic Boost) của card laptop NVIDIA. Số FPS / điểm của mẫu tính ở TGP tối đa,
+   * máy có TGP thấp hơn thì hiệu năng giảm theo (TGP / tối đa)^0,4. null = không chỉnh theo công suất.
+   */
+  tgp?: { min: number; max: number; default: number } | null;
 }
 
 export interface MachineConfig {
@@ -50,6 +60,10 @@ export interface MachineConfig {
   psuW: number;
   /** Độ phân giải màn hình người dùng đang dùng */
   resolution: Resolution;
+  /** Laptop: chấm nguyên chiếc — không có luật nguồn / PCIe, chỉ gợi ý nâng RAM / ổ cứng */
+  laptop?: boolean;
+  /** TGP thực tế của card laptop (W) */
+  gpuTgpW?: number;
 }
 
 export interface Scores {

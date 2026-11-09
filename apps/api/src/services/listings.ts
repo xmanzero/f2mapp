@@ -172,9 +172,12 @@ export async function createListing(db: DB, userId: string, input: CreateListing
   return db.transaction().execute(async (tx) => {
     const t = tx as unknown as DB;
     const mp = await t.selectFrom("machine_parts as mp").innerJoin("machines as m", "m.id", "mp.machine_id")
-      .select(["mp.id", "mp.kind", "mp.label", "mp.part_id", "mp.status", "mp.details"])
+      .select(["mp.id", "mp.kind", "mp.label", "mp.part_id", "mp.status", "mp.details", "m.form_factor"])
       .where("mp.id", "=", input.machinePartId).where("m.owner_id", "=", userId).executeTakeFirst();
     if (!mp) throw new ListingError(400, "Chỉ đăng bán được linh kiện có trong máy của bạn. Khai báo linh kiện ở Máy của tôi trước.");
+    // laptop: CPU, card, bo mạch hàn liền — không bán rời được (RAM, ổ cứng, sạc thì được)
+    if (mp.form_factor === "laptop" && ["cpu", "gpu", "mainboard"].includes(mp.kind))
+      throw new ListingError(400, "CPU, card đồ họa và bo mạch của laptop hàn liền với nhau, không đăng bán rời được.");
     if (isSubstitute(mp.details))
       throw new ListingError(400, "Đây là mẫu gần đúng thay cho linh kiện chưa có trong danh mục, không phải linh kiện bạn sở hữu nên không đăng bán được.");
     if (mp.status === "sold") throw new ListingError(409, "Linh kiện này đã bán");
