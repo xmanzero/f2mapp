@@ -382,6 +382,18 @@ export const en: typeof vi = {
     benched: "Benchmarked", benchGpu: "GPU",
     benchTip: "Real performance measured with Blender Benchmark in pcdex-scan; % is versus the average of the same CPU / card model",
   },
+  msg: {
+    title: "Messages", label: "Messages", unread: (n: number) => `${n} unread messages`,
+    login: "Sign in to message sellers and other users.",
+    empty: "No messages yet. Tap “Message seller” on a listing, or “Message” on someone’s profile.",
+    pick: "Pick a conversation.",
+    toSeller: "Message seller", toUser: "Message", loginToMessage: "Sign in to message",
+    placeholder: "Type a message… (Enter to send, Shift + Enter for a new line)",
+    send: "Send", sending: "Sending…", back: "Inbox", you: "You: ",
+    first: (name: string) => `Start chatting with ${name}. Ask about condition, warranty, delivery… Don’t pay before you see the item.`,
+    about: "About the listing", sold: "Sold", gone: "No longer for sale", banned: "This account has been suspended",
+    older: "Load older messages",
+  },
   feed: {
     title: "Feed",
     sub: "What the people you follow are up to.",

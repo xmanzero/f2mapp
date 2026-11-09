@@ -111,6 +111,8 @@ export interface Database {
     token_hash: string; user_id: string; purpose: "verify" | "reset"; email: string; expires_at: Date; used_at: Date | null; created_at: Generated<Date>;
   };
   user_devices: { user_id: string; device: string; last_ip: string | null; first_seen: Generated<Date>; last_seen: Generated<Date> };
+  conversations: { id: Generated<string>; a_id: string; b_id: string; listing_id: string | null; created_at: Generated<Date>; last_message_at: Generated<Date> };
+  messages: { id: Generated<string>; conversation_id: string; sender_id: string; body: string; created_at: Generated<Date>; read_at: Date | null };
   activities: { id: Generated<string>; user_id: string; kind: string; target: string | null; data: unknown; created_at: Generated<Date> };
   notifications: { id: Generated<string>; user_id: string; actor_id: string | null; kind: string; target: string | null; data: unknown; created_at: Generated<Date>; read_at: Date | null };
   follows: { follower_id: string; followee_id: string; created_at: Generated<Date> };

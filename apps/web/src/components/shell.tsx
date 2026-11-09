@@ -11,6 +11,7 @@ import { splitLocale } from "@/i18n/config";
 import { useI18n } from "@/i18n/client";
 import { BrandLogo, BrandMark } from "./brand-logo";
 import { LangSwitch } from "./lang-switch";
+import { MessageLink } from "./message-link";
 import { NotifyBell } from "./notify-bell";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -119,6 +120,7 @@ export function Shell({ children, brand }: { children: ReactNode; brand: Brandin
           </form>
           <LangSwitch />
           <ThemeToggle />
+          <MessageLink />
           <NotifyBell />
           <AccountControl />
         </header>

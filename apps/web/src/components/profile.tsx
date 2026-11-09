@@ -1,7 +1,8 @@
 "use client";
 
 import { isLaptop, localizePartLabel, partLabel, TIERS, tierName, type PartKind } from "@f2m/shared";
-import { Heart } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/client";
@@ -65,6 +66,7 @@ export function Profile({ initial }: { initial: PublicProfile }) {
             : user === null ? <Link href={`${p("/dang-nhap")}?next=${encodeURIComponent(profilePath(u.handle))}`} className="btn primary">{T.loginToFollow}</Link>
             : <button type="button" className={`btn ${data.following ? "" : "primary"}`} disabled={busy || user === undefined} onClick={toggleFollow}
                 aria-pressed={data.following} title={data.following ? T.unfollow : undefined}>{data.following ? T.following : T.follow}</button>}
+          {!data.me && user && <MessageUser handle={u.handle} />}
           {error && <span className="stamp" role="alert" style={{ color: "var(--negative)" }}>{error}</span>}
         </div>
       </div>
@@ -103,6 +105,21 @@ export function Profile({ initial }: { initial: PublicProfile }) {
       </div>
     </>
   );
+}
+
+/** Nhắn tin trực tiếp (không gắn tin rao) */
+function MessageUser({ handle }: { handle: string }) {
+  const { t, p } = useI18n();
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  const start = async () => {
+    setBusy(true);
+    try {
+      const r = await api<{ id: string }>("/v1/conversations", { method: "POST", body: { handle } });
+      router.push(`${p("/tin-nhan")}?c=${r.id}`);
+    } catch { setBusy(false); }
+  };
+  return <button type="button" className="btn" disabled={busy} onClick={start}><MessageCircle size={16} aria-hidden="true" /> {t.msg.toUser}</button>;
 }
 
 function MachineCard({ m, rank, canLike, loggedIn, handle, onLike }: {

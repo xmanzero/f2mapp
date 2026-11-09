@@ -886,3 +886,49 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .feed-who { font-weight: 600; color: var(--text); text-decoration: none; }
 .feed-who:hover, .feed-link:hover { text-decoration: underline; }
 .feed-link { color: inherit; text-decoration: none; }
+
+/* tin nhắn */
+.msg-link { text-decoration: none; }
+.msg-seller { margin: 12px 0 4px; }
+.msg-seller .btn { display: inline-flex; align-items: center; gap: 8px; }
+.profile-actions .btn { display: inline-flex; align-items: center; gap: 6px; }
+.inbox { display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: var(--gap); align-items: start; }
+.inbox-list { padding: 8px; max-height: calc(100vh - 190px); overflow: auto; }
+.inbox-list ul { display: grid; gap: 2px; }
+.conv { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: flex; gap: 12px; align-items: flex-start; padding: 10px; border-radius: var(--radius-inner); }
+.conv:hover { background: var(--control-hover); }
+.conv.active { background: var(--accent-soft); }
+.conv:focus-visible { outline: 2px solid var(--accent); }
+.conv-body { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.conv-top { display: flex; justify-content: space-between; gap: 8px; }
+.conv-listing { color: var(--accent); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv-last { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv.unread .conv-last { color: var(--text); font-weight: 600; }
+.conv-count { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 12px; font-weight: 700; line-height: 20px; text-align: center; align-self: center; }
+.inbox-thread { min-height: 420px; display: flex; flex-direction: column; }
+.inbox-pick { margin: auto; }
+.thread { display: flex; flex-direction: column; min-height: calc(100vh - 230px); max-height: calc(100vh - 190px); }
+.thread-head { display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.thread-back { display: none; }
+.thread-who { display: flex; gap: 10px; align-items: center; color: inherit; text-decoration: none; }
+.thread-listing { display: flex; gap: 12px; align-items: center; margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-inner); background: var(--raised); color: inherit; text-decoration: none; }
+.thread-listing .grow { flex: 1; min-width: 0; }
+.thread-msgs { flex: 1; overflow: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px 2px; }
+.thread-msgs > .btn { align-self: center; }
+.thread-first { text-align: center; margin: auto 24px; }
+.bubble { max-width: min(75%, 520px); align-self: flex-start; padding: 8px 12px; border-radius: 16px 16px 16px 4px; background: var(--raised); }
+.bubble.mine { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--accent-soft); }
+.bubble p { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.45; }
+.bubble small { display: block; margin-top: 2px; font-size: 11px; }
+.composer { display: flex; gap: 8px; align-items: flex-end; padding-top: 12px; border-top: 1px solid var(--rule); }
+.composer textarea { flex: 1; resize: none; min-height: 44px; max-height: 160px; padding: 10px 12px; border-radius: var(--radius-inner); border: 1px solid var(--control); background: var(--ground); color: var(--text); font: inherit; }
+.composer .btn { display: inline-flex; align-items: center; gap: 6px; }
+.thread-closed { padding-top: 12px; text-align: center; }
+@media (max-width: 760px) {
+  .inbox { grid-template-columns: 1fr; }
+  .inbox.has-thread .inbox-list, .inbox:not(.has-thread) .inbox-thread { display: none; }
+  .inbox.has-thread ~ * { display: none; }
+  .thread-back { display: grid; }
+  .thread { min-height: calc(100vh - 250px); }
+  .composer-label { display: none; }
+}

@@ -15,6 +15,7 @@ import { meRoutes } from "./routes/me.js";
 import { partsRoutes } from "./routes/parts.js";
 import { scanRoutes } from "./routes/scans.js";
 import { socialRoutes } from "./routes/social.js";
+import { messageRoutes } from "./routes/messages.js";
 
 export interface AppDeps {
   db: DB;
@@ -54,6 +55,7 @@ export function buildApp(opts: { logger?: boolean; corsOrigin?: string; deps?: A
     app.register(adminRoutes(opts.deps), { prefix: "/v1" });
     app.register(brandingRoutes(opts.deps), { prefix: "/v1" });
     app.register(socialRoutes(opts.deps), { prefix: "/v1" });
+    app.register(messageRoutes(opts.deps), { prefix: "/v1" });
   }
   return app;
 }

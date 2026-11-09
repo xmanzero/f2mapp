@@ -385,6 +385,18 @@ export const vi = {
     benched: "Đã đo", benchGpu: "Card",
     benchTip: "Đã đo hiệu năng thật bằng Blender Benchmark trong pcdex-scan; % là so với trung bình của cùng mẫu CPU / card",
   },
+  msg: {
+    title: "Tin nhắn", label: "Tin nhắn", unread: (n: number) => `${n} tin nhắn chưa đọc`,
+    login: "Đăng nhập để nhắn tin với người bán và người dùng khác.",
+    empty: "Chưa có tin nhắn nào. Bấm “Nhắn tin cho người bán” ở một tin rao, hoặc “Nhắn tin” trên hồ sơ người dùng.",
+    pick: "Chọn một hội thoại để xem.",
+    toSeller: "Nhắn tin cho người bán", toUser: "Nhắn tin", loginToMessage: "Đăng nhập để nhắn tin",
+    placeholder: "Nhập tin nhắn… (Enter để gửi, Shift + Enter xuống dòng)",
+    send: "Gửi", sending: "Đang gửi…", back: "Hộp thư", you: "Bạn: ",
+    first: (name: string) => `Bắt đầu trò chuyện với ${name}. Hỏi về tình trạng, bảo hành, cách giao hàng… Không chuyển tiền trước khi xem hàng.`,
+    about: "Về tin rao", sold: "Đã bán", gone: "Tin không còn bán", banned: "Tài khoản này đã bị khóa",
+    older: "Xem tin cũ hơn",
+  },
   feed: {
     title: "Bảng tin",
     sub: "Hoạt động của những người bạn theo dõi.",

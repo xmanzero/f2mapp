@@ -4,9 +4,9 @@ import { useI18n } from "@/i18n/client";
 import { machineName } from "@/lib/use-machine";
 
 import { findCpu, findGpu, localizePartLabel, resolveMachine, RESOLUTION_LABEL, TIERS, tierName } from "@f2m/shared";
-import { Copy } from "lucide-react";
+import { Copy, MessageCircle } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import {
@@ -17,6 +17,8 @@ import { MAX_PHOTOS, photoUrl, shrinkImage, uploadPhoto } from "@/lib/photos";
 import { useMachine } from "@/lib/use-machine";
 import { useNow } from "@/lib/use-now";
 import { profilePath } from "@/lib/profile";
+import { listingPath } from "@/lib/listing-url";
+import { useSession } from "@/lib/session";
 import { LifeBar } from "./life-bar";
 import { Gallery, PhotoPicker } from "./photos";
 
@@ -109,6 +111,7 @@ export function ListingDetail({ initial }: { initial?: Listing } = {}) {
             <div className="row"><dt className="grow muted">{T.area}</dt><dd>{item.province ?? "—"}</dd></div>
           </dl>
           {item.description && <p className="desc">{item.description}</p>}
+          <p className="msg-seller"><MessageSeller item={item} /></p>
           <Contact item={item} />
           {item.mine && <OwnerTools item={item} onChange={setItem} />}
         </section>
@@ -151,6 +154,24 @@ export function ListingDetail({ initial }: { initial?: Listing } = {}) {
       </div>
     </>
   );
+}
+
+/** Nhắn tin cho người bán: mở (hoặc dùng lại) hội thoại về tin này rồi sang hộp thư */
+function MessageSeller({ item }: { item: Listing }) {
+  const { t, p } = useI18n();
+  const { user } = useSession();
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  if (item.mine || item.sample) return null;
+  if (user === null) return <Link href={`${p("/dang-nhap")}?next=${encodeURIComponent(listingPath(item))}`} className="btn">{t.msg.loginToMessage}</Link>;
+  const start = async () => {
+    setBusy(true);
+    try {
+      const r = await api<{ id: string }>("/v1/conversations", { method: "POST", body: { listingId: item.id } });
+      router.push(`${p("/tin-nhan")}?c=${r.id}`);
+    } catch { setBusy(false); }
+  };
+  return <button type="button" className="btn primary" disabled={busy || user === undefined} onClick={start}><MessageCircle size={16} aria-hidden="true" /> {t.msg.toSeller}</button>;
 }
 
 function Contact({ item }: { item: Listing }) {
