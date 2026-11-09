@@ -21,7 +21,7 @@ Mạng xã hội máy tính: người dùng khai báo cấu hình PC, xem điể
 ## Việc để sau (chủ dự án dặn nhắc lại khi xong chức năng chính)
 - Google OAuth Client ID cho https://pcdex.app → bật đăng nhập Google (`GOOGLE_CLIENT_IDS` trong `~/f2mapp/.env`).
 - Gắn pcdex.net chuyển về pcdex.app (khi mua).
-- Chứng chỉ ký số cho pcdex-scan.exe (Certum Open Source / chứng chỉ OV / Azure Trusted Signing) → đặt biến `PCDEX_SIGN_*` khi deploy.
+- **Ký số pcdex-scan.exe** (hoãn 09/11/2026, deploy.py đã sẵn bước ký qua biến `PCDEX_SIGN_*`). Miễn phí: SignPath Foundation (cần giấy phép OSI cho repo — đề xuất MIT, trừ `PCDEX_Brand_Kit` là thương hiệu; build exe trên GitHub Actions; nhà phát hành hiện "SignPath Foundation") hoặc Microsoft Store (đóng gói MSIX, Microsoft ký, tài khoản cá nhân miễn phí). Trả phí: Certum Open Source (~50–70 €/năm, cần LICENSE), chứng chỉ OV (~200–400 USD/năm, cần giấy phép KD), Azure Trusted Signing (~10 USD/tháng).
 
 ## Cấu trúc (npm workspaces)
 - `apps/web`: Next.js 16, App Router, Tailwind 4, bật `cacheComponents`. **Đọc `node_modules/next/dist/docs/` trước khi viết mã** (API khác bản cũ). Trang tĩnh không được đọc đồng hồ (`new Date()`) lúc dựng.
