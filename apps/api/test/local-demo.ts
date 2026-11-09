@@ -42,5 +42,15 @@ const mine = await call("GET", "/v1/me/machines", undefined, a.token);
 const gpuPart = mine.machines[mine.machines.length - 1].parts.find((p: { kind: string }) => p.kind === "gpu");
 const posted = await call("POST", "/v1/listings", { machinePartId: gpuPart.id, priceVnd: 5_200_000, condition: "used", province: "Hà Nội", contact: "0900000000", durationDays: 7, description: "Card còn đẹp" }, a.token);
 console.log("listing", posted.id ?? posted.message ?? JSON.stringify(posted).slice(0, 120));
+// hội thoại có ảnh + báo cáo (để xem tab Báo cáo trong quản trị)
+const adm = await user("admin.demo@pcdex.invalid", "Quản trị", null);
+await t.db.updateTable("users").set({ role: "admin" }).where("handle", "=", adm.handle).execute();
+const conv = await call("POST", "/v1/conversations", { handle: c.handle }, b.token);
+await call("POST", `/v1/conversations/${conv.id}/messages`, { body: "Bạn chuyển cọc trước 1 triệu qua tài khoản này nhé" }, b.token);
+const { default: sharp } = await import("sharp");
+const png = await sharp({ create: { width: 900, height: 600, channels: 3, background: "#1769ff" } }).png().toBuffer();
+await t.app.inject({ method: "POST", url: `/v1/conversations/${conv.id}/images`, payload: png, headers: { authorization: `Bearer ${b.token}`, "content-type": "image/png" } });
+await call("POST", `/v1/conversations/${conv.id}/messages`, { body: "Sao phải chuyển trước ạ?" }, c.token);
+await call("POST", "/v1/reports", { handle: b.handle, conversationId: conv.id, reason: "scam", note: "Đòi chuyển cọc trước" }, c.token);
 await t.app.listen({ port: 8199 });
 console.log("PROFILE", a.handle, "VIEWER_TOKEN", c.token);

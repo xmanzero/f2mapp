@@ -932,3 +932,30 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
   .thread { min-height: calc(100vh - 250px); }
   .composer-label { display: none; }
 }
+
+/* chặn / báo cáo, ảnh trong tin nhắn */
+.safety { position: relative; margin-left: auto; }
+.thread-head .safety { margin-left: auto; }
+.profile-actions .safety { margin-left: 0; }
+.safety-btn { width: 36px; height: 36px; }
+.safety-menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 40; min-width: 160px; display: grid; padding: 6px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-inner); box-shadow: 0 8px 24px rgb(0 0 0 / 0.18); }
+.safety-menu button { all: unset; cursor: pointer; padding: 8px 10px; border-radius: 8px; }
+.safety-menu button:hover, .safety-menu button:focus-visible { background: var(--control-hover); }
+.report-dialog { margin: auto; inset: 0; border: 0; padding: 0; border-radius: var(--radius-card); background: var(--surface); color: var(--text); width: min(480px, calc(100vw - 32px)); }
+.report-dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+.report-body { padding: 24px; display: grid; gap: 12px; }
+.report-body form { display: grid; gap: 14px; }
+.report-reasons { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+.report-reasons label, .report-block { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+.report-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.report-list { display: grid; gap: 2px; }
+.report-admin-actions { display: grid; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.admin-thread { max-height: 520px; border: 1px solid var(--rule); border-radius: var(--radius-inner); padding: 12px; }
+.bubble.target { background: color-mix(in srgb, var(--warning) 18%, var(--raised)); }
+.bubble.has-image { padding: 4px; max-width: 288px; }
+.bubble.has-image p, .bubble.has-image small { padding: 0 8px; }
+.bubble-img { display: block; }
+.bubble-img img { display: block; max-width: min(280px, 100%); height: auto; border-radius: 12px; }
+.composer-photo { width: 44px; height: 44px; color: var(--muted); }
+.composer-photo:hover { color: var(--accent); }
+.conv-photo { display: inline-block; vertical-align: -2px; }

@@ -111,8 +111,14 @@ export interface Database {
     token_hash: string; user_id: string; purpose: "verify" | "reset"; email: string; expires_at: Date; used_at: Date | null; created_at: Generated<Date>;
   };
   user_devices: { user_id: string; device: string; last_ip: string | null; first_seen: Generated<Date>; last_seen: Generated<Date> };
+  user_blocks: { blocker_id: string; blocked_id: string; created_at: Generated<Date> };
+  reports: {
+    id: Generated<string>; reporter_id: string | null; target_id: string; conversation_id: string | null; reason: string; note: string | null;
+    status: Generated<string>; created_at: Generated<Date>; resolved_by: string | null; resolved_at: Date | null; resolution_note: string | null;
+  };
+  message_images: { id: Generated<string>; conversation_id: string; uploader_id: string; data: Buffer; width: number; height: number; size_bytes: number; created_at: Generated<Date> };
   conversations: { id: Generated<string>; a_id: string; b_id: string; listing_id: string | null; created_at: Generated<Date>; last_message_at: Generated<Date> };
-  messages: { id: Generated<string>; conversation_id: string; sender_id: string; body: string; created_at: Generated<Date>; read_at: Date | null };
+  messages: { id: Generated<string>; conversation_id: string; sender_id: string; body: string; created_at: Generated<Date>; read_at: Date | null; image_id: Generated<string | null> };
   activities: { id: Generated<string>; user_id: string; kind: string; target: string | null; data: unknown; created_at: Generated<Date> };
   notifications: { id: Generated<string>; user_id: string; actor_id: string | null; kind: string; target: string | null; data: unknown; created_at: Generated<Date>; read_at: Date | null };
   follows: { follower_id: string; followee_id: string; created_at: Generated<Date> };

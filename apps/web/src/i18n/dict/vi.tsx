@@ -385,6 +385,16 @@ export const vi = {
     benched: "Đã đo", benchGpu: "Card",
     benchTip: "Đã đo hiệu năng thật bằng Blender Benchmark trong pcdex-scan; % là so với trung bình của cùng mẫu CPU / card",
   },
+  safety: {
+    more: "Thêm", block: "Chặn", unblock: "Bỏ chặn", report: "Báo cáo",
+    blockConfirm: (name: string) => `Chặn ${name}? Hai bên sẽ không nhắn tin, không theo dõi được nhau. Bạn bỏ chặn được bất cứ lúc nào.`,
+    blockedYou: "Bạn đã chặn người này.", cannotSend: "Không gửi được tin nhắn cho người này.",
+    reportTitle: (name: string) => `Báo cáo ${name}`,
+    reportSub: "Quản trị viên sẽ xem báo cáo. Báo cáo từ hội thoại kèm nội dung hội thoại để kiểm tra.",
+    reasons: { spam: "Spam, quảng cáo", scam: "Lừa đảo, đòi chuyển tiền trước", harassment: "Quấy rối, lăng mạ", inappropriate: "Nội dung không phù hợp", other: "Lý do khác" } as Record<string, string>,
+    note: "Mô tả thêm (không bắt buộc)", alsoBlock: "Chặn luôn người này", send: "Gửi báo cáo", sent: "Đã gửi báo cáo. Cảm ơn bạn.",
+    blockedList: "Người đã chặn", blockedNone: "Bạn chưa chặn ai.",
+  },
   msg: {
     title: "Tin nhắn", label: "Tin nhắn", unread: (n: number) => `${n} tin nhắn chưa đọc`,
     login: "Đăng nhập để nhắn tin với người bán và người dùng khác.",
@@ -396,6 +406,7 @@ export const vi = {
     first: (name: string) => `Bắt đầu trò chuyện với ${name}. Hỏi về tình trạng, bảo hành, cách giao hàng… Không chuyển tiền trước khi xem hàng.`,
     about: "Về tin rao", sold: "Đã bán", gone: "Tin không còn bán", banned: "Tài khoản này đã bị khóa",
     older: "Xem tin cũ hơn",
+    photo: "Ảnh", sendPhoto: "Gửi ảnh", uploading: "Đang gửi ảnh…",
   },
   feed: {
     title: "Bảng tin",

@@ -151,6 +151,7 @@ export function Account() {
           <button className="btn" style={{ marginTop: 16 }} onClick={async () => { await logout(); router.push(p("/")); }}>{t.common.logout}</button>
         </section>
 
+        <BlockedList />
         <DeleteAccount handle={user.handle} />
       </div>
     </>
@@ -158,6 +159,34 @@ export function Account() {
 }
 
 /** Tự xóa tài khoản: gõ lại tên tài khoản để xác nhận. Không hoàn tác được. */
+/** Người đã chặn (bỏ chặn ngay tại đây) */
+function BlockedList() {
+  const { t, p } = useI18n();
+  const [items, setItems] = useState<{ handle: string; displayName: string }[] | null>(null);
+  useEffect(() => { api<{ items: { handle: string; displayName: string }[] }>("/v1/me/blocks").then((r) => setItems(r.items)).catch(() => setItems([])); }, []);
+  const unblock = async (handle: string) => {
+    await api(`/v1/users/${encodeURIComponent(handle)}/block`, { method: "DELETE" }).catch(() => {});
+    setItems((x) => x?.filter((i) => i.handle !== handle) ?? null);
+  };
+  return (
+    <section className="panel s12" aria-labelledby="h-blocked">
+      <header><h2 id="h-blocked">{t.safety.blockedList}</h2></header>
+      {items === null ? <div className="skeleton" style={{ height: 40 }} />
+        : items.length === 0 ? <p className="muted">{t.safety.blockedNone}</p>
+        : (
+          <ul className="follow-list">
+            {items.map((i) => (
+              <li key={i.handle} className="follow-row">
+                <Link href={p(profilePath(i.handle))} style={{ color: "inherit", textDecoration: "none" }}><b>{i.displayName}</b> <span className="faint small">@{i.handle}</span></Link>
+                <button type="button" className="btn small" style={{ marginLeft: "auto" }} onClick={() => void unblock(i.handle)}>{t.safety.unblock}</button>
+              </li>
+            ))}
+          </ul>
+        )}
+    </section>
+  );
+}
+
 function DeleteAccount({ handle }: { handle: string }) {
   const router = useRouter();
   const { refresh } = useSession();

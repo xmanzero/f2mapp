@@ -3,13 +3,20 @@ import { SCALE_VERSION } from "@f2m/shared";
 import type { AppDeps } from "../app.js";
 import { userIdFromRequest } from "../auth/session.js";
 import { feed, markAllRead, notifications, unreadCount } from "../services/activity.js";
+import { createReport, listBlocks, REPORT_REASONS, SafetyError, setBlock } from "../services/safety.js";
 import { followingIds, followList, profile, setFollow, setLike, SocialError } from "../services/social.js";
+import { z } from "zod";
+
+const reportBody = z.object({
+  handle: z.string().max(40), conversationId: z.string().uuid().optional(), reason: z.enum(REPORT_REASONS),
+  note: z.string().max(1000).optional(), block: z.boolean().optional(),
+});
 
 /** Cộng đồng: hồ sơ công khai, theo dõi, thích cấu hình máy (không có bình luận) */
 export const socialRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => {
   const { db } = deps;
   const fail = (reply: FastifyReply, e: unknown) => {
-    if (e instanceof SocialError) return reply.code(e.status).send({ error: "social", message: e.message });
+    if (e instanceof SocialError || e instanceof SafetyError) return reply.code(e.status).send({ error: "social", message: e.message });
     throw e;
   };
   const handleOf = (p: unknown) => String((p as { handle: string }).handle ?? "");
@@ -71,6 +78,24 @@ export const socialRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =
     const uid = await me(req, reply); if (!uid) return;
     await markAllRead(db, uid);
     return { unread: 0 };
+  });
+
+  // ---------- chặn / báo cáo ----------
+  const block = (on: boolean) => async (req: FastifyRequest, reply: FastifyReply) => {
+    const uid = await me(req, reply); if (!uid) return;
+    try { return await setBlock(db, uid, handleOf(req.params), on); } catch (e) { return fail(reply, e); }
+  };
+  app.post("/users/:handle/block", limit, block(true));
+  app.delete("/users/:handle/block", limit, block(false));
+  app.get("/me/blocks", async (req, reply) => {
+    const uid = await me(req, reply); if (!uid) return;
+    return { items: await listBlocks(db, uid) };
+  });
+  app.post("/reports", { config: { rateLimit: { max: 20, timeWindow: "1 day" } } }, async (req, reply) => {
+    const uid = await me(req, reply); if (!uid) return;
+    const b = reportBody.safeParse(req.body);
+    if (!b.success) return reply.code(400).send({ error: "bad_request", message: "Dữ liệu chưa đúng" });
+    try { return { id: await createReport(db, uid, b.data) }; } catch (e) { return fail(reply, e); }
   });
 
   /** id những người mình đang theo dõi (lọc bảng xếp hạng "Đang theo dõi") */

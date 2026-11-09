@@ -2,6 +2,7 @@ import { SCALE_VERSION } from "@f2m/shared";
 import { sql } from "kysely";
 import type { DB } from "../db.js";
 import { notify, unnotify } from "./activity.js";
+import { blockedEither, iBlocked } from "./safety.js";
 import { listListings } from "./listings.js";
 import { publicMachines } from "./machines.js";
 
@@ -48,6 +49,8 @@ export async function profile(db: DB, handle: string, viewerId: string | null) {
   return {
     user: { id: u.id, handle: u.handle, displayName: u.display_name, province: u.province, joinedAt: u.created_at },
     me: viewerId === u.id,
+    /** mình đã chặn người này */
+    blocked: viewerId && viewerId !== u.id ? await iBlocked(db, viewerId, u.id) : false,
     following,
     followers: await count("followee_id"),
     followingCount: await count("follower_id"),
@@ -77,6 +80,7 @@ export async function setFollow(db: DB, viewerId: string, handle: string, on: bo
   const u = await userByHandle(db, handle);
   if (!u) throw new SocialError(404, "Không tìm thấy người dùng");
   if (u.id === viewerId) throw new SocialError(400, "Không tự theo dõi chính mình được");
+  if (on && (await blockedEither(db, viewerId, u.id))) throw new SocialError(403, "Không theo dõi được người này");
   if (on) {
     const r = await db.insertInto("follows").values({ follower_id: viewerId, followee_id: u.id }).onConflict((oc) => oc.doNothing()).returning("followee_id").executeTakeFirst();
     if (r) await notify(db, u.id, viewerId, "follow", null);

@@ -382,6 +382,16 @@ export const en: typeof vi = {
     benched: "Benchmarked", benchGpu: "GPU",
     benchTip: "Real performance measured with Blender Benchmark in pcdex-scan; % is versus the average of the same CPU / card model",
   },
+  safety: {
+    more: "More", block: "Block", unblock: "Unblock", report: "Report",
+    blockConfirm: (name: string) => `Block ${name}? Neither of you will be able to message or follow the other. You can unblock any time.`,
+    blockedYou: "You blocked this person.", cannotSend: "You can’t message this person.",
+    reportTitle: (name: string) => `Report ${name}`,
+    reportSub: "An admin will review it. Reports from a conversation include the conversation so it can be checked.",
+    reasons: { spam: "Spam or ads", scam: "Scam, asking for payment upfront", harassment: "Harassment or abuse", inappropriate: "Inappropriate content", other: "Something else" } as Record<string, string>,
+    note: "More details (optional)", alsoBlock: "Also block this person", send: "Send report", sent: "Report sent. Thank you.",
+    blockedList: "Blocked people", blockedNone: "You haven’t blocked anyone.",
+  },
   msg: {
     title: "Messages", label: "Messages", unread: (n: number) => `${n} unread messages`,
     login: "Sign in to message sellers and other users.",
@@ -393,6 +403,7 @@ export const en: typeof vi = {
     first: (name: string) => `Start chatting with ${name}. Ask about condition, warranty, delivery… Don’t pay before you see the item.`,
     about: "About the listing", sold: "Sold", gone: "No longer for sale", banned: "This account has been suspended",
     older: "Load older messages",
+    photo: "Photo", sendPhoto: "Send a photo", uploading: "Sending photo…",
   },
   feed: {
     title: "Feed",

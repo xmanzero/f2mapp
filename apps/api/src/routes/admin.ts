@@ -11,6 +11,7 @@ import {
 import { BrandingError, brandingInput, deleteAsset, getBranding, isBrandKind, MAX_BRAND_BYTES, prepareAsset, saveAsset, saveBrandingText } from "../services/branding.js";
 import { getSmtpPublic, mailer, saveSmtp, SettingsError, smtpInput } from "../services/settings.js";
 import { benchCalibration, benchSummary, recentBench } from "../services/bench.js";
+import { listReports, reportDetail, resolveReport, SafetyError } from "../services/safety.js";
 
 const uuid = z.string().uuid();
 
@@ -34,6 +35,36 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
   app.get("/admin/stats", async (req, reply) => {
     if (!(await admin(req, reply))) return;
     return { stats: await stats(db), log: await recentLog(db, 30) };
+  });
+
+  // ---------- báo cáo người dùng ----------
+  app.get("/admin/reports", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    const status = (req.query as { status?: string }).status === "closed" ? "closed" : "open";
+    return { items: await listReports(db, status) };
+  });
+  app.get("/admin/reports/:id", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    const id = idOf(req);
+    const d = id.success ? await reportDetail(db, id.data) : null;
+    if (!d) return reply.code(404).send({ error: "not_found", message: "Không tìm thấy báo cáo" });
+    return d;
+  });
+  const resolveBody = z.object({ status: z.enum(["resolved", "dismissed"]), note: z.string().max(500).optional() });
+  app.post("/admin/reports/:id/resolve", async (req, reply) => {
+    const me = await admin(req, reply);
+    if (!me) return;
+    const id = idOf(req);
+    const body = resolveBody.safeParse(req.body);
+    if (!id.success || !body.success) return bad(reply);
+    try {
+      const target = await resolveReport(db, me.id, id.data, body.data.status, body.data.note);
+      await logAction(db, me, body.data.status === "resolved" ? "report.resolve" : "report.dismiss", target, body.data.note ? { reason: body.data.note } : undefined);
+      return { ok: true };
+    } catch (e) {
+      if (e instanceof SafetyError) return reply.code(e.status).send({ error: "admin", message: e.message });
+      throw e;
+    }
   });
 
   // ---------- số đo hiệu năng ----------

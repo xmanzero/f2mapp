@@ -13,6 +13,7 @@ import { profilePath, type FollowRow, type ProfileMachine, type PublicProfile } 
 import { useSession } from "@/lib/session";
 import { personTint } from "@/data/sample";
 import { TierEmblem, tierVars } from "./tier";
+import { UserSafetyMenu } from "./user-safety";
 
 const initialOf = (name: string) => name.trim()[0]?.toUpperCase() ?? "?";
 
@@ -64,9 +65,14 @@ export function Profile({ initial }: { initial: PublicProfile }) {
         <div className="profile-actions">
           {data.me ? <Link href={p("/tai-khoan")} className="btn">{T.edit}</Link>
             : user === null ? <Link href={`${p("/dang-nhap")}?next=${encodeURIComponent(profilePath(u.handle))}`} className="btn primary">{T.loginToFollow}</Link>
+            : data.blocked ? <span className="muted">{t.safety.blockedYou}</span>
             : <button type="button" className={`btn ${data.following ? "" : "primary"}`} disabled={busy || user === undefined} onClick={toggleFollow}
                 aria-pressed={data.following} title={data.following ? T.unfollow : undefined}>{data.following ? T.following : T.follow}</button>}
-          {!data.me && user && <MessageUser handle={u.handle} />}
+          {!data.me && user && !data.blocked && <MessageUser handle={u.handle} />}
+          {!data.me && user && (
+            <UserSafetyMenu handle={u.handle} name={u.displayName} blocked={!!data.blocked}
+              onBlocked={(b) => setData((d) => ({ ...d, blocked: b, following: b ? false : d.following, followers: b && d.following ? d.followers - 1 : d.followers }))} />
+          )}
           {error && <span className="stamp" role="alert" style={{ color: "var(--negative)" }}>{error}</span>}
         </div>
       </div>

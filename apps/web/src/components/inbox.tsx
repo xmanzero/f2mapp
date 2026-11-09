@@ -1,7 +1,7 @@
 "use client";
 
 import { localizePartLabel } from "@f2m/shared";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, ImageIcon, ImagePlus, Send } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -9,7 +9,9 @@ import { personTint } from "@/data/sample";
 import { useI18n } from "@/i18n/client";
 import { api, ApiError } from "@/lib/api";
 import { listingPath } from "@/lib/listing-url";
-import { photoUrl } from "@/lib/photos";
+import { pageLocale } from "@/i18n/config";
+import { photoUrl, shrinkImage } from "@/lib/photos";
+import { UserSafetyMenu } from "./user-safety";
 import { profilePath } from "@/lib/profile";
 import { useSession } from "@/lib/session";
 import { ago } from "@/lib/time";
@@ -18,9 +20,22 @@ interface Conv {
   id: string; lastMessageAt: string; unread: number;
   other: { handle: string; displayName: string; banned: boolean };
   listing: { id: string; name: string; priceVnd: number | null; status: string | null; province: string | null; photo: string | null } | null;
-  last: { body: string; mine: boolean } | null;
+  last: { body: string; mine: boolean; image?: boolean } | null;
+  /** chỉ có khi mở hội thoại */
+  blocked?: boolean; canSend?: boolean;
 }
-interface Msg { id: string; body: string; createdAt: string; mine: boolean; read: boolean }
+interface Msg { id: string; body: string; createdAt: string; mine: boolean; read: boolean; image: { id: string; width: number; height: number } | null }
+const imageUrl = (id: string) => `/api/v1/messages/images/${id}`;
+
+/** Gửi ảnh (thân yêu cầu là tệp ảnh đã thu nhỏ trên trình duyệt; máy chủ đổi sang WebP) */
+async function uploadImage(conversationId: string, blob: Blob): Promise<Msg> {
+  const res = await fetch(`/api/v1/conversations/${conversationId}/images`, {
+    method: "POST", headers: { "content-type": blob.type || "image/jpeg", "x-lang": pageLocale() }, body: blob, credentials: "same-origin",
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new ApiError(res.status, data.message ?? String(res.status), data.error);
+  return data.message as Msg;
+}
 
 const POLL_THREAD = 5_000, POLL_LIST = 20_000;
 const initialOf = (n: string) => n.trim()[0]?.toUpperCase() ?? "?";
@@ -82,7 +97,7 @@ function ConvRow({ c, active, onOpen }: { c: Conv; active: boolean; onOpen: () =
         <span className="conv-body">
           <span className="conv-top"><b>{c.other.displayName}</b><small className="faint">{ago(c.lastMessageAt, locale)}</small></span>
           {c.listing && <small className="conv-listing">{localizePartLabel(c.listing.name, locale)}</small>}
-          <span className="conv-last">{c.last?.mine ? t.msg.you : ""}{c.last?.body}</span>
+          <span className="conv-last">{c.last?.mine ? t.msg.you : ""}{c.last?.image && !c.last.body ? <><ImageIcon size={13} aria-hidden="true" className="conv-photo" /> {t.msg.photo}</> : c.last?.body}</span>
         </span>
         {c.unread > 0 && <span className="conv-count num" aria-label={t.msg.unread(c.unread)}>{c.unread}</span>}
       </button>
@@ -100,6 +115,8 @@ function Thread({ id, onSent, onBack }: { id: string; onSent: () => void; onBack
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const end = useRef<HTMLDivElement>(null);
+  const file = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   const last = useRef<string | null>(null);
 
   useEffect(() => {
@@ -138,6 +155,18 @@ function Thread({ id, onSent, onBack }: { id: string; onSent: () => void; onBack
     } catch (e) { setError((e as ApiError).message); }
     setBusy(false);
   };
+  const sendPhoto = async (f: File | undefined) => {
+    if (!f) return;
+    setUploading(true); setError(null);
+    try {
+      const m = await uploadImage(id, await shrinkImage(f, 1600));
+      setMsgs((x) => [...x, m]);
+      last.current = m.createdAt;
+      onSent();
+    } catch (e) { setError((e as Error).message); }
+    setUploading(false);
+    if (file.current) file.current.value = "";
+  };
   const older = async () => {
     if (!msgs[0]) return;
     const r = await api<{ messages: Msg[]; hasMore: boolean }>(`/v1/conversations/${id}?before=${encodeURIComponent(msgs[0].createdAt)}`);
@@ -155,6 +184,8 @@ function Thread({ id, onSent, onBack }: { id: string; onSent: () => void; onBack
           <span className="avatar" aria-hidden="true" style={{ background: personTint(conv.other.displayName) }}>{initialOf(conv.other.displayName)}</span>
           <span><b>{conv.other.displayName}</b><small className="faint"> @{conv.other.handle}</small></span>
         </Link>
+        <UserSafetyMenu handle={conv.other.handle} name={conv.other.displayName} blocked={!!conv.blocked} conversationId={id}
+          onBlocked={(b) => setConv((c) => c && ({ ...c, blocked: b, canSend: !b && !c.other.banned }))} />
       </header>
       {l && (
         <Link href={p(listingPath({ id: l.id, name: l.name, province: l.province }))} className="thread-listing">
@@ -172,15 +203,25 @@ function Thread({ id, onSent, onBack }: { id: string; onSent: () => void; onBack
         {hasMore && <button type="button" className="btn small" onClick={older}>{T.older}</button>}
         {msgs.length === 0 && <p className="muted thread-first">{T.first(conv.other.displayName)}</p>}
         {msgs.map((m) => (
-          <div key={m.id} className={`bubble${m.mine ? " mine" : ""}`}>
-            <p>{m.body}</p>
+          <div key={m.id} className={`bubble${m.mine ? " mine" : ""}${m.image ? " has-image" : ""}`}>
+            {m.image && (
+              <a href={imageUrl(m.image.id)} target="_blank" rel="noopener" className="bubble-img">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imageUrl(m.image.id)} alt={T.photo} width={m.image.width} height={m.image.height} loading="lazy" />
+              </a>
+            )}
+            {m.body && <p>{m.body}</p>}
             <small className="faint">{ago(m.createdAt, locale)}</small>
           </div>
         ))}
         <div ref={end} />
       </div>
-      {conv.other.banned ? <p className="muted thread-closed">{T.banned}</p> : (
+      {conv.other.banned ? <p className="muted thread-closed">{T.banned}</p>
+        : conv.canSend === false ? <p className="muted thread-closed">{conv.blocked ? t.safety.blockedYou : t.safety.cannotSend}</p> : (
         <form className="composer" onSubmit={(e) => { e.preventDefault(); void send(); }}>
+          <input ref={file} type="file" accept="image/*" hidden onChange={(e) => void sendPhoto(e.target.files?.[0])} />
+          <button type="button" className="icon-btn composer-photo" aria-label={uploading ? T.uploading : T.sendPhoto} title={T.sendPhoto}
+            disabled={uploading} onClick={() => file.current?.click()}><ImagePlus aria-hidden="true" /></button>
           <textarea value={text} rows={2} maxLength={2000} placeholder={T.placeholder} aria-label={T.placeholder}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); void send(); } }} />
