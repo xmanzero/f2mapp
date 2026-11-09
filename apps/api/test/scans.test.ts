@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { BENCH_OFFICIAL } from "@f2m/shared";
 import { ageParts, setup, spec } from "./helpers.js";
 
 let t: Awaited<ReturnType<typeof setup>>;
@@ -75,12 +76,44 @@ describe("quét máy → gắn vào tài khoản", () => {
     const m = (await machines(tk))[0]! as unknown as { id: string; bench: B };
     expect(m.bench.cpu?.points).toBe(6100);
     expect(m.bench.gpu).toBeNull();
-    // bảng xếp hạng: chỉ % so với trung bình (huy hiệu "Đã đo")
+    // số đo không có kết quả gốc / mã đo (phần mềm cũ): chưa xác minh → không lên bảng xếp hạng
     const board = (await req("GET", "/v1/leaderboard")).json().items as { handle: string; bench: unknown }[];
-    expect(board.find((x) => x.handle.startsWith("quetbench"))?.bench).toEqual({ cpu: 61, gpu: null });
+    expect(board.find((x) => x.handle.startsWith("quetbench"))?.bench).toBeNull();
     const again = (await req("POST", "/v1/scans", report())).json();
     await req("POST", `/v1/scans/${again.code}/claim`, { machineId: m.id }, tk);
     expect(((await machines(tk))[0]! as unknown as { bench: B }).bench.cpu?.points).toBe(6100);
+  });
+
+  it("số đo đã xác minh: mã đo dùng một lần, đủ thời gian → chỉnh điểm Đồ họa, lên bảng xếp hạng", async () => {
+    const tk = await register("quetverify@test.vn");
+    // số đo i5-12400F ~ 94% trung bình (155,7 điểm Blender = 10.000)
+    const sc = { monster: 66, junkshop: 48, classroom: 32 };
+    const runs = Object.entries(sc).map(([scene, spm]) => ({ scene, sceneChecksum: BENCH_OFFICIAL.scenes[scene], samples: spm / 2, seconds: 30, timeLimit: 30 }));
+    const bench = (nonce: string) => ({
+      blender: "4.5.0", launcher: "3.3.0", launcherChecksum: BENCH_OFFICIAL.launcher["3.3.0"], script: "3.1.2", scriptChecksum: BENCH_OFFICIAL.script["3.1.2"],
+      blenderChecksum: BENCH_OFFICIAL.blender, nonce, cpu: { name: "Intel Core i5-12400F", type: "CPU", threads: 12, scenes: sc, runs },
+    });
+    const n1 = (await req("POST", "/v1/bench/start", {})).json().nonce as string;
+    // gửi ngay sau khi xin mã: chưa đủ thời gian đo thật
+    const quick = (await req("POST", "/v1/scans", report({ bench: bench(n1) }))).json();
+    expect(quick.result.bench.cpu).toMatchObject({ trust: "unverified", flags: ["nonce"] });
+    const n2 = (await req("POST", "/v1/bench/start", {})).json().nonce as string;
+    await t.db.updateTable("bench_nonces").set({ created_at: new Date(Date.now() - 5 * 60_000) }).where("nonce", "=", n2).execute();
+    const ok = (await req("POST", "/v1/scans", report({ bench: bench(n2) }))).json();
+    expect(ok.result.bench.cpu).toMatchObject({ trust: "verified", pct: 94, points: 9375 });
+    // dùng lại mã đã dùng → không xác minh
+    expect((await req("POST", "/v1/scans", report({ bench: bench(n2) }))).json().result.bench.cpu.flags).toEqual(["nonce"]);
+    await req("POST", `/v1/scans/${ok.code}/claim`, { machineId: null, psuW: 650 }, tk);
+    const m = (await machines(tk))[0]! as unknown as { power: number };
+    // máy mốc 12400F + 3060 = 10.000; render CPU 94% → điểm thấp hơn một chút
+    expect(m.power).toBeLessThan(10000);
+    expect(m.power).toBeGreaterThan(9500);
+    const board = (await req("GET", "/v1/leaderboard")).json().items as { handle: string; bench: unknown; power: number }[];
+    const row = board.find((x) => x.handle.startsWith("quetverify"))!;
+    expect(row.bench).toEqual({ cpu: 94, gpu: null });
+    expect(row.power).toBe(m.power);
+    const saved = await t.db.selectFrom("bench_results").select(["trust", "pct"]).where("kind", "=", "cpu").where("pct", "=", 94).execute();
+    expect(saved).toEqual([{ trust: "verified", pct: 94 }]);
   });
 
   it("cập nhật máy đã khai: linh kiện khai sơ sài được giữ (kể cả tin đang bán) và bổ sung chi tiết; linh kiện khác thì thành đã thay ra", async () => {

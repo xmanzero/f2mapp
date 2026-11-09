@@ -3,7 +3,7 @@
 import { useI18n } from "@/i18n/client";
 
 import {
-  evaluate, localizePartLabel, partLabel, resolveMachine, tierName, RESOLUTION_LABEL, specFromInput, specToInput,
+  benchForSpec, evaluate, localizePartLabel, measuredRender, partLabel, resolveMachine, tierName, RESOLUTION_LABEL, specFromInput, specToInput,
   type MachineInput, type MachineSpec, type PartKind,
 } from "@f2m/shared";
 import { X } from "lucide-react";
@@ -80,7 +80,7 @@ export function MachineDetail({ target, myPower, onClose }: { target: DetailTarg
 
 function Body({ target, data, myPower }: { target: DetailTarget; data: PublicMachine; myPower: number | null }) {
   const { spec } = data;
-  const cfg = resolveMachine(specToInput(spec));
+  const cfg = resolveMachine(specToInput(spec), measuredRender(benchForSpec(data.bench ?? null, spec)));
   const { t, n0, ratio, locale } = useI18n();
   const T = t.pcDetail, M = t.machine, K = t.listing.kind;
   const r = evaluate(cfg, undefined, locale);
@@ -127,11 +127,11 @@ function Body({ target, data, myPower }: { target: DetailTarget; data: PublicMac
           <div key={k}><div className="label">{l}</div><div className="value num">{n0(s[k])}</div></div>
         ))}
       </div>
-      {data.bench && (data.bench.cpu?.pct != null || data.bench.gpu?.pct != null) && (
+      {data.bench && (data.bench.cpu?.trust === "verified" || data.bench.gpu?.trust === "verified") && (
         <p className="bench-line">
           <span className="faint">{t.bench.title}</span>
-          {data.bench.cpu?.pct != null && <span>CPU <b className="num">{data.bench.cpu.pct}%</b></span>}
-          {data.bench.gpu?.pct != null && <span>{t.bench.gpu} <b className="num">{data.bench.gpu.pct}%</b></span>}
+          {data.bench.cpu?.trust === "verified" && data.bench.cpu.pct != null && <span>CPU <b className="num">{data.bench.cpu.pct}%</b></span>}
+          {data.bench.gpu?.trust === "verified" && data.bench.gpu.pct != null && <span>{t.bench.gpu} <b className="num">{data.bench.gpu.pct}%</b></span>}
           <span className="faint">{t.bench.ofAvg}</span>
         </p>
       )}

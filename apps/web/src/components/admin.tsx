@@ -9,12 +9,13 @@ import { api, ApiError } from "@/lib/api";
 import { n0, vnd } from "@/lib/format";
 import { KIND_LABEL } from "@/lib/listings";
 import { useSession } from "@/lib/session";
+import { AdminBench } from "./admin-bench";
 import { AdminBranding } from "./admin-branding";
 import { EmailLog, EmailTemplates } from "./admin-email";
 
-type Tab = "overview" | "users" | "listings" | "email" | "thuong-hieu";
+type Tab = "overview" | "users" | "listings" | "email" | "so-do" | "thuong-hieu";
 const TABS: { id: Tab; label: string }[] = [
-  { id: "overview", label: "Tổng quan" }, { id: "users", label: "Người dùng" }, { id: "listings", label: "Tin rao" }, { id: "email", label: "Email" }, { id: "thuong-hieu", label: "Thương hiệu" },
+  { id: "overview", label: "Tổng quan" }, { id: "users", label: "Người dùng" }, { id: "listings", label: "Tin rao" }, { id: "email", label: "Email" }, { id: "so-do", label: "Số đo" }, { id: "thuong-hieu", label: "Thương hiệu" },
 ];
 const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString("vi-VN") : "—");
 const dayTime = (iso: string) => new Date(iso).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -50,6 +51,7 @@ export function Admin() {
       {tab === "users" && <Users meId={user.id} />}
       {tab === "listings" && <Listings />}
       {tab === "email" && <Email defaultTo={user.email ?? ""} />}
+      {tab === "so-do" && <AdminBench />}
       {tab === "thuong-hieu" && <AdminBranding />}
     </>
   );

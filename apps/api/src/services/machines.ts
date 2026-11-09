@@ -1,6 +1,6 @@
 import {
-  badgesFor, benchForSpec, computeScores, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
-  tierOf, VERIFIABLE_KINDS, type BenchResult, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
+  badgesFor, benchForSpec, computeScores, measuredRender, CPUS, GPUS, MAX_MACHINES, partKey, partLabel, resolveMachine, sameScannedPart, SCALE_VERSION, specFromInput, specToInput,
+  tierOf, VERIFIABLE_KINDS, type BenchDevice, type BenchResult, type Drive, type MachineConfig, type MachineInput, type MachineSpec, type PartKind, type RamKit,
 } from "@f2m/shared";
 import { sql } from "kysely";
 import type { DB } from "../db.js";
@@ -62,6 +62,9 @@ const keyOf = (row: { kind: PartKind; label: string; details: unknown }): string
 type MachineRow = { id: string; name: string; is_primary: boolean; ram_gb: number; ram_channels: number; storage: string; pcie_gen: number; psu_w: number; resolution: number; last_scan_at: Date | null; bench: unknown };
 /** Số đo hiệu năng còn đúng với CPU / card đang lắp */
 const benchOf = (m: MachineRow, spec: MachineSpec) => benchForSpec(m.bench as BenchResult | null, spec);
+/** Cấu hình để tính điểm: điểm render theo số đo đã xác minh của chính máy (nếu có) */
+const configOf = (spec: MachineSpec, bench: unknown) =>
+  resolveMachine(specToInput(spec), measuredRender(benchForSpec(bench as BenchResult | null, spec)));
 const summaryOf = (m: MachineRow, cpu: string, gpu: string): MachineInput => ({
   cpu, gpu, ramGb: m.ram_gb, ramChannels: m.ram_channels as 1 | 2, storage: m.storage as MachineInput["storage"],
   pcieGen: m.pcie_gen as 3 | 4 | 5, psuW: m.psu_w, resolution: m.resolution as MachineInput["resolution"],
@@ -140,7 +143,7 @@ export async function loadMachines(db: DB, userId: string) {
     }));
     const verifiable = view.filter((p) => p.status === "in_use" && VERIFIABLE_KINDS.includes(p.kind));
     const input = specToInput(built.spec);
-    const s = computeScores(resolveMachine(input));
+    const s = computeScores(configOf(built.spec, m.bench));
     out.push({
       id: m.id, name: m.name, isPrimary: m.is_primary, spec: built.spec, input, missing: built.missing, parts: view,
       verified: verifiable.length > 0 && verifiable.every((p) => p.verified), lastScanAt: m.last_scan_at, bench: benchOf(m, built.spec),
@@ -156,7 +159,7 @@ export async function loadMachines(db: DB, userId: string) {
  * linh kiện bị bỏ ra → "đã thay ra"; linh kiện mới → "chưa xác thực".
  */
 export async function saveSpec(db: DB, userId: string, machineId: string | null, spec: MachineSpec, name?: string, opts: { loose?: boolean } = {}) {
-  const cfg = resolveMachine(specToInput(spec));
+  resolveMachine(specToInput(spec)); // kiểm tra tên linh kiện có trong danh mục trước khi ghi
   return db.transaction().execute(async (tx) => {
     const t = tx as unknown as DB;
     const input = specToInput(spec);
@@ -215,7 +218,7 @@ export async function saveSpec(db: DB, userId: string, machineId: string | null,
       if (replaced.length) await t.updateTable("machine_parts").set({ status: "replaced", replaced_at: new Date() }).where("id", "in", replaced).execute();
     }
 
-    await upsertScores(t, id, cfg);
+    await upsertScores(t, id, spec);
     return id;
   });
 }
@@ -230,13 +233,22 @@ export async function refreshScores(db: DB) {
   for (const m of ms) {
     const built = buildSpec(m as unknown as MachineRow, await partsOf(db, m.id));
     if (!built) continue;
-    await upsertScores(db, m.id, resolveMachine(specToInput(built.spec)));
+    await upsertScores(db, m.id, built.spec);
     n++;
   }
   return n;
 }
 
-async function upsertScores(db: DB, machineId: string, cfg: MachineConfig) {
+/** Tính lại điểm một máy (sau khi gắn số đo hiệu năng mới) */
+export async function rescoreMachine(db: DB, machineId: string) {
+  const m = await db.selectFrom("machines").select(machineCols).where("id", "=", machineId).executeTakeFirst();
+  const built = m && buildSpec(m as unknown as MachineRow, await partsOf(db, machineId));
+  if (built) await upsertScores(db, machineId, built.spec);
+}
+
+async function upsertScores(db: DB, machineId: string, spec: MachineSpec) {
+  const bench = await db.selectFrom("machines").select("bench").where("id", "=", machineId).executeTakeFirst();
+  const cfg = configOf(spec, bench?.bench);
   const s = computeScores(cfg);
   const row = {
     gaming: Math.round(s.gaming), render: Math.round(s.render), ai: Math.round(s.ai), office: Math.round(s.office),
@@ -311,13 +323,15 @@ export async function leaderboard(db: DB, limit = 100) {
     const mine = parts.filter((p) => p.machine_id === r.machineId);
     const cpu = mine.find((p) => p.kind === "cpu")?.label ?? null, gpu = mine.find((p) => p.kind === "gpu")?.label ?? null;
     // số đo hiệu năng còn đúng CPU / card đang lắp: chỉ hiện % so với trung bình (chưa tính vào điểm — số đo chưa chống giả mạo)
-    const b = cpu && gpu ? benchForSpec(r.bench as BenchResult | null, { cpu, gpu }) : null;
+    const b0 = cpu && gpu ? benchForSpec(r.bench as BenchResult | null, { cpu, gpu }) : null;
+    const ok = (d: BenchDevice | null | undefined) => d?.trust === "verified" ? d.pct ?? null : null;
+    const b = b0 && (ok(b0.cpu) !== null || ok(b0.gpu) !== null) ? { cpu: ok(b0.cpu), gpu: ok(b0.gpu) } : null;
     return {
       rank: i + 1, userId: r.userId, handle: r.handle, displayName: r.display_name, province: r.province,
       cpu: mine.find((p) => p.kind === "cpu")?.label ?? null, gpu: mine.find((p) => p.kind === "gpu")?.label ?? null,
       ramGb: r.ram_gb, resolution: r.resolution, power: r.power, tier: r.tier,
       verified: mine.length === 2 && mine.every((p) => p.verified_at),
-      bench: b ? { cpu: b.cpu?.pct ?? null, gpu: b.gpu?.pct ?? null } : null,
+      bench: b,
     };
   });
 }

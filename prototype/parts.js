@@ -1082,7 +1082,8 @@ window.PARTS = {
 "tbp": 575,
 "rec": 1000,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4090",
@@ -1099,7 +1100,8 @@ window.PARTS = {
 "tbp": 450,
 "rec": 850,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 5080",
@@ -1116,7 +1118,8 @@ window.PARTS = {
 "tbp": 360,
 "rec": 850,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 7900 XTX",
@@ -1133,7 +1136,8 @@ window.PARTS = {
 "tbp": 355,
 "rec": 800,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4080 Super",
@@ -1150,7 +1154,8 @@ window.PARTS = {
 "tbp": 320,
 "rec": 750,
 "y": 2024,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4080",
@@ -1167,7 +1172,8 @@ window.PARTS = {
 "tbp": 320,
 "rec": 750,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 5070 Ti",
@@ -1184,7 +1190,8 @@ window.PARTS = {
 "tbp": 300,
 "rec": 750,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 9070 XT",
@@ -1201,7 +1208,8 @@ window.PARTS = {
 "tbp": 304,
 "rec": 750,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 7900 XT",
@@ -1218,7 +1226,8 @@ window.PARTS = {
 "tbp": 315,
 "rec": 750,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4070 Ti Super",
@@ -1235,7 +1244,8 @@ window.PARTS = {
 "tbp": 285,
 "rec": 700,
 "y": 2024,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 9070",
@@ -1252,7 +1262,8 @@ window.PARTS = {
 "tbp": 220,
 "rec": 650,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3090 Ti",
@@ -1269,7 +1280,8 @@ window.PARTS = {
 "tbp": 450,
 "rec": 850,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4070 Ti",
@@ -1286,7 +1298,8 @@ window.PARTS = {
 "tbp": 285,
 "rec": 700,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 5070",
@@ -1303,7 +1316,8 @@ window.PARTS = {
 "tbp": 250,
 "rec": 650,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3090",
@@ -1320,7 +1334,8 @@ window.PARTS = {
 "tbp": 350,
 "rec": 750,
 "y": 2020,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4070 Super",
@@ -1337,7 +1352,8 @@ window.PARTS = {
 "tbp": 220,
 "rec": 650,
 "y": 2024,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6950 XT",
@@ -1354,7 +1370,8 @@ window.PARTS = {
 "tbp": 335,
 "rec": 850,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3080 Ti",
@@ -1371,7 +1388,8 @@ window.PARTS = {
 "tbp": 350,
 "rec": 750,
 "y": 2021,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 9070 GRE",
@@ -1388,7 +1406,8 @@ window.PARTS = {
 "tbp": 220,
 "rec": 650,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 7800 XT",
@@ -1405,7 +1424,8 @@ window.PARTS = {
 "tbp": 263,
 "rec": 700,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6900 XT",
@@ -1422,7 +1442,8 @@ window.PARTS = {
 "tbp": 300,
 "rec": 850,
 "y": 2020,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3080 10GB",
@@ -1439,7 +1460,8 @@ window.PARTS = {
 "tbp": 320,
 "rec": 750,
 "y": 2020,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6800 XT",
@@ -1456,7 +1478,8 @@ window.PARTS = {
 "tbp": 300,
 "rec": 750,
 "y": 2020,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4070",
@@ -1473,7 +1496,8 @@ window.PARTS = {
 "tbp": 200,
 "rec": 650,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 5060 Ti 16GB",
@@ -1490,7 +1514,8 @@ window.PARTS = {
 "tbp": 180,
 "rec": 600,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 7700 XT",
@@ -1507,7 +1532,8 @@ window.PARTS = {
 "tbp": 245,
 "rec": 700,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 9060 XT 16GB",
@@ -1524,7 +1550,8 @@ window.PARTS = {
 "tbp": 160,
 "rec": 450,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 5060 Ti 8GB",
@@ -1541,7 +1568,8 @@ window.PARTS = {
 "tbp": 180,
 "rec": 600,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3070 Ti",
@@ -1558,7 +1586,8 @@ window.PARTS = {
 "tbp": 290,
 "rec": 750,
 "y": 2021,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 9060 XT 8GB",
@@ -1575,7 +1604,8 @@ window.PARTS = {
 "tbp": 150,
 "rec": 450,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4060 Ti 16GB",
@@ -1592,7 +1622,8 @@ window.PARTS = {
 "tbp": 165,
 "rec": 550,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 7600 XT",
@@ -1609,7 +1640,8 @@ window.PARTS = {
 "tbp": 190,
 "rec": 600,
 "y": 2024,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3070",
@@ -1626,7 +1658,8 @@ window.PARTS = {
 "tbp": 220,
 "rec": 650,
 "y": 2020,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4060 Ti 8GB",
@@ -1643,7 +1676,8 @@ window.PARTS = {
 "tbp": 160,
 "rec": 550,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6750 XT",
@@ -1660,7 +1694,8 @@ window.PARTS = {
 "tbp": 250,
 "rec": 650,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 5060",
@@ -1677,7 +1712,8 @@ window.PARTS = {
 "tbp": 145,
 "rec": 550,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6700 XT",
@@ -1694,7 +1730,8 @@ window.PARTS = {
 "tbp": 230,
 "rec": 650,
 "y": 2021,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "Arc B580",
@@ -1711,7 +1748,8 @@ window.PARTS = {
 "tbp": 190,
 "rec": 600,
 "y": 2024,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3060 Ti",
@@ -1728,7 +1766,8 @@ window.PARTS = {
 "tbp": 200,
 "rec": 600,
 "y": 2020,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 4060",
@@ -1745,7 +1784,8 @@ window.PARTS = {
 "tbp": 115,
 "rec": 550,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 7600",
@@ -1762,7 +1802,8 @@ window.PARTS = {
 "tbp": 165,
 "rec": 550,
 "y": 2023,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 5050",
@@ -1779,7 +1820,8 @@ window.PARTS = {
 "tbp": 130,
 "rec": 550,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "Arc B570",
@@ -1796,7 +1838,8 @@ window.PARTS = {
 "tbp": 150,
 "rec": 500,
 "y": 2025,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3060 12GB",
@@ -1813,7 +1856,8 @@ window.PARTS = {
 "tbp": 170,
 "rec": 550,
 "y": 2021,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6650 XT",
@@ -1830,7 +1874,8 @@ window.PARTS = {
 "tbp": 180,
 "rec": 500,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6600 XT",
@@ -1847,7 +1892,8 @@ window.PARTS = {
 "tbp": 160,
 "rec": 500,
 "y": 2021,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RX 6600",
@@ -1864,7 +1910,8 @@ window.PARTS = {
 "tbp": 132,
 "rec": 450,
 "y": 2021,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3050 8GB",
@@ -1881,7 +1928,8 @@ window.PARTS = {
 "tbp": 130,
 "rec": 550,
 "y": 2022,
-"src": "toms"
+"src": "toms",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2080 Ti",
@@ -1898,7 +1946,8 @@ window.PARTS = {
 "tbp": 250,
 "rec": 650,
 "y": 2018,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2080 Super",
@@ -1915,7 +1964,8 @@ window.PARTS = {
 "tbp": 250,
 "rec": 650,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2080",
@@ -1932,7 +1982,8 @@ window.PARTS = {
 "tbp": 215,
 "rec": 650,
 "y": 2018,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2070 Super",
@@ -1949,7 +2000,8 @@ window.PARTS = {
 "tbp": 215,
 "rec": 650,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2070",
@@ -1966,7 +2018,8 @@ window.PARTS = {
 "tbp": 175,
 "rec": 550,
 "y": 2018,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2060 Super",
@@ -1983,7 +2036,8 @@ window.PARTS = {
 "tbp": 175,
 "rec": 550,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2060 12GB",
@@ -2000,7 +2054,8 @@ window.PARTS = {
 "tbp": 184,
 "rec": 500,
 "y": 2021,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3060 8GB",
@@ -2017,7 +2072,8 @@ window.PARTS = {
 "tbp": 170,
 "rec": 550,
 "y": 2022,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 3050 6GB",
@@ -2034,7 +2090,8 @@ window.PARTS = {
 "tbp": 70,
 "rec": 300,
 "y": 2024,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 7900 GRE",
@@ -2051,7 +2108,8 @@ window.PARTS = {
 "tbp": 260,
 "rec": 700,
 "y": 2024,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 6800",
@@ -2068,7 +2126,8 @@ window.PARTS = {
 "tbp": 250,
 "rec": 650,
 "y": 2020,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 5700 XT",
@@ -2085,7 +2144,8 @@ window.PARTS = {
 "tbp": 225,
 "rec": 600,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 5700",
@@ -2102,7 +2162,8 @@ window.PARTS = {
 "tbp": 180,
 "rec": 550,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "est"
 },
 {
 "n": "RX 5600 XT",
@@ -2119,7 +2180,8 @@ window.PARTS = {
 "tbp": 150,
 "rec": 450,
 "y": 2020,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "Arc A770",
@@ -2136,7 +2198,8 @@ window.PARTS = {
 "tbp": 225,
 "rec": 650,
 "y": 2022,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "Arc A750",
@@ -2153,7 +2216,8 @@ window.PARTS = {
 "tbp": 225,
 "rec": 600,
 "y": 2022,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1080 Ti",
@@ -2170,7 +2234,8 @@ window.PARTS = {
 "tbp": 250,
 "rec": 600,
 "y": 2017,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1080",
@@ -2187,7 +2252,8 @@ window.PARTS = {
 "tbp": 180,
 "rec": 500,
 "y": 2016,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1070 Ti",
@@ -2204,7 +2270,8 @@ window.PARTS = {
 "tbp": 180,
 "rec": 500,
 "y": 2017,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1070",
@@ -2221,7 +2288,8 @@ window.PARTS = {
 "tbp": 150,
 "rec": 500,
 "y": 2016,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RTX 2060",
@@ -2238,7 +2306,8 @@ window.PARTS = {
 "tbp": 160,
 "rec": 500,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1660 Super",
@@ -2255,7 +2324,8 @@ window.PARTS = {
 "tbp": 125,
 "rec": 450,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1660 Ti",
@@ -2272,7 +2342,8 @@ window.PARTS = {
 "tbp": 120,
 "rec": 450,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1660",
@@ -2289,7 +2360,8 @@ window.PARTS = {
 "tbp": 120,
 "rec": 450,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 6500 XT",
@@ -2306,7 +2378,8 @@ window.PARTS = {
 "tbp": 107,
 "rec": 400,
 "y": 2022,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1060 6GB",
@@ -2323,7 +2396,8 @@ window.PARTS = {
 "tbp": 120,
 "rec": 400,
 "y": 2016,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1650 Super",
@@ -2340,7 +2414,8 @@ window.PARTS = {
 "tbp": 100,
 "rec": 350,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 590",
@@ -2357,7 +2432,8 @@ window.PARTS = {
 "tbp": 225,
 "rec": 500,
 "y": 2018,
-"src": "est"
+"src": "est",
+"rsrc": "est"
 },
 {
 "n": "RX 580 8GB",
@@ -2374,7 +2450,8 @@ window.PARTS = {
 "tbp": 185,
 "rec": 500,
 "y": 2017,
-"src": "est"
+"src": "est",
+"rsrc": "est"
 },
 {
 "n": "RX 5500 XT",
@@ -2391,7 +2468,8 @@ window.PARTS = {
 "tbp": 130,
 "rec": 400,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1060 3GB",
@@ -2408,7 +2486,8 @@ window.PARTS = {
 "tbp": 120,
 "rec": 400,
 "y": 2016,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 580 2048SP",
@@ -2425,7 +2504,8 @@ window.PARTS = {
 "tbp": 150,
 "rec": 450,
 "y": 2018,
-"src": "est"
+"src": "est",
+"rsrc": "est"
 },
 {
 "n": "RX 570",
@@ -2442,7 +2522,8 @@ window.PARTS = {
 "tbp": 150,
 "rec": 450,
 "y": 2017,
-"src": "est"
+"src": "est",
+"rsrc": "est"
 },
 {
 "n": "GTX 970",
@@ -2459,7 +2540,8 @@ window.PARTS = {
 "tbp": 145,
 "rec": 500,
 "y": 2014,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "Arc A380",
@@ -2476,7 +2558,8 @@ window.PARTS = {
 "tbp": 75,
 "rec": 300,
 "y": 2022,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "RX 6400",
@@ -2493,7 +2576,8 @@ window.PARTS = {
 "tbp": 53,
 "rec": 300,
 "y": 2022,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1650",
@@ -2510,7 +2594,8 @@ window.PARTS = {
 "tbp": 75,
 "rec": 300,
 "y": 2019,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1050 Ti",
@@ -2527,7 +2612,8 @@ window.PARTS = {
 "tbp": 75,
 "rec": 300,
 "y": 2016,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1050",
@@ -2544,7 +2630,8 @@ window.PARTS = {
 "tbp": 75,
 "rec": 300,
 "y": 2016,
-"src": "est"
+"src": "est",
+"rsrc": "blender"
 },
 {
 "n": "GTX 1630",
@@ -2561,7 +2648,8 @@ window.PARTS = {
 "tbp": 75,
 "rec": 300,
 "y": 2022,
-"src": "est"
+"src": "est",
+"rsrc": "est"
 },
 {
 "n": "Đồ họa tích hợp (iGPU)",
@@ -2578,7 +2666,8 @@ window.PARTS = {
 "tbp": 0,
 "rec": 300,
 "y": null,
-"src": "est"
+"src": "est",
+"rsrc": "est"
 }
 ]
 };

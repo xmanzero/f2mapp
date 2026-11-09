@@ -596,6 +596,12 @@ export const en: typeof vi = {
     how: "Measured with Blender Benchmark (Cycles rendering) in pcdex-scan and compared with the same model on Blender Open Data. Results are sent from the user’s PC.",
     cta: "Measure real performance with pcdex-scan (the “Benchmark” button) to see whether your PC runs at full strength.",
     scanTitle: "Measured performance",
+    verified: "Verified: this PC’s Creative score uses this measurement (at most ±25% from the model average).",
+    unverified: (why: string) => `Not verified (${why}) — not used for scoring. Measure again with the latest pcdex-scan.`,
+    flags: {
+      no_runs: "measured with an old app version", checksum: "not an official Blender build", inconsistent: "numbers don’t match the raw results",
+      threads: "CPU thread count doesn’t match", nonce: "missing the server’s benchmark code", outlier: "unusually far from the same model",
+    } as Record<string, string>,
     ofAvg: "of the model average",
   },
   export: {

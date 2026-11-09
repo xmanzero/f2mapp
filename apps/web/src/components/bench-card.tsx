@@ -16,6 +16,9 @@ export function BenchCard({ bench }: { bench: MachineBench }) {
   const T = t.bench;
   const rows = ([["cpu", bench.cpu], ["gpu", bench.gpu]] as const).filter((x): x is ["cpu" | "gpu", BenchDevice] => !!x[1]);
   const low = rows.some(([, d]) => d.pct !== null && d.pct < 85);
+  const verified = rows.some(([, d]) => d.trust === "verified");
+  // lý do chưa xác minh (gộp các thiết bị); số đo trước pcdex-scan 0.6 không có trường trust
+  const flags = [...new Set(rows.flatMap(([, d]) => d.trust === "verified" ? [] : d.flags ?? ["no_runs"]))].filter((f) => f !== "no_compare");
   return (
     <section className="panel" aria-labelledby="h-bench">
       <header>
@@ -26,6 +29,8 @@ export function BenchCard({ bench }: { bench: MachineBench }) {
         {rows.map(([kind, d]) => <BenchRow key={kind} kind={kind} d={d} />)}
       </ul>
       {low && <p className="bench-tip">{T.lowTip}</p>}
+      {verified && <p className="bench-trust ok">{T.verified}</p>}
+      {flags.length > 0 && <p className="bench-trust">{T.unverified(flags.map((f) => T.flags[f] ?? f).join(" · "))}</p>}
       <p className="faint" style={{ marginTop: 12, fontSize: "var(--fs-small)" }}>{T.how}</p>
     </section>
   );
@@ -43,7 +48,7 @@ function BenchRow({ kind, d }: { kind: "cpu" | "gpu"; d: BenchDevice }) {
           <strong>{d.part ?? d.raw}</strong>
         </div>
         {d.pct !== null
-          ? <span className={`bench-pct num ${tone}`}>{d.pct}%</span>
+          ? <span className={`bench-pct num ${tone}${d.trust === "verified" ? "" : " dim"}`}>{d.pct}%</span>
           : <span className="faint num">{n0(d.points)}</span>}
       </div>
       {d.pct !== null && (

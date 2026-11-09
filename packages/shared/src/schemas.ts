@@ -17,11 +17,25 @@ export type MachineInput = z.infer<typeof machineInputSchema>;
 
 export class UnknownPartError extends Error {}
 
-/** Đổi input (tên linh kiện) thành cấu hình đầy đủ để tính điểm */
-export function resolveMachine(input: MachineInput): MachineConfig {
+/** Điểm render đo thật (Blender Benchmark đã xác minh) của CPU / card trong máy — không nhận từ client */
+export interface MeasuredRender { cpu?: number; gpu?: number }
+/** Số đo kéo điểm render lệch tối đa ±25% so với danh mục (giới hạn thiệt hại nếu số đo vẫn bị làm giả) */
+const MAX_ADJUST = 0.25;
+const adjust = (catalog: number, measured?: number) =>
+  measured ? Math.round(Math.min(catalog * (1 + MAX_ADJUST), Math.max(catalog * (1 - MAX_ADJUST), measured))) : catalog;
+
+/**
+ * Đổi input (tên linh kiện) thành cấu hình đầy đủ để tính điểm.
+ * measured: điểm render đo thật của chính máy này → thay điểm render trung bình của mẫu (điểm Đồ họa theo máy thật).
+ */
+export function resolveMachine(input: MachineInput, measured?: MeasuredRender): MachineConfig {
   const cpu = findCpu(input.cpu);
   if (!cpu) throw new UnknownPartError(`Không có CPU "${input.cpu}" trong danh mục`);
   const gpu = findGpu(input.gpu);
   if (!gpu) throw new UnknownPartError(`Không có card đồ họa "${input.gpu}" trong danh mục`);
-  return { ...input, cpu, gpu };
+  return {
+    ...input,
+    cpu: measured?.cpu ? { ...cpu, render: adjust(cpu.render, measured.cpu) } : cpu,
+    gpu: measured?.gpu ? { ...gpu, render: adjust(gpu.render, measured.gpu) } : gpu,
+  };
 }

@@ -10,6 +10,7 @@ import {
 } from "../services/email.js";
 import { BrandingError, brandingInput, deleteAsset, getBranding, isBrandKind, MAX_BRAND_BYTES, prepareAsset, saveAsset, saveBrandingText } from "../services/branding.js";
 import { getSmtpPublic, mailer, saveSmtp, SettingsError, smtpInput } from "../services/settings.js";
+import { benchCalibration, benchSummary, recentBench } from "../services/bench.js";
 
 const uuid = z.string().uuid();
 
@@ -33,6 +34,17 @@ export const adminRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) =>
   app.get("/admin/stats", async (req, reply) => {
     if (!(await admin(req, reply))) return;
     return { stats: await stats(db), log: await recentLog(db, 30) };
+  });
+
+  // ---------- số đo hiệu năng ----------
+  app.get("/admin/bench", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    return { summary: await benchSummary(db), recent: await recentBench(db, 60) };
+  });
+  app.get("/admin/bench/calibration", async (req, reply) => {
+    if (!(await admin(req, reply))) return;
+    reply.header("content-disposition", 'attachment; filename="bench-calibration.json"');
+    return benchCalibration(db);
   });
 
   // ---------- người dùng ----------

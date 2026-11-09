@@ -5,7 +5,7 @@ import type { AppDeps } from "../app.js";
 import { reqLang } from "../i18n.js";
 import { userIdFromRequest } from "../auth/session.js";
 import { MachineError } from "../services/machines.js";
-import { claimScan, createScan, getScan, prettyCode, qrMatrix } from "../services/scans.js";
+import { claimScan, createScan, getScan, prettyCode, qrMatrix, startBench } from "../services/scans.js";
 
 const claimBody = z.object({
   machineId: z.string().uuid().nullable(),
@@ -30,6 +30,9 @@ export const scanRoutes = (deps: AppDeps): FastifyPluginAsync => async (app) => 
     const claimUrl = `${webBase(req)}${reqLang(req) === "en" ? "/en" : ""}/quet?ma=${s.code}`;
     return reply.code(201).send({ code: s.code, pretty: prettyCode(s.code), claimUrl, qr: qrMatrix(claimUrl), expiresAt: s.expiresAt, result: s.result });
   });
+
+  /** pcdex-scan xin mã đo dùng một lần ngay trước khi chạy Blender Benchmark (chống gửi số đo bịa) */
+  app.post("/bench/start", { config: { rateLimit: { max: 20, timeWindow: "1 hour" } } }, async () => ({ nonce: await startBench(db) }));
 
   app.get("/scans/:code", async (req, reply) => {
     const { code } = req.params as { code: string };

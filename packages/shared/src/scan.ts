@@ -7,6 +7,7 @@ import { z } from "zod";
 import { CPUS, GPUS } from "./catalog";
 import type { Drive, Mainboard, MachineSpec, PartKind, RamKit, RamType } from "./spec";
 import type { PcieGen, Resolution, StorageKind } from "./types";
+import type { MeasuredRender } from "./schemas";
 
 // ---------- dữ liệu thô ----------
 const text = (max: number) => z.string().max(max).transform((s) => s.replace(/\s+/g, " ").trim());
@@ -14,17 +15,40 @@ const optNum = z.number().finite().nullable().optional().transform((n) => n ?? n
 
 /** Số đo Blender Benchmark của một thiết bị: samples_per_minute từng cảnh (đọc từ `benchmark-launcher-cli benchmark --json`) */
 const spm = z.number().finite().positive().max(1e6);
+const hex = z.string().regex(/^[0-9a-f]{6,64}$/i);
+/** Kết quả gốc của một cảnh (stats trong JSON của Blender) — để máy chủ kiểm tra số đo có khớp nhau không */
+const benchRunSchema = z.object({
+  scene: text(20),
+  /** checksum cảnh do Blender ghi — phải trùng bản chính thức */
+  sceneChecksum: hex.optional(),
+  /** number_of_samples */
+  samples: z.number().int().positive().max(1e7),
+  /** time_for_samples (giây) */
+  seconds: z.number().positive().max(3600),
+  /** time_limit (giây) */
+  timeLimit: z.number().positive().max(3600).optional(),
+});
 const benchDeviceSchema = z.object({
   /** Tên thiết bị Blender báo (VD "Intel Core i7-14700", "NVIDIA GeForce RTX 3060") */
   name: text(120),
   /** CPU, OPTIX (NVIDIA), HIP (AMD), ONEAPI (Intel), CUDA */
   type: text(16),
   scenes: z.object({ monster: spm, junkshop: spm, classroom: spm }),
+  /** num_cpu_threads Blender dùng (đo CPU) — phải khớp số luồng trong bản quét */
+  threads: optNum,
+  runs: z.array(benchRunSchema).max(6).optional(),
 });
 export const benchReportSchema = z.object({
   /** Phiên bản Blender đã chạy (VD "4.5.0") */
   blender: text(20),
   launcher: text(20).optional(),
+  /** checksum công cụ đo, script đo và bản Blender do chính Blender ghi trong kết quả */
+  launcherChecksum: hex.optional(),
+  script: text(20).optional(),
+  scriptChecksum: hex.optional(),
+  blenderChecksum: hex.optional(),
+  /** mã dùng một lần máy chủ cấp lúc bắt đầu đo (POST /v1/bench/start) */
+  nonce: z.string().max(64).optional(),
   cpu: benchDeviceSchema.optional(),
   gpu: benchDeviceSchema.optional(),
 });
@@ -262,6 +286,29 @@ export const BENCH_SCENES = ["monster", "junkshop", "classroom"] as const;
 export const BLENDER_REF = { cpu: 155.74156713789637, gpu: 2155.3024287254093 } as const;
 /** API card có trong dữ liệu so sánh (NVIDIA đo bằng OptiX, AMD bằng HIP, Intel bằng oneAPI) */
 const COMPARABLE_GPU_API = new Set(["OPTIX", "HIP", "ONEAPI"]);
+/** Checksum bản chính thức (Blender tự ghi trong kết quả --json; benchmark-launcher-cli 3.3.0 trên Windows, 09/11/2026) */
+export const BENCH_OFFICIAL = {
+  launcher: { "3.3.0": "9d01636a9f9cf2386289bc4ab0cf1be9cd88b65097f0664066d519a197aee236" } as Record<string, string>,
+  script: { "3.1.2": "2881a9f160a24ccd4282e43b861bd727e33562a4a230401343b590d10e890272" } as Record<string, string>,
+  blender: "2ee75e9466d293a784fdf020f60fe1309c1e0610ecf73c64f1fc09b01e5eec56",
+  scenes: {
+    monster: "8ff812a02f720433de1403dab447be9541eecca71cc919224a7790d017c1b2ce",
+    junkshop: "f5515a21a1337b908212d8d76733530df83014464a24c585ab7b96000da0cdce",
+    classroom: "936f0a528f03eba291c67ea87743a0ebde58938fb87471b262721b89b46b875d",
+  } as Record<string, string>,
+};
+/** Mỗi cảnh chạy 30 giây: số đo cả lượt (CPU hoặc card) không thể xong sớm hơn ngần này */
+export const BENCH_MIN_SECONDS_PER_DEVICE = 75;
+/**
+ * Khoảng % so với trung bình cùng mẫu được coi là bình thường. Điểm danh mục lấy từ Blender Open Data thì hẹp
+ * (ép xung / tản nhiệt kém vẫn nằm trong), điểm ước tính thì rộng (chính số đo sẽ dùng để sửa ước tính).
+ */
+export const BENCH_RANGE = { blender: [60, 130], est: [35, 250] } as const;
+/** Số đo đã xác minh chỉ được kéo điểm render của máy lệch tối đa ±25% so với danh mục */
+export const BENCH_MAX_ADJUST = 0.25;
+
+/** Lý do số đo chưa được xác minh */
+export type BenchFlag = "no_runs" | "checksum" | "inconsistent" | "threads" | "nonce" | "outlier" | "no_compare";
 
 export interface BenchDevice {
   /** Tên Blender báo */
@@ -277,6 +324,12 @@ export interface BenchDevice {
   expected: number | null;
   /** points / expected (%) */
   pct: number | null;
+  /**
+   * verified = qua mọi kiểm tra (kết quả gốc khớp nhau, đúng bản Blender chính thức, mã đo của máy chủ, kết quả hợp lý)
+   * → dùng để chỉnh điểm Đồ họa và hiệu chỉnh danh mục. Số đo cũ (trước pcdex-scan 0.6) không có trường này = chưa xác minh.
+   */
+  trust?: "verified" | "unverified";
+  flags?: BenchFlag[];
 }
 export interface BenchResult { blender: string; cpu: BenchDevice | null; gpu: BenchDevice | null }
 
@@ -286,8 +339,18 @@ const noVram = (n: string) => n.replace(/\s*\d+\s?GB$/i, "");
  * Đối chiếu số đo với linh kiện đã nhận ra: chỉ nhận số đo của đúng CPU / card chính trong bản quét,
  * đúng phiên bản Blender của dữ liệu so sánh.
  */
-export function interpretBench(b: BenchReport | null | undefined, cpu: PartMatch, gpu: PartMatch & { vramGb: number | null }): BenchResult | null {
+export function interpretBench(
+  b: BenchReport | null | undefined, cpu: PartMatch, gpu: PartMatch & { vramGb: number | null },
+  ctx: { threads?: number | null; nonceOk?: boolean } = {},
+): BenchResult | null {
   if (!b || b.blender !== BENCH_BLENDER) return null;
+  // kiểm tra chung cho cả lượt đo: đúng bản công cụ / script / Blender chính thức, có mã đo của máy chủ
+  const common: BenchFlag[] = [];
+  const off = BENCH_OFFICIAL;
+  if (!b.launcher || off.launcher[b.launcher] !== b.launcherChecksum?.toLowerCase()
+    || !b.script || off.script[b.script] !== b.scriptChecksum?.toLowerCase()
+    || b.blenderChecksum?.toLowerCase() !== off.blender) common.push("checksum");
+  if (!ctx.nonceOk) common.push("nonce");
   const device = (d: BenchReport["cpu"], kind: "cpu" | "gpu"): BenchDevice | null => {
     if (!d) return null;
     if (kind === "cpu" ? d.type !== "CPU" : d.type === "CPU") return null;
@@ -301,10 +364,45 @@ export function interpretBench(b: BenchReport | null | undefined, cpu: PartMatch
     const info = part ? (kind === "cpu" ? CPUS.find((c) => c.name === part) : GPUS.find((g) => g.name === part)) : undefined;
     const comparable = kind === "cpu" || COMPARABLE_GPU_API.has(d.type);
     const expected = info && comparable ? info.render : null;
-    return { raw: d.name, part, type: d.type, score: Math.round(score * 10) / 10, points, expected, pct: expected ? Math.round(points / expected * 100) : null };
+    const pct = expected ? Math.round(points / expected * 100) : null;
+    const flags = [...common, ...checkRuns(d, kind, ctx.threads)];
+    if (pct === null) flags.push("no_compare");
+    else {
+      const est = info && (kind === "cpu" ? (info as (typeof CPUS)[number]).source.mt === "est" : (info as (typeof GPUS)[number]).renderSource === "est");
+      const [lo, hi] = BENCH_RANGE[est ? "est" : "blender"];
+      if (pct < lo || pct > hi) flags.push("outlier");
+    }
+    return {
+      raw: d.name, part, type: d.type, score: Math.round(score * 10) / 10, points, expected, pct,
+      trust: flags.length ? "unverified" : "verified", flags: [...new Set(flags)],
+    };
   };
   const out = { blender: b.blender, cpu: device(b.cpu, "cpu"), gpu: device(b.gpu, "gpu") };
   return out.cpu || out.gpu ? out : null;
+}
+
+/** Kết quả gốc từng cảnh phải có đủ, khớp điểm gửi lên (samples / giây × 60), đúng cảnh chính thức, đủ thời gian */
+function checkRuns(d: NonNullable<BenchReport["cpu"]>, kind: "cpu" | "gpu", threads?: number | null): BenchFlag[] {
+  const flags: BenchFlag[] = [];
+  if (!d.runs?.length) return ["no_runs"];
+  for (const scene of BENCH_SCENES) {
+    const r = d.runs.find((x) => x.scene === scene);
+    if (!r) { flags.push("no_runs"); continue; }
+    if (r.sceneChecksum?.toLowerCase() !== BENCH_OFFICIAL.scenes[scene]) flags.push("checksum");
+    const spmCalc = r.samples / r.seconds * 60;
+    // Blender tính đúng samples / time_for_samples × 60; lệch > 1% là số đã bị sửa
+    if (Math.abs(spmCalc - d.scenes[scene]) > d.scenes[scene] * 0.01 || r.seconds < (r.timeLimit ?? 30) * 0.5) flags.push("inconsistent");
+  }
+  if (kind === "cpu" && threads && d.threads && threads !== d.threads) flags.push("threads");
+  return flags;
+}
+
+/** Điểm render đo được dùng để tính điểm: chỉ số đo đã xác minh, so được với danh mục */
+export function measuredRender(b: BenchResult | null | undefined): MeasuredRender | undefined {
+  if (!b) return undefined;
+  const ok = (d: BenchDevice | null) => d && d.trust === "verified" && d.expected ? d.points : undefined;
+  const m = { cpu: ok(b.cpu), gpu: ok(b.gpu) };
+  return m.cpu || m.gpu ? m : undefined;
 }
 
 /** Phần đo còn đúng với cấu hình hiện tại (đổi CPU / card sau khi đo thì số đo cũ không còn giá trị) */
@@ -315,7 +413,8 @@ export function benchForSpec(b: (BenchResult & { at?: string | Date }) | null | 
   return cpu || gpu ? { ...b, cpu, gpu } : null;
 }
 
-export function interpretScan(r: ScanReport): ScanResult {
+/** nonceOk: máy chủ đã kiểm tra mã đo dùng một lần và thời gian đo (không có thì số đo chưa xác minh) */
+export function interpretScan(r: ScanReport, opts: { nonceOk?: boolean } = {}): ScanResult {
   const notes: string[] = [];
   const cpu = matchCpu(r.cpu.name);
   const g = primaryGpu(r.gpus);
@@ -333,7 +432,7 @@ export function interpretScan(r: ScanReport): ScanResult {
   return {
     cpu, gpu, mainboard: { ...mb, raw: `${r.board.manufacturer} ${r.board.product}`.trim() }, ram, drives,
     resolution: resolutionOf(r.display), display: r.display ? `${r.display.width}×${r.display.height}` : null, notes,
-    bench: interpretBench(r.bench, cpu, gpu),
+    bench: interpretBench(r.bench, cpu, gpu, { threads: r.cpu.threads, nonceOk: opts.nonceOk }),
   };
 }
 

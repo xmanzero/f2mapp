@@ -285,7 +285,8 @@ namespace PcdexScan
             try
             {
                 var gpuHint = report.Gpus.OrderByDescending(g => g.VramBytes ?? 0).FirstOrDefault()?.Name;
-                report.Bench = await bench.RunAsync(gpuHint, benchCts.Token);
+                var nonce = await api.BenchStartAsync();
+                report.Bench = await bench.RunAsync(gpuHint, nonce, benchCts.Token);
                 ShowSpec(report);
                 ResetSide(); // mã đã gửi (nếu có) chưa kèm số đo → gửi lại
                 benchStatus.ForeColor = Lime;

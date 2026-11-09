@@ -39,6 +39,18 @@ namespace PcdexScan
             return reply;
         }
 
+        /// <summary>Xin mã đo dùng một lần trước khi chạy Blender Benchmark. Không kết nối được → null (vẫn đo, nhưng chưa xác minh).</summary>
+        public async Task<string> BenchStartAsync()
+        {
+            try
+            {
+                var res = await http.PostAsync(Server + "/api/v1/bench/start", new StringContent("{}", Encoding.UTF8, "application/json"));
+                if (!res.IsSuccessStatusCode) return null;
+                return FromJson<BenchStart>(await res.Content.ReadAsStringAsync())?.Nonce;
+            }
+            catch { return null; }
+        }
+
         public async Task<ScanStatus> StatusAsync(string code)
         {
             var res = await http.GetAsync(Server + "/api/v1/scans/" + Uri.EscapeDataString(code));

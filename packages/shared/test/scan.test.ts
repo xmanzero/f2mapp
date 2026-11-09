@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   chipsetOf, drivesFrom, interpretScan, mainboardFrom, matchCpu, matchGpu, pcieGenOfChipset, primaryGpu, ramKitsFrom, resolutionOf,
-  sameScannedPart, scanReportSchema, specFromScan, benchForSpec, BLENDER_REF,
+  sameScannedPart, scanReportSchema, specFromScan, benchForSpec, BLENDER_REF, BENCH_OFFICIAL, measuredRender, resolveMachine,
 } from "../src";
 
 const GB = 2 ** 30;
@@ -177,5 +177,56 @@ describe("danh mục mở rộng (09/11/2026)", () => {
     expect(matchGpu("NVIDIA GeForce RTX 3060", 8).name).toBe("RTX 3060 8GB");
     expect(matchGpu("NVIDIA GeForce RTX 2060", 12).name).toBe("RTX 2060 12GB");
     expect(matchGpu("NVIDIA GeForce GTX 1060 3GB", 3).name).toBe("GTX 1060 3GB");
+  });
+});
+
+describe("xác minh số đo hiệu năng", () => {
+  // kết quả gốc thật (i7-14700, 09/11/2026)
+  const runs = [
+    { scene: "monster", sceneChecksum: BENCH_OFFICIAL.scenes.monster, samples: 65, seconds: 31.924849, timeLimit: 30 },
+    { scene: "junkshop", sceneChecksum: BENCH_OFFICIAL.scenes.junkshop, samples: 43, seconds: 30.364408, timeLimit: 30 },
+    { scene: "classroom", sceneChecksum: BENCH_OFFICIAL.scenes.classroom, samples: 33, seconds: 31.282244, timeLimit: 30 },
+  ];
+  const scenes = { monster: 122.16189338906506, junkshop: 84.96790057622727, classroom: 63.29469203040549 };
+  const bench = (o: Record<string, unknown> = {}, dev: Record<string, unknown> = {}) => ({
+    blender: "4.5.0", launcher: "3.3.0", launcherChecksum: BENCH_OFFICIAL.launcher["3.3.0"], script: "3.1.2",
+    scriptChecksum: BENCH_OFFICIAL.script["3.1.2"], blenderChecksum: BENCH_OFFICIAL.blender, nonce: "n",
+    cpu: { name: "Intel Core i7-14700", type: "CPU", threads: 28, scenes, runs, ...dev }, ...o,
+  });
+  const base = {
+    tool: "pcdex-scan/0.6.0", cpu: { name: "Intel(R) Core(TM) i7-14700", cores: 20, threads: 28 },
+    gpus: [{ name: "NVIDIA GeForce GTX 1660 Ti", vramBytes: 6 * GB }], board: { manufacturer: "ASUS", product: "TUF GAMING B660M-PLUS D4" }, ram: [], disks: [],
+  };
+  const cpuOf = (b: unknown, nonceOk = true) => interpretScan(scanReportSchema.parse({ ...base, bench: b }), { nonceOk }).bench?.cpu;
+
+  it("kết quả gốc khớp, đúng bản chính thức, có mã đo → đã xác minh, dùng để tính điểm", () => {
+    const c = cpuOf(bench());
+    expect(c).toMatchObject({ trust: "verified", flags: [], pct: 90 });
+    const r = interpretScan(scanReportSchema.parse({ ...base, bench: bench() }), { nonceOk: true }).bench;
+    expect(measuredRender(r)).toEqual({ cpu: 17364 });
+  });
+  it("sửa điểm mà không sửa kết quả gốc → không khớp", () => {
+    expect(cpuOf(bench({}, { scenes: { ...scenes, monster: 200 } }))?.flags).toContain("inconsistent");
+  });
+  it("thiếu kết quả gốc (bản phần mềm cũ), sai checksum, không có mã đo, sai số luồng", () => {
+    expect(cpuOf(bench({}, { runs: undefined }))?.flags).toEqual(["no_runs"]);
+    expect(cpuOf(bench({ blenderChecksum: "abcdef12" }))?.flags).toContain("checksum");
+    expect(cpuOf(bench(), false)?.flags).toEqual(["nonce"]);
+    expect(cpuOf(bench({}, { threads: 16 }))?.flags).toContain("threads");
+    expect(measuredRender(interpretScan(scanReportSchema.parse({ ...base, bench: bench() }), { nonceOk: false }).bench)).toBeUndefined();
+  });
+  it("kết quả bất thường so với trung bình cùng mẫu → chưa xác minh", () => {
+    const k = 1.6; // 144% trung bình — vượt khoảng 60–130% của mẫu có số Blender
+    const big = { monster: scenes.monster * k, junkshop: scenes.junkshop * k, classroom: scenes.classroom * k };
+    const bigRuns = runs.map((r) => ({ ...r, samples: Math.round(r.samples * k) }));
+    const c = cpuOf(bench({}, { scenes: { monster: bigRuns[0]!.samples / runs[0]!.seconds * 60, junkshop: bigRuns[1]!.samples / runs[1]!.seconds * 60, classroom: bigRuns[2]!.samples / runs[2]!.seconds * 60 }, runs: bigRuns }));
+    expect(big.monster).toBeGreaterThan(0);
+    expect(c).toMatchObject({ trust: "unverified", flags: ["outlier"] });
+  });
+  it("số đo chỉ kéo điểm render lệch tối đa ±25%", () => {
+    const base12400 = resolveMachine({ cpu: "Core i5-12400F", gpu: "RTX 3060 12GB", ramGb: 16, ramChannels: 2, storage: "nvme4", pcieGen: 4, psuW: 550, resolution: 1080 });
+    const hi = resolveMachine({ ...base12400, cpu: "Core i5-12400F", gpu: "RTX 3060 12GB" }, { cpu: 99999, gpu: 1 });
+    expect(hi.cpu.render).toBe(12500);
+    expect(hi.gpu.render).toBe(7500);
   });
 });

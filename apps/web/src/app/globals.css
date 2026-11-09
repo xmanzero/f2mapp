@@ -813,6 +813,9 @@ table.data.market tr.clickable:hover td { background: var(--raised); }
 .bench-track > div.warn { background: var(--warning); }
 .bench-avg { position: absolute; top: -4px; width: 2px; height: 16px; background: var(--text); transform: translateX(-1px); }
 .bench-note { margin-top: 8px; font-size: var(--fs-small); }
-.bench-tip { margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2, var(--track)); font-size: var(--fs-small); }
+.bench-tip { margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: var(--raised); font-size: var(--fs-small); }
 .bench-line { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; margin-top: 12px; font-size: 13px; }
 .bench-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 12px; }
+.bench-pct.dim { color: var(--muted); }
+.bench-trust { margin-top: 12px; font-size: var(--fs-small); color: var(--muted); }
+.bench-trust.ok { color: var(--positive); }

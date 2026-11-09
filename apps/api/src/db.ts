@@ -108,6 +108,11 @@ export interface Database {
     token_hash: string; user_id: string; purpose: "verify" | "reset"; email: string; expires_at: Date; used_at: Date | null; created_at: Generated<Date>;
   };
   user_devices: { user_id: string; device: string; last_ip: string | null; first_seen: Generated<Date>; last_seen: Generated<Date> };
+  bench_nonces: { nonce: string; created_at: Generated<Date>; used_at: Date | null };
+  bench_results: {
+    id: Generated<string>; user_id: string | null; machine_id: string | null; kind: string; part: string | null; raw: string; api: string;
+    points: number; expected: number | null; pct: number | null; trust: string; flags: Generated<string[]>; tool: string | null; created_at: Generated<Date>;
+  };
   scans: {
     id: Generated<string>;
     code: string;

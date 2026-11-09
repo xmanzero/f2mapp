@@ -596,6 +596,12 @@ export const vi = {
     how: "Đo bằng Blender Benchmark (render Cycles) trong phần mềm pcdex-scan, so với kết quả của cùng mẫu trên Blender Open Data. Số đo do máy người dùng gửi lên.",
     cta: "Đo hiệu năng thật bằng pcdex-scan (nút “Đo hiệu năng”) để biết máy có chạy đúng sức không.",
     scanTitle: "Hiệu năng đo được",
+    verified: "Đã xác minh: điểm Đồ họa của máy tính theo số đo này (lệch tối đa ±25% so với trung bình mẫu).",
+    unverified: (why: string) => `Chưa xác minh (${why}) — chưa dùng để tính điểm. Đo lại bằng pcdex-scan bản mới nhất.`,
+    flags: {
+      no_runs: "đo bằng phần mềm bản cũ", checksum: "không phải bản Blender chính thức", inconsistent: "số liệu không khớp kết quả gốc",
+      threads: "số luồng CPU không khớp", nonce: "thiếu mã đo của máy chủ", outlier: "lệch bất thường so với cùng mẫu",
+    } as Record<string, string>,
     ofAvg: "so với trung bình cùng mẫu",
   },
   export: {

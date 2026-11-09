@@ -8,7 +8,7 @@ namespace PcdexScan
 {
     static class Program
     {
-        public const string Version = "0.5.1";
+        public const string Version = "0.6.0";
         /// <summary>Địa chỉ web pcdex mặc định. Đổi bằng tham số --server hoặc biến môi trường PCDEX_SERVER.</summary>
         const string DefaultServer = "https://pcdex.app";
 
@@ -35,7 +35,8 @@ namespace PcdexScan
             {
                 var r = Scanner.Scan("pcdex-scan/" + Version);
                 var gpu = r.Gpus.OrderByDescending(g => g.VramBytes ?? 0).FirstOrDefault()?.Name;
-                r.Bench = new Bench().RunAsync(gpu, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
+                var nonce = new Api(server).BenchStartAsync().GetAwaiter().GetResult();
+                r.Bench = new Bench().RunAsync(gpu, nonce, System.Threading.CancellationToken.None).GetAwaiter().GetResult();
                 File.WriteAllText(Path.GetFullPath(benchOut), Api.ToJson(r), new UTF8Encoding(false));
                 return 0;
             }

@@ -79,6 +79,9 @@ namespace PcdexScan
     // ---------- phản hồi của máy chủ ----------
 
     [DataContract]
+    public class BenchStart { [DataMember(Name = "nonce")] public string Nonce; }
+
+    [DataContract]
     public class CreateScanReply
     {
         [DataMember(Name = "code")] public string Code;

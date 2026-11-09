@@ -1,11 +1,11 @@
-import { randomInt } from "node:crypto";
+import { randomBytes, randomInt } from "node:crypto";
 import {
-  findCpu, findGpu, interpretScan, MAX_MACHINES, specFromScan, VERIFIABLE_KINDS, type MachineSpec, type PartKind, type ScanReport, type ScanResult,
+  BENCH_MIN_SECONDS_PER_DEVICE, findCpu, findGpu, interpretScan, MAX_MACHINES, specFromScan, VERIFIABLE_KINDS, type MachineSpec, type PartKind, type ScanReport, type ScanResult,
 } from "@f2m/shared";
 import { sql } from "kysely";
 import QRCode from "qrcode";
 import type { DB } from "../db.js";
-import { loadMachines, MachineError, saveSpec } from "./machines.js";
+import { loadMachines, MachineError, rescoreMachine, saveSpec } from "./machines.js";
 
 export const SCAN_TTL_MS = 30 * 60_000;
 /** Bỏ chữ dễ nhầm (0/O, 1/I/L) để đọc mã qua điện thoại cho dễ */
@@ -23,8 +23,33 @@ export function qrMatrix(text: string) {
   return { size: q.modules.size, bits };
 }
 
+/** Mã đo dùng một lần: phần mềm xin lúc bắt đầu đo hiệu năng, gửi lại kèm kết quả */
+export async function startBench(db: DB) {
+  const nonce = randomBytes(18).toString("base64url");
+  await db.deleteFrom("bench_nonces").where("created_at", "<", new Date(Date.now() - 2 * 86_400_000)).execute();
+  await db.insertInto("bench_nonces").values({ nonce }).execute();
+  return nonce;
+}
+
+/**
+ * Mã đo hợp lệ: do máy chủ cấp, chưa dùng, cấp cách đây đủ lâu để đo thật (mỗi thiết bị ≥ 75 giây) và không quá 6 giờ.
+ * Dùng rồi thì đánh dấu — một lần đo chỉ gắn được một bản quét.
+ */
+async function checkNonce(db: DB, report: ScanReport): Promise<boolean> {
+  const b = report.bench;
+  if (!b?.nonce) return false;
+  const devices = (b.cpu ? 1 : 0) + (b.gpu ? 1 : 0);
+  const now = Date.now();
+  const used = await db.updateTable("bench_nonces").set({ used_at: new Date() })
+    .where("nonce", "=", b.nonce).where("used_at", "is", null)
+    .where("created_at", "<=", new Date(now - devices * BENCH_MIN_SECONDS_PER_DEVICE * 1000))
+    .where("created_at", ">=", new Date(now - 6 * 3_600_000))
+    .returning("nonce").executeTakeFirst();
+  return !!used;
+}
+
 export async function createScan(db: DB, report: ScanReport) {
-  const result = interpretScan(report);
+  const result = interpretScan(report, { nonceOk: report.bench ? await checkNonce(db, report) : false });
   const expires = new Date(Date.now() + SCAN_TTL_MS);
   // dọn mã hết hạn chưa dùng (rẻ, có index)
   await db.deleteFrom("scans").where("expires_at", "<", new Date(Date.now() - 86_400_000)).where("claimed_at", "is", null).execute();
@@ -116,6 +141,18 @@ export async function claimScan(db: DB, userId: string, rawCode: string, input: 
     // có đo hiệu năng trong lần quét này → thay số đo cũ; không đo thì giữ số đo cũ (chỉ hiện khi vẫn đúng CPU / card)
     const bench = result.bench ? JSON.stringify({ ...result.bench, at: now.toISOString() }) : undefined;
     await db.updateTable("machines").set({ last_scan_at: now, updated_at: sql`now()`, ...(bench ? { bench } : {}) }).where("id", "=", machineId).execute();
+    if (result.bench) {
+      // lưu từng số đo (để quản trị xem, hiệu chỉnh danh mục) rồi tính lại điểm theo số đo đã xác minh
+      const tool = await db.selectFrom("scans").select(sql<string>`report->>'tool'`.as("tool")).where("code", "=", code).executeTakeFirst();
+      for (const [kind, d] of [["cpu", result.bench.cpu], ["gpu", result.bench.gpu]] as const) {
+        if (!d) continue;
+        await db.insertInto("bench_results").values({
+          user_id: userId, machine_id: machineId, kind, part: d.part, raw: d.raw, api: d.type, points: d.points, expected: d.expected, pct: d.pct,
+          trust: d.trust ?? "unverified", flags: d.flags ?? ["no_runs"], tool: tool?.tool ?? null,
+        }).execute();
+      }
+      await rescoreMachine(db, machineId);
+    }
     await db.updateTable("scans").set({ claimed_machine: machineId }).where("code", "=", code).execute();
     return machineId;
   } catch (e) {

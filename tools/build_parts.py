@@ -224,6 +224,17 @@ fps = lambda s: float(re.search(r"\(([\d.]+)\)", s).group(1))
 raster = {r[0]: [fps(c) for c in r[2:5]] for r in toms["raster"][1:]}
 rt = {r[0]: [fps(c) for c in r[2:5]] for r in toms["rt"][1:]}
 
+# Hiệu chỉnh bằng số đo thật (pcdex-scan "Đo hiệu năng", đã xác minh): Quản trị → Số đo → "Tải JSON hiệu chỉnh",
+# lưu vào data/bench-calibration.json. Chỉ thay điểm render đang là ước tính, khi có ≥ CALIB_MIN người đo khác nhau.
+CALIB_MIN = 5
+_calib_path = ROOT / "data/bench-calibration.json"
+calib = {}
+if _calib_path.exists():
+    for c in json.load(open(_calib_path, encoding="utf-8"))["parts"]:
+        if c["users"] >= CALIB_MIN:
+            calib[(c["kind"], c["name"])] = round(c["medianPoints"])
+
+
 cpus = []
 for n, sock, gm_t, st_t, gm_e, st_e, w, y in CPU:
     bp = blender_points("cpu", n)
@@ -232,15 +243,16 @@ for n, sock, gm_t, st_t, gm_e, st_e, w, y in CPU:
         n=n, s=sock, w=w, y=y,
         gm=round(gm_t / GM_REF * 10000) if gm_t else gm_e * 100,
         st=st,
-        mt=bp or round(st * 0.75),  # chưa có Blender: ước tính thô từ đơn nhân
-        src={"gm": "toms" if gm_t else "est", "st": "toms" if st_t else "est", "mt": "blender" if bp else "est"}))
+        mt=bp or calib.get(("cpu", n)) or round(st * 0.75),  # chưa có Blender: số đo người dùng, hoặc ước tính thô từ đơn nhân
+        src={"gm": "toms" if gm_t else "est", "st": "toms" if st_t else "est",
+             "mt": "blender" if bp else "measured" if ("cpu", n) in calib else "est"}))
 
 gpus = []
 for n, t, v, lanes, tbp, rec, y in GPU:
     f1080, f1440, f2160 = raster[t]
     gpus.append(dict(n=n, f=[round(max(f1080, f1440 / R1440), 1), f1440, f2160], r=round(f1440 / REF_1440 * 10000),
                      rt=round(rt[t][1] / REF_RT1440 * 10000), rd=blender_points("gpu", n), v=v, lanes=lanes,
-                     tbp=tbp, rec=rec, y=y, src="toms"))
+                     tbp=tbp, rec=rec, y=y, src="toms", rsrc="blender"))
 base = [61.5, 41.9, 22.2]  # RTX 3060 12GB
 
 
@@ -255,8 +267,10 @@ def render_est(name, rel):
 for n, rel, rtrel, v, lanes, tbp, rec, y in GPU_OLD:
     vf = [1, 0.85 if v <= 6 else 1, 0.6 if v <= 6 else 1]
     gpus.append(dict(n=n, f=[round(b * rel * k, 1) for b, k in zip(base, vf)], r=round(rel * 10000),
-                     rt=None if rtrel is None else round(rtrel * 10000), rd=blender_points("gpu", n) or render_est(n, rel), v=v,
-                     lanes=lanes, tbp=tbp, rec=rec, y=y, src="est"))
+                     rt=None if rtrel is None else round(rtrel * 10000),
+                     rd=blender_points("gpu", n) or calib.get(("gpu", n)) or render_est(n, rel), v=v,
+                     lanes=lanes, tbp=tbp, rec=rec, y=y, src="est",
+                     rsrc="blender" if blender_points("gpu", n) else "measured" if ("gpu", n) in calib else "est"))
 
 missing_cpu = [c["n"] for c in cpus if c["mt"] is None]
 missing_gpu = [g["n"] for g in gpus if g["rd"] is None]
@@ -272,7 +286,7 @@ shared = {
     "cpus": [dict(name=c["n"], socket=c["s"], powerW=c["w"], releaseYear=c["y"], gaming=c["gm"], single=c["st"],
                   render=c["mt"], source=c["src"]) for c in cpus],
     "gpus": [dict(name=g["n"], fps={"1080": g["f"][0], "1440": g["f"][1], "2160": g["f"][2]}, raster=g["r"],
-                  rayTracing=g["rt"], render=g["rd"], vramGb=g["v"], pcieLanes=g["lanes"], boardPowerW=g["tbp"],
+                  rayTracing=g["rt"], render=g["rd"], renderSource=g["rsrc"], vramGb=g["v"], pcieLanes=g["lanes"], boardPowerW=g["tbp"],
                   psuRecommendedW=g["rec"], releaseYear=g["y"], integrated=g["n"].startswith("Đồ họa tích hợp"),
                   source=g["src"]) for g in gpus],
 }

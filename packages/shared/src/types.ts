@@ -4,7 +4,7 @@ export type Resolution = 1080 | 1440 | 2160;
 export type RamGb = number;
 export type StorageKind = "hdd" | "sata" | "nvme3" | "nvme4" | "nvme5";
 export type PcieGen = 3 | 4 | 5;
-export type DataSource = "toms" | "blender" | "est";
+export type DataSource = "toms" | "blender" | "est" | "measured";
 
 export interface Cpu {
   name: string;
@@ -29,6 +29,8 @@ export interface Gpu {
   rayTracing: number | null;
   /** Render 3D (Blender). RTX 3060 12GB = 10.000 */
   render: number;
+  /** Nguồn điểm render: Blender Open Data, ước tính, hay số đo người dùng đã xác minh */
+  renderSource: DataSource;
   vramGb: number;
   pcieLanes: 4 | 8 | 16;
   boardPowerW: number;

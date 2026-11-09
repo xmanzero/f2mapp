@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  computeScores, estimateFps, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS, tierName, localizePartLabel,
+  benchForSpec, computeScores, estimateFps, measuredRender, evaluate, GPUS, hardwareFindings, resolveMachine, RESOLUTION_LABEL, specFindings, specToInput, suggestUpgrades, TIERS, tierName, localizePartLabel,
   type Finding, type MachineConfig, type MachineSpec, type Resolution, type Severity, type UpgradeSuggestion,
 } from "@f2m/shared";
 import { Star } from "lucide-react";
@@ -46,10 +46,12 @@ export function MyMachine() {
 
   const view = useMemo(() => {
     if (!ready) return null;
-    const cfg = resolveMachine(specToInput(shownSpec));
-    const base = resolveMachine(specToInput(spec));
+    // điểm render theo số đo đã xác minh của chính máy (chỉ khi còn đúng CPU / card đang xem)
+    const measured = (s: MachineSpec) => measuredRender(benchForSpec(active.bench ?? null, s));
+    const cfg = resolveMachine(specToInput(shownSpec), measured(shownSpec));
+    const base = resolveMachine(specToInput(spec), measured(spec));
     return { cfg, r: evaluate(cfg, new Date().getFullYear(), locale), base: evaluate(base).scores.power, upgrades: suggestUpgrades(base, locale) };
-  }, [ready, shownSpec, spec, locale]);
+  }, [ready, shownSpec, spec, locale, active.bench]);
 
   useEffect(() => { setPreview(null); }, [active.id]);
   if (!view) return <Loading />;

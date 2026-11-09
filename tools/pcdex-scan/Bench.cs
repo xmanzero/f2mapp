@@ -21,8 +21,15 @@ namespace PcdexScan
     {
         [DataMember(Name = "blender", Order = 1)] public string Blender;
         [DataMember(Name = "launcher", Order = 2, EmitDefaultValue = false)] public string Launcher;
-        [DataMember(Name = "cpu", Order = 3, EmitDefaultValue = false)] public BenchDevice Cpu;
-        [DataMember(Name = "gpu", Order = 4, EmitDefaultValue = false)] public BenchDevice Gpu;
+        // checksum Blender tự ghi trong kết quả: máy chủ so với bản chính thức (chống số đo bịa / bản sửa)
+        [DataMember(Name = "launcherChecksum", Order = 3, EmitDefaultValue = false)] public string LauncherChecksum;
+        [DataMember(Name = "script", Order = 4, EmitDefaultValue = false)] public string Script;
+        [DataMember(Name = "scriptChecksum", Order = 5, EmitDefaultValue = false)] public string ScriptChecksum;
+        [DataMember(Name = "blenderChecksum", Order = 6, EmitDefaultValue = false)] public string BlenderChecksum;
+        /// <summary>Mã dùng một lần máy chủ cấp lúc bắt đầu đo (POST /api/v1/bench/start)</summary>
+        [DataMember(Name = "nonce", Order = 7, EmitDefaultValue = false)] public string Nonce;
+        [DataMember(Name = "cpu", Order = 8, EmitDefaultValue = false)] public BenchDevice Cpu;
+        [DataMember(Name = "gpu", Order = 9, EmitDefaultValue = false)] public BenchDevice Gpu;
     }
 
     [DataContract]
@@ -31,8 +38,21 @@ namespace PcdexScan
         [DataMember(Name = "name", Order = 1)] public string Name;
         [DataMember(Name = "type", Order = 2)] public string Type;
         [DataMember(Name = "scenes", Order = 3)] public BenchScenes Scenes;
+        [DataMember(Name = "threads", Order = 4, EmitDefaultValue = false)] public int? Threads;
+        /// <summary>Kết quả gốc từng cảnh (số mẫu, thời gian) — máy chủ kiểm tra khớp với điểm</summary>
+        [DataMember(Name = "runs", Order = 5, EmitDefaultValue = false)] public List<BenchRun> Runs;
         /// <summary>Điểm Blender = tổng samples_per_minute 3 cảnh (giống trang Blender Open Data)</summary>
         public double Score => Scenes == null ? 0 : Scenes.Monster + Scenes.Junkshop + Scenes.Classroom;
+    }
+
+    [DataContract]
+    public class BenchRun
+    {
+        [DataMember(Name = "scene", Order = 1)] public string Scene;
+        [DataMember(Name = "sceneChecksum", Order = 2, EmitDefaultValue = false)] public string SceneChecksum;
+        [DataMember(Name = "samples", Order = 3)] public long Samples;
+        [DataMember(Name = "seconds", Order = 4)] public double Seconds;
+        [DataMember(Name = "timeLimit", Order = 5, EmitDefaultValue = false)] public double? TimeLimit;
     }
 
     [DataContract]
@@ -49,15 +69,25 @@ namespace PcdexScan
     [DataContract] class RunEntry
     {
         [DataMember(Name = "scene")] public SceneLabel Scene;
+        [DataMember(Name = "blender_version")] public Version Blender;
+        [DataMember(Name = "benchmark_launcher")] public SceneLabel Launcher;
+        [DataMember(Name = "benchmark_script")] public SceneLabel Script;
         [DataMember(Name = "system_info")] public SysInfo System;
         [DataMember(Name = "device_info")] public DevInfo Device;
         [DataMember(Name = "stats")] public Stats Stats;
     }
-    [DataContract] class SceneLabel { [DataMember(Name = "label")] public string Text; }
+    [DataContract] class SceneLabel { [DataMember(Name = "label")] public string Text; [DataMember(Name = "checksum")] public string Checksum; }
+    [DataContract] class Version { [DataMember(Name = "version")] public string Text; [DataMember(Name = "checksum")] public string Checksum; }
     [DataContract] class SysInfo { [DataMember(Name = "devices")] public List<Dev> Devices; }
-    [DataContract] class DevInfo { [DataMember(Name = "device_type")] public string Type; [DataMember(Name = "compute_devices")] public List<Dev> Devices; }
+    [DataContract] class DevInfo { [DataMember(Name = "device_type")] public string Type; [DataMember(Name = "compute_devices")] public List<Dev> Devices; [DataMember(Name = "num_cpu_threads")] public int? Threads; }
     [DataContract] class Dev { [DataMember(Name = "type")] public string Type; [DataMember(Name = "name")] public string Name; [DataMember(Name = "is_display")] public bool? IsDisplay; }
-    [DataContract] class Stats { [DataMember(Name = "samples_per_minute")] public double? Spm; }
+    [DataContract] class Stats
+    {
+        [DataMember(Name = "samples_per_minute")] public double? Spm;
+        [DataMember(Name = "number_of_samples")] public long? Samples;
+        [DataMember(Name = "time_for_samples")] public double? Seconds;
+        [DataMember(Name = "time_limit")] public double? TimeLimit;
+    }
 
 #pragma warning restore CS0649
 
@@ -87,7 +117,8 @@ namespace PcdexScan
         CancellationToken token;
 
         /// <param name="gpuHint">Tên card chính đọc được khi quét (chọn đúng card khi máy có nhiều thiết bị)</param>
-        public async Task<BenchReport> RunAsync(string gpuHint, CancellationToken ct)
+        /// <param name="nonce">mã đo máy chủ cấp (null nếu không xin được — số đo vẫn hiện nhưng chưa được xác minh)</param>
+        public async Task<BenchReport> RunAsync(string gpuHint, string nonce, CancellationToken ct)
         {
             token = ct;
             Report(L.T("Đang tải công cụ đo của Blender…", "Downloading the Blender benchmark tool…"), 2);
@@ -97,10 +128,16 @@ namespace PcdexScan
             Report(L.T("Đang tải 3 cảnh thử (lần đầu khoảng 100 MB)…", "Downloading 3 test scenes (about 100 MB the first time)…"), 22);
             await Run($"scenes download --blender-version {BlenderVersion} " + string.Join(" ", Scenes));
 
-            var report = new BenchReport { Blender = BlenderVersion, Launcher = LauncherVersion };
+            var report = new BenchReport { Blender = BlenderVersion, Launcher = LauncherVersion, Nonce = nonce };
             Report(L.T("Đang đo CPU (3 cảnh, khoảng 2–3 phút)…", "Benchmarking the CPU (3 scenes, about 2–3 minutes)…"), 30);
             var cpuRuns = Parse(await Run($"benchmark --blender-version {BlenderVersion} --device-type CPU --json " + string.Join(" ", Scenes)));
             report.Cpu = Device(cpuRuns, "CPU");
+            // checksum do chính Blender ghi (bản công cụ, script đo, bản Blender)
+            var first = cpuRuns.FirstOrDefault();
+            report.LauncherChecksum = first?.Launcher?.Checksum;
+            report.Script = first?.Script?.Text;
+            report.ScriptChecksum = first?.Script?.Checksum;
+            report.BlenderChecksum = first?.Blender?.Checksum;
 
             // card: lấy từ danh sách thiết bị Blender thấy được (ghi trong kết quả đo CPU)
             var devices = cpuRuns.SelectMany(r => r.System?.Devices ?? new List<Dev>()).Where(d => d.Type != "CPU" && d.Name != null)
@@ -147,7 +184,15 @@ namespace PcdexScan
             double Spm(string scene) => mine.FirstOrDefault(r => r.Scene?.Text == scene)?.Stats?.Spm ?? 0;
             var s = new BenchScenes { Monster = Spm("monster"), Junkshop = Spm("junkshop"), Classroom = Spm("classroom") };
             if (s.Monster <= 0 || s.Junkshop <= 0 || s.Classroom <= 0) throw new Exception(L.T("Không đọc được kết quả đo.", "Couldn’t read the benchmark result."));
-            return new BenchDevice { Name = mine[0].Device.Devices[0].Name, Type = type, Scenes = s };
+            return new BenchDevice
+            {
+                Name = mine[0].Device.Devices[0].Name, Type = type, Scenes = s,
+                Threads = type == "CPU" ? mine[0].Device.Threads : null,
+                Runs = mine.Where(r => r.Stats?.Samples > 0 && r.Stats.Seconds > 0).Select(r => new BenchRun
+                {
+                    Scene = r.Scene?.Text, SceneChecksum = r.Scene?.Checksum, Samples = r.Stats.Samples.Value, Seconds = r.Stats.Seconds.Value, TimeLimit = r.Stats.TimeLimit,
+                }).ToList(),
+            };
         }
 
         /// <summary>Kết quả --json: một mảng JSON (lấy từ dấu [ đầu tiên đến ] cuối cùng, bỏ chữ khác nếu có)</summary>
