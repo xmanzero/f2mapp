@@ -10,6 +10,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace PcdexScan
 {
@@ -204,7 +205,12 @@ namespace PcdexScan
                     p.Start();
                     current = p;
                     p.BeginOutputReadLine(); p.BeginErrorReadLine();
-                    using (token.Register(Cancel)) p.WaitForExit();
+                    // Windows 11 coi tiến trình không cửa sổ là việc nền (EcoQoS) và đẩy sang nhân E trên CPU lai
+                    // (Intel 12–14, Core Ultra) → điểm thấp hơn thật ~25%. Tắt chế độ đó cho công cụ đo và mọi Blender nó mở.
+                    var boosted = new HashSet<int>();
+                    using (token.Register(Cancel))
+                        while (!p.WaitForExit(500)) Boost(p.Id, boosted);
+                    p.WaitForExit();
                     current = null;
                     if (token.IsCancellationRequested) throw new BenchCancelled();
                     if (p.ExitCode != 0)
@@ -215,6 +221,34 @@ namespace PcdexScan
                     return outp.ToString();
                 }
             });
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct PowerThrottlingState { public uint Version, ControlMask, StateMask; }
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool SetProcessInformation(IntPtr process, int infoClass, ref PowerThrottlingState info, int size);
+        const int ProcessPowerThrottling = 4;
+        const uint ThrottleExecutionSpeed = 0x1, ThrottleIgnoreTimerResolution = 0x4;
+
+        /// <summary>Đưa công cụ đo và các Blender đang chạy về chế độ hiệu năng cao (không EcoQoS), mỗi tiến trình một lần</summary>
+        static void Boost(int launcherPid, HashSet<int> done)
+        {
+            var targets = new List<Process>();
+            try { targets.Add(Process.GetProcessById(launcherPid)); } catch { }
+            try { targets.AddRange(Process.GetProcessesByName("blender")); } catch { }
+            foreach (var t in targets)
+            {
+                try
+                {
+                    if (done.Contains(t.Id) || t.HasExited) continue;
+                    // ControlMask = loại điều tiết mình quản lý, StateMask = 0 → tắt điều tiết (luôn chạy hết tốc)
+                    var st = new PowerThrottlingState { Version = 1, ControlMask = ThrottleExecutionSpeed | ThrottleIgnoreTimerResolution, StateMask = 0 };
+                    SetProcessInformation(t.Handle, ProcessPowerThrottling, ref st, Marshal.SizeOf(st));
+                    done.Add(t.Id);
+                }
+                catch { /* Windows 10 cũ không có tùy chọn này — bỏ qua */ }
+                finally { t.Dispose(); }
+            }
         }
 
         static void KillTree(int pid)

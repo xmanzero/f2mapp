@@ -8,7 +8,7 @@ namespace PcdexScan
 {
     static class Program
     {
-        public const string Version = "0.5.0";
+        public const string Version = "0.5.1";
         /// <summary>Địa chỉ web pcdex mặc định. Đổi bằng tham số --server hoặc biến môi trường PCDEX_SERVER.</summary>
         const string DefaultServer = "https://pcdex.app";
 
